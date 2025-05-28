@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.Optional;
 
 @Service
 public class AuthAccountService {
@@ -38,8 +39,8 @@ public class AuthAccountService {
         AuthAccountResponse authAccountResponse;
         UserEntity user = new UserEntity();
         user.setPhoneNumber(registerRequest.getPhoneNumber());
-        RoleEntity roleMember = roleRepository.findByRoleName(RoleEnum.ROLE_MEMBER);
-        user.setRole(roleMember);
+        Optional<RoleEntity> roleMember = roleRepository.findByRoleName(RoleEnum.ROLE_MEMBER);
+        user.setRole(roleMember.orElseThrow());//throw
         user.setFullName(registerRequest.getFullName());
         user.setAddress(registerRequest.getAddress());
         user.setDateOfBirth(registerRequest.getDateOfBirth());
@@ -57,9 +58,7 @@ public class AuthAccountService {
                         user.getAuthorities()
                 )
         );
-        UserProfileDTO userProfileDTO = new UserProfileDTO();
-        userProfileDTO.setPhoneNumber(user.getPhoneNumber());
-        authAccountResponse = new AuthAccountResponse(token, userProfileDTO);
+        authAccountResponse = new AuthAccountResponse(token);
         return authAccountResponse;
     }
 
@@ -78,7 +77,7 @@ public class AuthAccountService {
         userProfileDTO.setLongitude(user.getLongitude());
         userProfileDTO.setBloodType(user.getBloodType());
         userProfileDTO.setDayOfBirth(user.getDateOfBirth());
-        authAccountResponse = new AuthAccountResponse(token, userProfileDTO);
+        authAccountResponse = new AuthAccountResponse(token);
         return authAccountResponse;
 
 
