@@ -1,14 +1,20 @@
 package com.example.BloodDonationSupportSystem.service.authaccountservice;
 
 
+import com.example.BloodDonationSupportSystem.dto.common.BaseReponse;
 import com.example.BloodDonationSupportSystem.entity.OauthAccountEntity;
+import com.example.BloodDonationSupportSystem.entity.RoleEntity;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
+import com.example.BloodDonationSupportSystem.enumentity.RoleEnum;
+import com.example.BloodDonationSupportSystem.repository.RoleRepository;
+import com.example.BloodDonationSupportSystem.service.jwtservice.JwtService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -16,9 +22,13 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.lang.reflect.Member;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.example.BloodDonationSupportSystem.enumentity.RoleEnum.ROLE_MEMBER;
 
 @Slf4j
 @Service
@@ -47,6 +57,10 @@ public class GoogleOAuthService {
 
     @Autowired
     private final AuthAccountService authAccountService;
+    @Autowired
+    private JwtService jwtService;
+    @Autowired
+    private RoleRepository roleRepository;
 
     public void redirectToGoogle(HttpServletResponse response) {
         try {
@@ -64,10 +78,36 @@ public class GoogleOAuthService {
         }
     }
 
-    public Map<String, Object> handleGoogleCallback(String code) {
-        String accessToken = getGoogleAccessToken(code);
-        Map<String, Object> userInfo = getGoogleUserInfo(accessToken);
-        return processGoogleUser(userInfo);
+    public BaseReponse<?> handleGoogleCallback(String code) {
+        try {
+            String accessToken = getGoogleAccessToken(code);
+            Map<String, Object> userInfo = getGoogleUserInfo(accessToken);
+
+            String providerUserId = (String) userInfo.get("sub");
+
+            var oauthAccountOpt = oauthService.getOauthAccount(GOOGLE_PROVIDER, providerUserId);
+            UserEntity user = oauthAccountOpt.map(OauthAccountEntity::getUser)
+                    .orElseGet(() -> createNewGoogleUser(userInfo, providerUserId));
+
+            String jwtToken = jwtService.generateToken(
+                    new org.springframework.security.core.userdetails.User(
+                            String.valueOf(user.getUser_id()), "", Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getRoleName().name()))
+                    )
+            );
+
+            // Only return the access token
+            return new BaseReponse<>(
+                    HttpStatus.OK.value(),
+                    "Login successful",
+                    jwtToken
+            );
+        } catch (Exception e) {
+            return new BaseReponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Login failed: " + e.getMessage(),
+                    null
+            );
+        }
     }
 
     private Map<String, Object> processGoogleUser(Map<String, Object> userInfo) {
@@ -92,6 +132,9 @@ public class GoogleOAuthService {
         UserEntity user = new UserEntity();
         user.setFullName((String) userInfo.get("name"));
         user.setAvatar((String) userInfo.get("picture"));
+        RoleEntity memberRole = roleRepository.findByRoleName(ROLE_MEMBER)
+                .orElseThrow(() -> new RuntimeException("ROLE_MEMBER not found"));
+        user.setRole(memberRole);
         user = authAccountService.createUser(user);
 
         OauthAccountEntity oauthAccount = new OauthAccountEntity();

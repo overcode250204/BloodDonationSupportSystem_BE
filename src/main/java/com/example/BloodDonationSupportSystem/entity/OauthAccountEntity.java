@@ -3,12 +3,15 @@ package com.example.BloodDonationSupportSystem.entity;
 
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 
 import java.time.LocalDateTime;
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "oauth_account")
 public class OauthAccountEntity {
@@ -32,14 +35,6 @@ public class OauthAccountEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    public OauthAccountEntity() {
-    }
 
-    public OauthAccountEntity(String provider, String providerUserId, LocalDateTime createdAt, UserEntity user) {
-        this.provider = provider;
-        this.providerUserId = providerUserId;
-        this.createdAt = createdAt;
-        this.user = user;
-    }
 }
 

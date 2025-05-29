@@ -43,7 +43,7 @@ public class AuthAccountController {
     @Value("${google.redirect.uri}")
     private String redirectUri;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+
 
     @Autowired
     private OauthService oauthService;
@@ -72,14 +72,16 @@ public class AuthAccountController {
     }
 
     @GetMapping("/callback/google")
-    public ResponseEntity<?> handleGoogleCallback(@RequestParam("code") String code) {
-//        log.info("Handling Google OAuth callback");
+    public BaseReponse<?> handleGoogleCallback(@RequestParam("code") String code) {
         try {
-            return ResponseEntity.ok(googleOAuthService.handleGoogleCallback(code));
+
+            return googleOAuthService.handleGoogleCallback(code);
         } catch (Exception e) {
-//            log.error("Error during Google OAuth callback", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error during Google OAuth callback: " + e.getMessage());
+            return new BaseReponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Error during Google OAuth callback: " + e.getMessage(),
+                    null
+            );
         }
     }
 
