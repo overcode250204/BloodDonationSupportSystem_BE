@@ -95,10 +95,10 @@ public class GoogleOAuthService {
                     )
             );
 
-            // Only return the access token
+
             return new BaseReponse<>(
                     HttpStatus.OK.value(),
-                    "Login successful",
+                    "Login google successful",
                     jwtToken
             );
         } catch (Exception e) {
