@@ -40,7 +40,7 @@ public class AuthAccountService {
         UserEntity user = new UserEntity();
         user.setPhoneNumber(registerRequest.getPhoneNumber());
         Optional<RoleEntity> roleMember = roleRepository.findByRoleName(RoleEnum.ROLE_MEMBER);
-        user.setRole(roleMember.orElseThrow());//throw
+        user.setRole(roleMember.orElseThrow());
         user.setFullName(registerRequest.getFullName());
         user.setAddress(registerRequest.getAddress());
         user.setDateOfBirth(registerRequest.getDateOfBirth());
@@ -53,7 +53,7 @@ public class AuthAccountService {
 
         String token = jwtService.generateToken(
                 new User(
-                        user.getPhoneNumber(),
+                        String.valueOf(user.getUser_id()),
                         user.getPasswordHash(),
                         user.getAuthorities()
                 )
@@ -68,7 +68,7 @@ public class AuthAccountService {
                 new UsernamePasswordAuthenticationToken(loginRequest.getPhoneNumber(), loginRequest.getPassword()));
         UserEntity user = userRepository.findByPhoneNumber(loginRequest.getPhoneNumber()).orElseThrow();
 
-        String token = jwtService.generateToken(new User(user.getPhoneNumber(), user.getPasswordHash(), Collections.singleton(new SimpleGrantedAuthority(user.getRole().getRoleName().name()))));
+        String token = jwtService.generateToken(new User(String.valueOf(user.getUser_id()), user.getPasswordHash(), Collections.singleton(new SimpleGrantedAuthority(user.getRole().getRoleName().name()))));
         UserProfileDTO userProfileDTO = new UserProfileDTO();
         userProfileDTO.setPhoneNumber(user.getPhoneNumber());
         userProfileDTO.setGender(user.getGender());
