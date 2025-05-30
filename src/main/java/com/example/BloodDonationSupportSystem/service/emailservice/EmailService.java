@@ -16,13 +16,13 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String email;
 
-    public void sendHealthReminder(String username ) throws MessagingException {
+    public void sendHealthReminder(String username, String userEmail ) throws MessagingException {
             MimeMessage message = mailSender.createMimeMessage();
 
             // true = multipart
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setTo(username);
+            helper.setTo(userEmail);
 
             helper.setSubject("Nhắc nhở theo dõi sức khỏe sau hiến máu");
 
