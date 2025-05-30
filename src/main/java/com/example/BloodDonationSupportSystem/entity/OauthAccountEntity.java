@@ -6,9 +6,13 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 
 import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,9 +21,10 @@ import java.time.LocalDateTime;
 public class OauthAccountEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "oauth_account_id")
-    private Long oauthAccountId; // 🔐 Primary Key nội bộ
+    @GeneratedValue
+    @JdbcTypeCode(SqlTypes.UUID)
+    @Column(name = "oauth_account_id", columnDefinition = "uniqueidentifier")
+    private UUID oauthAccountId;
 
     @Column(name = "provider")
     private String provider; // eg: "google"
