@@ -83,7 +83,9 @@ public class AuthAccountService {
 
     }
 
-
+    public UserEntity createUser(UserEntity newUser) {
+        return userRepository.save(newUser);
+    }
 
 
 
