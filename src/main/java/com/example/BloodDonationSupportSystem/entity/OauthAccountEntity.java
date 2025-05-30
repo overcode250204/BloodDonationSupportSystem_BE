@@ -17,13 +17,13 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "oauth_account")
+@Table(name = "oauthaccount")
 public class OauthAccountEntity {
 
     @Id
     @GeneratedValue
     @JdbcTypeCode(SqlTypes.UUID)
-    @Column(name = "oauth_account_id", columnDefinition = "uniqueidentifier")
+    @Column(name = "oauthaccount_id", columnDefinition = "uniqueidentifier")
     private UUID oauthAccountId;
 
     @Column(name = "provider")
