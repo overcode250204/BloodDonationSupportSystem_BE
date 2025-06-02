@@ -6,7 +6,9 @@ import com.example.BloodDonationSupportSystem.entity.OauthAccountEntity;
 import com.example.BloodDonationSupportSystem.entity.RoleEntity;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import com.example.BloodDonationSupportSystem.enumentity.RoleEnum;
+import com.example.BloodDonationSupportSystem.enumentity.StatusUserEnum;
 import com.example.BloodDonationSupportSystem.repository.RoleRepository;
+import com.example.BloodDonationSupportSystem.repository.UserRepository;
 import com.example.BloodDonationSupportSystem.service.jwtservice.JwtService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -33,6 +36,7 @@ import static com.example.BloodDonationSupportSystem.enumentity.RoleEnum.ROLE_ME
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class GoogleOAuthService {
 
     private static final String GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
@@ -54,6 +58,8 @@ public class GoogleOAuthService {
 
     @Autowired
     private final OauthService oauthService;
+    @Autowired
+    private final UserRepository userRepository;
 
     @Autowired
     private final AuthAccountService authAccountService;
@@ -91,7 +97,7 @@ public class GoogleOAuthService {
 
             String jwtToken = jwtService.generateToken(
                     new org.springframework.security.core.userdetails.User(
-                            String.valueOf(user.getUser_id()), "", Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getRoleName().name()))
+                           user.getUserId().toString() , "", Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getRoleName().name()))
                     )
             );
 
@@ -129,20 +135,25 @@ public class GoogleOAuthService {
     }
 
     private UserEntity createNewGoogleUser(Map<String, Object> userInfo, String providerUserId) {
-        UserEntity user = new UserEntity();
-        user.setFullName((String) userInfo.get("name"));
-        user.setAvatar((String) userInfo.get("picture"));
-        RoleEntity memberRole = roleRepository.findByRoleName(ROLE_MEMBER)
-                .orElseThrow(() -> new RuntimeException("ROLE_MEMBER not found"));
-        user.setRole(memberRole);
-        user = authAccountService.createUser(user);
-
         OauthAccountEntity oauthAccount = new OauthAccountEntity();
         oauthAccount.setProvider(GOOGLE_PROVIDER);
         oauthAccount.setProviderUserId(providerUserId);
         oauthAccount.setCreatedAt(LocalDateTime.now());
-        oauthAccount.setUser(user);
+        oauthAccount.setAccount((String) userInfo.get("email"));
+
         oauthService.saveOauthAccount(oauthAccount);
+
+        UserEntity user = new UserEntity();
+        user.setFullName((String) userInfo.get("name"));
+        user.setAvatar((String) userInfo.get("picture"));
+        user.setStatus(StatusUserEnum.ACTIVE);
+        user.setOauthAccount(oauthAccount);
+        RoleEntity memberRole = roleRepository.findByRoleName(ROLE_MEMBER)
+                .orElseThrow(() -> new RuntimeException("ROLE_MEMBER not found"));
+        user.setRole(memberRole);
+        user = userRepository.save(user);
+
+
 
         return user;
     }

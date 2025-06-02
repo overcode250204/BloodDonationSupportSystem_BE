@@ -5,7 +5,7 @@ import com.example.BloodDonationSupportSystem.enumentity.GenderEnum;
 import com.example.BloodDonationSupportSystem.enumentity.StatusUserEnum;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
+
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,7 +13,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,7 +26,7 @@ public class UserEntity {
     @GeneratedValue
     @JdbcTypeCode(SqlTypes.UUID)
     @Column(name = "user_id", columnDefinition = "uniqueidentifier")
-    private UUID user_id;
+    private UUID userId;
 
     @Column(name = "password_hash")
     private String passwordHash;
@@ -69,6 +68,9 @@ public class UserEntity {
     @JoinColumn(name = "role_id")
     private RoleEntity role;
 
+    @OneToOne
+    @JoinColumn(name = "oauthaccount_id")
+    private OauthAccountEntity oauthAccount;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(this.getRole().getRoleName().name()));

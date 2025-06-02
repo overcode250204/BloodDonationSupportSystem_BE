@@ -46,10 +46,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         final String token = authorizationHeader.substring(7);
-        final String phoneNumber = jwtService.extractPhonenumber(token);
-        if (phoneNumber != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+        final String username = jwtService.extractUsername(token);
+
+
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             //User này là của Spring để phục vu cho viec authorization có role
-            User userDetails = (User) customUserDetailsService.loadUserByUsername(phoneNumber);
+            User userDetails = (User) customUserDetailsService.loadUserByUsername(username);
             if (jwtService.isTokenValid(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authenToken =
                         new UsernamePasswordAuthenticationToken(

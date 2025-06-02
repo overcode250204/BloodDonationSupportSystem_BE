@@ -27,19 +27,18 @@ public class OauthAccountEntity {
     private UUID oauthAccountId;
 
     @Column(name = "provider")
-    private String provider; // eg: "google"
+    private String provider;
 
     @Column(name = "provider_user_id")
-    private String providerUserId; // eg: "1234567890"
+    private String providerUserId;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "account")
+    private String account;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @OneToOne(mappedBy = "oauthAccount")
     private UserEntity user;
-
-
 }
 
