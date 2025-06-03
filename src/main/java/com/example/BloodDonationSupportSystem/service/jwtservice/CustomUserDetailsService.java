@@ -26,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         UserEntity user = null;
         try {
             UUID uuid = UUID.fromString(username);
-            userRepository.findByUserId(uuid).orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + username));
+            user = userRepository.findByUserId(uuid).orElseThrow(() -> new UsernameNotFoundException("User not found" + username));
         } catch (IllegalArgumentException e) {
             user = userRepository.findByPhoneNumber(username).orElseThrow(() -> new UsernameNotFoundException("User not found with phone: " + username));
 
