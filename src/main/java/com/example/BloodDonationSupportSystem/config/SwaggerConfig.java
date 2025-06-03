@@ -27,6 +27,7 @@ public class SwaggerConfig {
                                 .email("nguyenlpkse182643@fpt.edu.vn")
                                 .url("https://blooddonationsupportsystem.github.io/blooddonationsupportsystem")))
 
+
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .components(new Components()
                         .addSecuritySchemes("bearerAuth", new SecurityScheme()
