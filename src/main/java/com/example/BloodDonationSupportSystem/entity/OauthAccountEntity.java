@@ -38,7 +38,8 @@ public class OauthAccountEntity {
     @Column(name = "account")
     private String account;
 
-    @OneToOne(mappedBy = "oauthAccount")
+    @OneToOne
+    @JoinColumn(name = "user_id")
     private UserEntity user;
 }
 

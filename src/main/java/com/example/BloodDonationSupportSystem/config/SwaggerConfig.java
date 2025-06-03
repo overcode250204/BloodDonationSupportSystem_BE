@@ -35,6 +35,7 @@ public class SwaggerConfig {
                                 .scheme("bearer")
                                 .bearerFormat("JWT")));
 
+
     }
     @Bean
     public GroupedOpenApi bloodDonationSupportSystemGroup() {

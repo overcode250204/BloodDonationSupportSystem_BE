@@ -135,24 +135,26 @@ public class GoogleOAuthService {
     }
 
     private UserEntity createNewGoogleUser(Map<String, Object> userInfo, String providerUserId) {
-        OauthAccountEntity oauthAccount = new OauthAccountEntity();
-        oauthAccount.setProvider(GOOGLE_PROVIDER);
-        oauthAccount.setProviderUserId(providerUserId);
-        oauthAccount.setCreatedAt(LocalDateTime.now());
-        oauthAccount.setAccount((String) userInfo.get("email"));
 
-        oauthService.saveOauthAccount(oauthAccount);
 
         UserEntity user = new UserEntity();
         user.setFullName((String) userInfo.get("name"));
         user.setAvatar((String) userInfo.get("picture"));
         user.setStatus(StatusUserEnum.ACTIVE);
-        user.setOauthAccount(oauthAccount);
+
         RoleEntity memberRole = roleRepository.findByRoleName(ROLE_MEMBER)
                 .orElseThrow(() -> new RuntimeException("ROLE_MEMBER not found"));
         user.setRole(memberRole);
         user = userRepository.save(user);
 
+        OauthAccountEntity oauthAccount = new OauthAccountEntity();
+        oauthAccount.setProvider(GOOGLE_PROVIDER);
+        oauthAccount.setProviderUserId(providerUserId);
+        oauthAccount.setCreatedAt(LocalDateTime.now());
+        oauthAccount.setAccount((String) userInfo.get("email"));
+        oauthAccount.setUser(user);
+        user.setOauthAccount(oauthAccount);
+        oauthService.saveOauthAccount(oauthAccount);
 
 
         return user;

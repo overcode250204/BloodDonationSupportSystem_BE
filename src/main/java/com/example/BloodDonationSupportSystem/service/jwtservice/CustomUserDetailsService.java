@@ -5,12 +5,14 @@ import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import com.example.BloodDonationSupportSystem.repository.OauthAccountRepository;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -20,6 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private UserRepository userRepository;
     @Autowired
     private OauthAccountRepository oauthAccountRepository;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
@@ -34,13 +37,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 
 
-
-
-
-
-        return new User(user.getUserId().toString(),
+        User user1 = new User(user.getUserId().toString(),
                 user.getPasswordHash() == null ? "" : user.getPasswordHash(),
                 user.getAuthorities());
+
+        System.out.println(user1.toString());
+
+        return user1;
 
     }
 

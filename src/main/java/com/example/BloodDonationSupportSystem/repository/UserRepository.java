@@ -12,4 +12,5 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     Optional<UserEntity> findByPhoneNumber(String phoneNumber);
     Optional<UserEntity> findByOauthAccount(OauthAccountEntity oauthAccountEntity);
     Optional<UserEntity> findByUserId(UUID userId);
+    boolean existsByPhoneNumber(String phoneNumber);
 }
