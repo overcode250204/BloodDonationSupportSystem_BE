@@ -53,7 +53,7 @@ public class AuthAccountService {
 
         String token = jwtService.generateToken(
                 new User(
-                        String.valueOf(user.getUser_id()),
+                        user.getUserId().toString(),
                         user.getPasswordHash(),
                         user.getAuthorities()
                 )
@@ -68,7 +68,7 @@ public class AuthAccountService {
                 new UsernamePasswordAuthenticationToken(loginRequest.getPhoneNumber(), loginRequest.getPassword()));
         UserEntity user = userRepository.findByPhoneNumber(loginRequest.getPhoneNumber()).orElseThrow();
 
-        String token = jwtService.generateToken(new User(String.valueOf(user.getUser_id()), user.getPasswordHash(), Collections.singleton(new SimpleGrantedAuthority(user.getRole().getRoleName().name()))));
+        String token = jwtService.generateToken(new User(user.getUserId().toString(), user.getPasswordHash(), Collections.singleton(new SimpleGrantedAuthority(user.getRole().getRoleName().name()))));
         UserProfileDTO userProfileDTO = new UserProfileDTO();
         userProfileDTO.setPhoneNumber(user.getPhoneNumber());
         userProfileDTO.setGender(user.getGender());
@@ -83,9 +83,7 @@ public class AuthAccountService {
 
     }
 
-    public UserEntity createUser(UserEntity newUser) {
-        return userRepository.save(newUser);
-    }
+
 
 
 
