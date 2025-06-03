@@ -44,9 +44,10 @@ public class JwtService {
     }
 
     public String generateToken(UserDetails userDetails) {
+
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
-                .claim("authories", userDetails.getAuthorities())
+                .claim("role", userDetails.getAuthorities().stream().map(Object::toString).toList())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), SignatureAlgorithm.HS256)

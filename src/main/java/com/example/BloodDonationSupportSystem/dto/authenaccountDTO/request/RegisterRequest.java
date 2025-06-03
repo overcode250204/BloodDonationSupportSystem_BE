@@ -1,6 +1,7 @@
 package com.example.BloodDonationSupportSystem.dto.authenaccountDTO.request;
 
 import com.example.BloodDonationSupportSystem.enumentity.GenderEnum;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -9,12 +10,16 @@ import java.time.LocalDate;
 
 @Data
 public class RegisterRequest {
+    @NotBlank
     @NotNull
     @Length(max = 10)
     private String phoneNumber;
+
+    @NotBlank
     @NotNull
     @Length(max = 10)
     private String password;
+
     @NotNull
     private String fullName;
 
