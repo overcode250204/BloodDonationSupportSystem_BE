@@ -3,7 +3,6 @@ package com.example.BloodDonationSupportSystem.service.processmanagement;
 import com.example.BloodDonationSupportSystem.dto.processmanagement.UpdateToCompletedRequest;
 import com.example.BloodDonationSupportSystem.entity.BloodDonationHistory;
 import com.example.BloodDonationSupportSystem.entity.BloodDonationProcess;
-
 import com.example.BloodDonationSupportSystem.enumentity.processmanagement.BloodDonationProcessStatus;
 import com.example.BloodDonationSupportSystem.repository.processmanagement.BloodDonationHistoryRepository;
 import com.example.BloodDonationSupportSystem.repository.processmanagement.BloodDonationProcessRepository;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class BloodDonationProcessServiceImpl implements BloodDonationProcessService{
@@ -31,9 +29,7 @@ public class BloodDonationProcessServiceImpl implements BloodDonationProcessServ
 
     @Override
     public String updateToCompleted(UpdateToCompletedRequest req) {
-        if(req.getDonation_process_id() == null || req.getVolume_ml() == null) {
-            throw new IllegalArgumentException("Donation process ID and volume must not be null");
-        }
+
         Optional<BloodDonationProcess> optionalProcess = bloodDonationProcessRepository.findById(req.getDonation_process_id());
         if(optionalProcess.isPresent()) {
             BloodDonationProcess process = optionalProcess.get();

@@ -45,19 +45,4 @@ public class MemberScreening {
     @Column(name = "screened_by_staff_id")
     private UUID screened_by_staff_id;
 
-    public void setStatus(MemberScreeningStatus status) {
-        this.status = status;
-    }
-
-    public MemberScreeningStatus getStatus() {
-        return status;
-    }
-
-    public HealthStatusEnum getHealth_status() {
-        return health_status;
-    }
-
-    public void setHealth_status(HealthStatusEnum health_status) {
-        this.health_status = health_status;
-    }
 }

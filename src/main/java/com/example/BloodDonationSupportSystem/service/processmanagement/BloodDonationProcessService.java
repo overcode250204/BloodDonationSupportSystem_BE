@@ -6,7 +6,6 @@ import com.example.BloodDonationSupportSystem.enumentity.processmanagement.Blood
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public interface BloodDonationProcessService {

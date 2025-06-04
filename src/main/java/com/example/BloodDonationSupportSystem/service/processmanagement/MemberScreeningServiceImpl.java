@@ -5,7 +5,6 @@ import com.example.BloodDonationSupportSystem.dto.processmanagement.UpdateToColl
 import com.example.BloodDonationSupportSystem.dto.processmanagement.UpdateToScreeningRequest;
 import com.example.BloodDonationSupportSystem.entity.BloodDonationProcess;
 import com.example.BloodDonationSupportSystem.entity.MemberScreening;
-
 import com.example.BloodDonationSupportSystem.enumentity.processmanagement.BloodDonationProcessStatus;
 import com.example.BloodDonationSupportSystem.enumentity.processmanagement.HealthStatusEnum;
 import com.example.BloodDonationSupportSystem.enumentity.processmanagement.MemberScreeningStatus;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class MemberScreeningServiceImpl implements MemberScreeningService {
@@ -48,9 +46,7 @@ public class MemberScreeningServiceImpl implements MemberScreeningService {
 
     @Override
     public String updateToCollecting(UpdateToCollectingRequest req) {
-        if (req.getMember_screening_id() == null || req.getHealth_status() == null) {
-            throw new IllegalArgumentException("Member screening ID and health status must not be null");
-        }
+
         String message = "";
         Optional<MemberScreening> optionalMemberScreening = memberScreeningRepository.findById(req.getMember_screening_id());
         if (optionalMemberScreening.isPresent()) {

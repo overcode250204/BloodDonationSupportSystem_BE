@@ -1,15 +1,19 @@
 package com.example.BloodDonationSupportSystem.dto.processmanagement;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.antlr.v4.runtime.misc.NotNull;
+
 import java.util.UUID;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class UpdateToScreeningRequest {
-    UUID member_screening_id;
 
-    public UUID getMember_screening_id() {
-        return member_screening_id;
-    }
-
-    public void setMember_screening_id(UUID member_screening_id) {
-        this.member_screening_id = member_screening_id;
-    }
+    @NotNull
+    @JsonProperty("member_screening_id")
+    private UUID member_screening_id;
 }
