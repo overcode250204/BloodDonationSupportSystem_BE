@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface BloodBagRepository extends JpaRepository<BloodBag, UUID> {
+public interface BloodInventoryRepository extends JpaRepository<BloodBag, UUID> {
 
 }

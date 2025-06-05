@@ -3,7 +3,9 @@ package com.example.BloodDonationSupportSystem.service.BloodInventoryService;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.request.BloodBagRequest;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.BloodBagResponse;
 import com.example.BloodDonationSupportSystem.entity.BloodBag;
-import com.example.BloodDonationSupportSystem.repository.BloodBagRepository;
+import com.example.BloodDonationSupportSystem.entity.DonationRegisterationFake;
+import com.example.BloodDonationSupportSystem.repository.BloodInventoryRepository;
+import com.example.BloodDonationSupportSystem.repository.FakeDonationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,33 +13,40 @@ import java.util.UUID;
 
 
 @Service
-public class BloodBagService {
+public class BloodInventoryService {
     @Autowired
-    private BloodBagRepository bloodBagRepository;
+    private BloodInventoryRepository bloodInventoryRepository;
+
+    @Autowired
+    private FakeDonationRepository fakeDonationRepository;
+
+    public DonationRegisterationFake createFakeDonation(DonationRegisterationFake donationRegisterationFake) {
+        return fakeDonationRepository.save(donationRegisterationFake);
+    }
 
     public BloodBagResponse createBloodBag(BloodBagRequest bloodBagRequest) {
-
+        DonationRegisterationFake donaFake = fakeDonationRepository.findById(bloodBagRequest.getDonationId()).orElseThrow(
+                ()-> new RuntimeException("Donation registration not found with ID: " + bloodBagRequest.getDonationId()));
         BloodBag bloodBag = new BloodBag();
-        bloodBag.setBloodType(bloodBagRequest.getBloodType().getValue());// cái này co the null nen fix lai
-        System.out.println("Creating blood bag with type: " + bloodBagRequest.getBloodType());
+        bloodBag.setBloodType(bloodBagRequest.getBloodType());
+        bloodBag.setAmountBag(bloodBagRequest.getAmount_bag());
         bloodBag.setVolume(bloodBagRequest.getVolume());
-        bloodBag.setStatus(bloodBagRequest.getStatus());
-        bloodBag.setCreateAtDate(bloodBagRequest.getCreateAtDate());
-        if (bloodBagRequest.getBloodDonationHistoryId() == null) {
-            bloodBag.setBloodDonationHistory(UUID.randomUUID()); // Fake nếu null
-        } else {
-            bloodBag.setBloodDonationHistory(bloodBagRequest.getBloodDonationHistoryId()); // Đúng rồi!
-        }
-        // Save the blood bag to the database
+        bloodBag.setCreatedAt(bloodBagRequest.getCreateAt());
+        bloodBag.setExpiredDate(bloodBagRequest.getExpiredDate());
+        bloodBag.setStatus(bloodBagRequest.getStatusBloodBagEnum());
+        bloodBag.setDonationRegisteration(donaFake);
 
-         bloodBagRepository.save(bloodBag);
-        System.out.println("Saving blood bag with ID: " + bloodBag.getBloodBagId());
-         return  new BloodBagResponse(bloodBag.getBloodBagId(),
+
+        bloodInventoryRepository.save(bloodBag);
+         return  new BloodBagResponse(
+                 bloodBag.getBloodBagId(),
                  bloodBag.getBloodType(),
+                 bloodBag.getAmountBag(),
                  bloodBag.getVolume(),
+                 bloodBag.getCreatedAt(),
+                 bloodBag.getExpiredDate(),
                  bloodBag.getStatus(),
-                 bloodBag.getCreateAtDate(),
-                 bloodBag.getBloodDonationHistory());
+                 bloodBag.getDonationRegisteration().getDonation_registration_id());
 
     }
 }
