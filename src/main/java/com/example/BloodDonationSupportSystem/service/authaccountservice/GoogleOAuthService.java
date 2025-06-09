@@ -5,8 +5,6 @@ import com.example.BloodDonationSupportSystem.dto.common.BaseReponse;
 import com.example.BloodDonationSupportSystem.entity.OauthAccountEntity;
 import com.example.BloodDonationSupportSystem.entity.RoleEntity;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
-import com.example.BloodDonationSupportSystem.enumentity.RoleEnum;
-import com.example.BloodDonationSupportSystem.enumentity.StatusUserEnum;
 import com.example.BloodDonationSupportSystem.repository.RoleRepository;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
 import com.example.BloodDonationSupportSystem.service.jwtservice.JwtService;
@@ -25,13 +23,12 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.lang.reflect.Member;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.example.BloodDonationSupportSystem.enumentity.RoleEnum.ROLE_MEMBER;
+
 
 @Slf4j
 @Service
@@ -97,7 +94,7 @@ public class GoogleOAuthService {
 
             String jwtToken = jwtService.generateToken(
                     new org.springframework.security.core.userdetails.User(
-                           user.getUserId().toString() , "", Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getRoleName().name()))
+                           user.getUserId().toString() , "", Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getRoleName()))
                     )
             );
 
@@ -140,9 +137,9 @@ public class GoogleOAuthService {
         UserEntity user = new UserEntity();
         user.setFullName((String) userInfo.get("name"));
         user.setAvatar((String) userInfo.get("picture"));
-        user.setStatus(StatusUserEnum.ACTIVE);
+        user.setStatus("KÍCH HOẠT");
 
-        RoleEntity memberRole = roleRepository.findByRoleName(ROLE_MEMBER)
+        RoleEntity memberRole = roleRepository.findByRoleName("ROLE_MEMBER")
                 .orElseThrow(() -> new RuntimeException("ROLE_MEMBER not found"));
         user.setRole(memberRole);
         user = userRepository.save(user);

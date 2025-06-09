@@ -1,13 +1,13 @@
 package com.example.BloodDonationSupportSystem.service.authaccountservice;
 
-import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.UserProfileDTO;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.request.LoginRequest;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.request.RegisterRequest;
-import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.AuthAccountResponse;
+import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.LoginAccountResponse;
+import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.RegisterAccountReponse;
 import com.example.BloodDonationSupportSystem.entity.RoleEntity;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
-import com.example.BloodDonationSupportSystem.enumentity.RoleEnum;
-import com.example.BloodDonationSupportSystem.enumentity.StatusUserEnum;
+import com.example.BloodDonationSupportSystem.exception.BadRequestException;
+import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
 import com.example.BloodDonationSupportSystem.repository.RoleRepository;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
 import com.example.BloodDonationSupportSystem.service.jwtservice.JwtService;
@@ -35,50 +35,43 @@ public class AuthAccountService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public AuthAccountResponse register(RegisterRequest registerRequest) {
-        AuthAccountResponse authAccountResponse;
-        UserEntity user = new UserEntity();
-        user.setPhoneNumber(registerRequest.getPhoneNumber());
-        Optional<RoleEntity> roleMember = roleRepository.findByRoleName(RoleEnum.ROLE_MEMBER);
-        user.setRole(roleMember.orElseThrow());
-        user.setFullName(registerRequest.getFullName());
-        user.setAddress(registerRequest.getAddress());
-        user.setDateOfBirth(registerRequest.getDateOfBirth());
-        user.setGender(registerRequest.getGender());
-        user.setStatus(StatusUserEnum.ACTIVE);
-        user.setPasswordHash(passwordEncoder.encode(registerRequest.getPassword()));
-        userRepository.save(user);
+    public RegisterAccountReponse register(RegisterRequest registerRequest) {
+        RegisterAccountReponse reponse;
+        if (userRepository.existsByPhoneNumber(registerRequest.getPhoneNumber())) {
+            throw new BadRequestException("Phone number already in use");
+        }
+            UserEntity user = new UserEntity();
+            user.setPhoneNumber(registerRequest.getPhoneNumber());
+            Optional<RoleEntity> roleMember = roleRepository.findByRoleName("ROLE_MEMBER");
+            user.setRole(roleMember.orElseThrow(() -> new ResourceNotFoundException("Cannot find role")));
+            user.setFullName(registerRequest.getFullName());
+            user.setAddress(registerRequest.getAddress());
+            user.setDateOfBirth(registerRequest.getDateOfBirth());
+            user.setGender(registerRequest.getGender());
+
+
+            user.setStatus(registerRequest.getStatus());
+            user.setPasswordHash(passwordEncoder.encode(registerRequest.getConfirmPassword()));
+        System.out.println(user.getFullName() + " " +user.getGender() + " " + user.getStatus() + " " + user.getAddress());
+            userRepository.save(user);
+            reponse = new RegisterAccountReponse();
+            reponse.setMessage("Registration successful");
 
 
 
-        String token = jwtService.generateToken(
-                new User(
-                        user.getUserId().toString(),
-                        user.getPasswordHash(),
-                        user.getAuthorities()
-                )
-        );
-        authAccountResponse = new AuthAccountResponse(token);
-        return authAccountResponse;
+
+
+        return reponse;
     }
 
-    public AuthAccountResponse authAccount(LoginRequest loginRequest) {
-        AuthAccountResponse authAccountResponse;
+    public LoginAccountResponse authAccount(LoginRequest loginRequest) {
+        LoginAccountResponse loginAccountResponse;
+        UserEntity user = userRepository.findByPhoneNumber(loginRequest.getPhoneNumber()).orElseThrow(() -> new BadRequestException("PhoneNumber doesn't exist"));
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getPhoneNumber(), loginRequest.getPassword()));
-        UserEntity user = userRepository.findByPhoneNumber(loginRequest.getPhoneNumber()).orElseThrow();
-
-        String token = jwtService.generateToken(new User(user.getUserId().toString(), user.getPasswordHash(), Collections.singleton(new SimpleGrantedAuthority(user.getRole().getRoleName().name()))));
-        UserProfileDTO userProfileDTO = new UserProfileDTO();
-        userProfileDTO.setPhoneNumber(user.getPhoneNumber());
-        userProfileDTO.setGender(user.getGender());
-        userProfileDTO.setAddress(user.getAddress());
-        userProfileDTO.setLatitude(user.getLatitude());
-        userProfileDTO.setLongitude(user.getLongitude());
-        userProfileDTO.setBloodType(user.getBloodType());
-        userProfileDTO.setDayOfBirth(user.getDateOfBirth());
-        authAccountResponse = new AuthAccountResponse(token);
-        return authAccountResponse;
+        String token = jwtService.generateToken(new User(user.getUserId().toString(), user.getPasswordHash(), Collections.singleton(new SimpleGrantedAuthority(user.getRole().getRoleName()))));
+        loginAccountResponse = new LoginAccountResponse(token);
+        return loginAccountResponse;
 
 
     }
