@@ -35,15 +35,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         }
 
-
-
-        User user1 = new User(user.getUserId().toString(),
+        return new User(user.getUserId().toString(),
                 user.getPasswordHash() == null ? "" : user.getPasswordHash(),
                 user.getAuthorities());
-
-        System.out.println(user1.toString());
-
-        return user1;
 
     }
 

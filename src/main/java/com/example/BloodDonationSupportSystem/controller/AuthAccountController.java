@@ -2,29 +2,19 @@ package com.example.BloodDonationSupportSystem.controller;
 
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.request.LoginRequest;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.request.RegisterRequest;
-import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.AuthAccountResponse;
+import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.LoginAccountResponse;
+import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.RegisterAccountReponse;
 import com.example.BloodDonationSupportSystem.dto.common.BaseReponse;
-import com.example.BloodDonationSupportSystem.entity.OauthAccountEntity;
-import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import com.example.BloodDonationSupportSystem.service.authaccountservice.AuthAccountService;
 import com.example.BloodDonationSupportSystem.service.authaccountservice.GoogleOAuthService;
 import com.example.BloodDonationSupportSystem.service.authaccountservice.OauthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -53,16 +43,16 @@ public class AuthAccountController {
     private GoogleOAuthService googleOAuthService;
 
     @PostMapping("/register")
-    public BaseReponse<?> register(@RequestBody RegisterRequest authAccountRequest) {
-        AuthAccountResponse data = authAccountService.register(authAccountRequest);
-        return new BaseReponse<>(HttpStatus.OK.value(), "Success", data);
+    public BaseReponse<?> register(@Valid @RequestBody RegisterRequest authAccountRequest) {
+        RegisterAccountReponse data = authAccountService.register(authAccountRequest);
+        return new BaseReponse<>(HttpStatus.OK.value(), "Registration Successful", data);
     }
 
 
     @PostMapping("/login")
-    public BaseReponse<?> login(@RequestBody LoginRequest loginRequest) {
-        AuthAccountResponse data = authAccountService.authAccount(loginRequest);
-        return new BaseReponse<>(HttpStatus.OK.value(), "Succes", data);
+    public BaseReponse<?> login(@Valid @RequestBody LoginRequest loginRequest) {
+        LoginAccountResponse data = authAccountService.authAccount(loginRequest);
+        return new BaseReponse<>(HttpStatus.OK.value(), "Login success", data);
     }
 
     @GetMapping("/login/google")

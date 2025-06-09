@@ -1,9 +1,5 @@
 package com.example.BloodDonationSupportSystem.entity;
 
-import com.example.BloodDonationSupportSystem.enumentity.BloodTypeEnum;
-import com.example.BloodDonationSupportSystem.enumentity.GenderEnum;
-import com.example.BloodDonationSupportSystem.enumentity.RoleEnum;
-import com.example.BloodDonationSupportSystem.enumentity.StatusUserEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -54,16 +50,13 @@ public class UserEntity {
     private String latitude;
 
     @Column(name = "gender")
-    @Enumerated(EnumType.STRING)
-    private GenderEnum gender;
+    private String gender;
 
     @Column(name = "bloodType")
-    @Enumerated(EnumType.STRING)
-    private BloodTypeEnum bloodType;
+    private String bloodType;
 
     @Column(name = "status")
-    @Enumerated(EnumType.STRING)
-    private StatusUserEnum status;
+    private String status;
 
     @ManyToOne
     @JoinColumn(name = "role_id")
@@ -73,14 +66,16 @@ public class UserEntity {
     private OauthAccountEntity oauthAccount;
 
 
+
+
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        RoleEnum roleName;
+        String roleName;
         if (this.role == null || this.role.getRoleName() == null) {
-            roleName = RoleEnum.ROLE_MEMBER;
+            roleName = "ROLE_MEMBER";
         } else {
             roleName = this.role.getRoleName();
         }
-        return List.of(new SimpleGrantedAuthority(roleName.name()));
+        return List.of(new SimpleGrantedAuthority(roleName));
     }
 
 

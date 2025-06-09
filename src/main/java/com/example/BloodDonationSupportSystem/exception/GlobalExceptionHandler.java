@@ -1,12 +1,12 @@
 package com.example.BloodDonationSupportSystem.exception;
 
 import com.example.BloodDonationSupportSystem.dto.common.BaseReponse;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,39 +14,49 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<BaseReponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-        // Kiểm tra message lỗi để xác định lỗi trùng key khi nó log dưới console nó dựa trên key dulicate nó bắt thấy trả ra resp
-        String message = ex.getRootCause() != null ? ex.getRootCause().getMessage() : ex.getMessage();
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<BaseReponse<Object>> handleGeneralException(Exception ex) {
+        ex.printStackTrace();
+        BaseReponse<Object> response = new BaseReponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Internal Server Error" + ex.getMessage(),
+                null
+        );
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
-        ErrorCode errorCode;
-        //trùng key o day
-        if (message != null && message.toLowerCase().contains("duplicate")) {
-            errorCode = ErrorCode.DUPLICATE_DONATION_REGIS_ID;
-        } else {
-            // lỗi không xác định
-            errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
-        }
-
-        BaseReponse response = new BaseReponse<>(errorCode.getCode(), errorCode.getMessage(), null);
-
-        return ResponseEntity.status(errorCode.getStatusCode()).body(response);
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<BaseReponse<Object>> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        BaseReponse<Object> response = new BaseReponse<>(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage(),
+                null
+        );
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<BaseReponse<?>> handleValidationException(MethodArgumentNotValidException ex) {
-        // thằng này gom các lỗi từ dto request vô
+    public ResponseEntity<BaseReponse<Map<String, String>>> handleValidationErrors(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error -> {
-            errors.put(error.getField(), error.getDefaultMessage());
-        });
-
-        BaseReponse<?> response = new BaseReponse<>(
-               HttpStatus.BAD_REQUEST.value(),
-                "Xác thực thất bại",
-                errors
+        ex.getBindingResult().getFieldErrors().forEach(err ->
+                errors.put(err.getField(), err.getDefaultMessage())
         );
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        BaseReponse<Map<String, String>> response = new BaseReponse<>(
+                HttpStatus.BAD_REQUEST.value(),
+                "Dữ liệu không hợp lệ",
+                errors
+        );
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<BaseReponse<Object>> handleBadRequest(BadRequestException ex) {
+        return new ResponseEntity<>(
+                new BaseReponse<>(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), null),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+
 }
