@@ -1,6 +1,5 @@
 package com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response;
 
-import com.example.BloodDonationSupportSystem.entity.DonationRegisterationFake;
 import com.example.BloodDonationSupportSystem.enumentity.BloodTypeEnum;
 import com.example.BloodDonationSupportSystem.enumentity.StatusBloodBagEnum;
 import lombok.AllArgsConstructor;
@@ -15,10 +14,10 @@ import java.util.UUID;
 public class BloodBagResponse {
     private UUID bloodBagId;
     private BloodTypeEnum bloodType;
-    private int amountBag;
     private int volume;
+    private int amountBag;
     private LocalDate createdAt;
     private LocalDate expiredDate;
     private StatusBloodBagEnum status;
-    private UUID donationRegistrationId;
+//    private UUID donationRegistrationId;
 }

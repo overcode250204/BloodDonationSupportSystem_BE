@@ -43,7 +43,7 @@ public class BloodBag {
     @Enumerated(EnumType.STRING)
     private StatusBloodBagEnum status;
 
-    @OneToOne
-    @JoinColumn(name = "donation_registration_id")
-    private DonationRegisterationFake donationRegisteration;
+//    @OneToOne
+//    @JoinColumn(name = "donation_registration_id")
+//    private DonationRegisteration donationRegisteration;
 }
