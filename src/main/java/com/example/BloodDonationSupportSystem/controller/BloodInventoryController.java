@@ -21,7 +21,7 @@ public class BloodInventoryController {
     public BaseReponse<BloodBagResponse> createBloodBag(@RequestBody @Valid BloodBagRequest bloodBagRequest) {
          BloodBagResponse bloodBagResponse= bloodBagService.createBloodBag(bloodBagRequest);
 
-         return new BaseReponse<>(HttpStatus.OK.value(), "Blood bag created successfully", bloodBagResponse);
+         return new BaseReponse<>(HttpStatus.OK.value(), "Tạo túi máu thành công", bloodBagResponse);
 
     }
 

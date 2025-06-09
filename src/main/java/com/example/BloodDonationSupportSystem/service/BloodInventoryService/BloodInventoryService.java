@@ -13,8 +13,6 @@ public class BloodInventoryService {
     @Autowired
     private BloodInventoryRepository bloodInventoryRepository;
 
-
-
     public BloodBagResponse createBloodBag(BloodBagRequest bloodBagRequest) {
 //        DonationRegisteration donationRegister = DonationRepository.findById(bloodBagRequest.getDonationId()).orElseThrow(
 //                ()-> new RuntimeException("Donation registration not found with ID: " + bloodBagRequest.getDonationId()));
@@ -24,7 +22,7 @@ public class BloodInventoryService {
         bloodBag.setAmountBag(bloodBagRequest.getAmount_bag());
         bloodBag.setCreatedAt(bloodBagRequest.getCreateAt());
         bloodBag.setExpiredDate(bloodBagRequest.getExpiredDate());
-        bloodBag.setStatus(bloodBagRequest.getStatusBloodBagEnum());
+        bloodBag.setStatus(bloodBagRequest.getStatus());
       //  bloodBag.setDonationRegisteration(donationRegister);
 
 

@@ -1,15 +1,10 @@
 package com.example.BloodDonationSupportSystem.entity;
 
-import com.example.BloodDonationSupportSystem.enumentity.BloodTypeEnum;
-import com.example.BloodDonationSupportSystem.enumentity.StatusBloodBagEnum;
+
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import org.hibernate.annotations.Check;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -24,8 +19,7 @@ public class BloodBag {
     private UUID bloodBagId;
 
     @Column(name = "bloodType")
-    @Enumerated(EnumType.STRING)
-    private BloodTypeEnum bloodType;
+    private String bloodType;
 
     @Column(name = "volume_ml")
     private int volume;
@@ -40,8 +34,7 @@ public class BloodBag {
     private LocalDate expiredDate;
 
     @Column(name = "status")
-    @Enumerated(EnumType.STRING)
-    private StatusBloodBagEnum status;
+    private String status;
 
 //    @OneToOne
 //    @JoinColumn(name = "donation_registration_id")
