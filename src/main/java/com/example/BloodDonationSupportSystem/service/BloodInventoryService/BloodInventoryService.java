@@ -7,6 +7,8 @@ import com.example.BloodDonationSupportSystem.repository.BloodInventoryRepositor
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 public class BloodInventoryService {
@@ -38,4 +40,22 @@ public class BloodInventoryService {
               //   bloodBag.getDonationRegisteration().getDonation_registration_id());
 
     }
+
+
+    public List<BloodBagResponse> getBloodBagList(){
+        List<BloodBag> bloodBagList = bloodInventoryRepository.findAll();
+
+        return  bloodBagList.stream()
+                .map(bloodBag -> new BloodBagResponse(
+                        bloodBag.getBloodBagId(),
+                        bloodBag.getBloodType(),
+                        bloodBag.getVolume(),
+                        bloodBag.getAmountBag(),
+                        bloodBag.getCreatedAt(),
+                        bloodBag.getExpiredDate(),
+                        bloodBag.getStatus()
+                        //bloodBag.getDonationRegistration()
+                )).toList();
+    }
+
 }

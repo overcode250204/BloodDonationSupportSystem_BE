@@ -9,6 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/staff")
@@ -23,6 +26,12 @@ public class BloodInventoryController {
 
          return new BaseReponse<>(HttpStatus.OK.value(), "Tạo túi máu thành công", bloodBagResponse);
 
+    }
+
+    @GetMapping("/get-blood-bag-list")
+    public BaseReponse<List<BloodBagResponse>> getBloodBagList() {
+        List<BloodBagResponse> bloodBagList = bloodBagService.getBloodBagList();
+        return new BaseReponse<>(HttpStatus.OK.value(), "Lấy danh sách túi máu thành công", bloodBagList);
     }
 
 
