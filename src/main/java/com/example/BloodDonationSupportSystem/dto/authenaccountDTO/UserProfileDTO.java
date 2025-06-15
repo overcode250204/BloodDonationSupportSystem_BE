@@ -22,5 +22,6 @@ public class UserProfileDTO {
     private String longitude;
     private String latitude;
     private String bloodType;
+    private String role;
 
 }

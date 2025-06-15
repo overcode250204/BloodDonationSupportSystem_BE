@@ -36,6 +36,7 @@ public class UserService {
             userProfileDTO.setBloodType(userEntity.getBloodType());
             userProfileDTO.setLongitude(userEntity.getLongitude());
             userProfileDTO.setLatitude(userEntity.getLatitude());
+            userProfileDTO.setRole(userEntity.getRole().getRoleName());
             return userProfileDTO;
         } catch (Exception e) {
             throw new RuntimeException("Error while getting current user profile");

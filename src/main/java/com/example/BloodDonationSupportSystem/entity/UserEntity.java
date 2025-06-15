@@ -63,6 +63,8 @@ public class UserEntity {
     @OneToOne(mappedBy = "user")
     private OauthAccountEntity oauthAccount;
 
+    @OneToMany(mappedBy = "articleId")
+    private List<ArticleEntity> articles;
 
 
 

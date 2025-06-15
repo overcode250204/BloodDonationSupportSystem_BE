@@ -1,4 +1,4 @@
-package com.example.BloodDonationSupportSystem.dto.common;
+package com.example.BloodDonationSupportSystem.base;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
