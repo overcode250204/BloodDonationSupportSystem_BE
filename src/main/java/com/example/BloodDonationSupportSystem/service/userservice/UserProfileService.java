@@ -29,14 +29,7 @@ public class UserProfileService {
             }
             UserEntity userEntity = userRepository.findByUserId(userId)
                     .orElseThrow(() -> new RuntimeException("UserId Not Found At getUserProfile()" + currentUser.getUsername()));
-            UserProfileResponse userProfileResponse = new UserProfileResponse();
-            userProfileResponse.setFullName(userEntity.getFullName());
-            userProfileResponse.setPhoneNumber(userEntity.getPhoneNumber());
-            userProfileResponse.setGender(userEntity.getGender());
-            userProfileResponse.setDayOfBirth(userEntity.getDateOfBirth());
-            userProfileResponse.setAddress(userEntity.getAddress());
-            userProfileResponse.setBloodType(userEntity.getBloodType());
-            return userProfileResponse;
+            return convertToRespone(userEntity);
         } catch (Exception e) {
             throw new RuntimeException("Error while getting current user profile");
         }
@@ -57,17 +50,20 @@ public class UserProfileService {
             userEntity.setAddress(user.getAddress());
             userEntity.setDateOfBirth(user.getDateOfBirth());
             userEntity.setGender(user.getGender());
-            userEntity = userRepository.save(userEntity);
-            UserProfileResponse userProfileResponse = new UserProfileResponse();
-            userProfileResponse.setFullName(userEntity.getFullName());
-            userProfileResponse.setPhoneNumber(userEntity.getPhoneNumber());
-            userProfileResponse.setGender(userEntity.getGender());
-            userProfileResponse.setDayOfBirth(userEntity.getDateOfBirth());
-            userProfileResponse.setAddress(userEntity.getAddress());
-            userProfileResponse.setBloodType(userEntity.getBloodType());
-            return userProfileResponse;
+            return convertToRespone(userRepository.save(userEntity));
         } catch (Exception e) {
             throw new RuntimeException("Error while updating current user profile");
         }
+    }
+
+    private UserProfileResponse convertToRespone(UserEntity user) {
+        return UserProfileResponse.builder()
+                .fullName(user.getFullName())
+                .dayOfBirth(user.getDateOfBirth())
+                .gender(user.getGender())
+                .address(user.getAddress())
+                .phoneNumber(user.getPhoneNumber())
+                .bloodType(user.getBloodType())
+                .build();
     }
 }

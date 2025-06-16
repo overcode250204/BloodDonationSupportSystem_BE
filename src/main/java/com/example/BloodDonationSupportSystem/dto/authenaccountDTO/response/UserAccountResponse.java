@@ -12,11 +12,14 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserProfileResponse {
+public class UserAccountResponse {
+    private UUID userId;
     private String fullName;
     private LocalDate dayOfBirth;
     private String gender;
     private String address;
     private String phoneNumber;
     private String bloodType;
+    private String status;
+    private String roleName;
 }
