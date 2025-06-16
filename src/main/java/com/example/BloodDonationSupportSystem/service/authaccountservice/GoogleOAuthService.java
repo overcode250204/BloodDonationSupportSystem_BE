@@ -136,7 +136,6 @@ public class GoogleOAuthService {
 
         UserEntity user = new UserEntity();
         user.setFullName((String) userInfo.get("name"));
-        user.setAvatar((String) userInfo.get("picture"));
         user.setStatus("KÍCH HOẠT");
 
         RoleEntity memberRole = roleRepository.findByRoleName("ROLE_MEMBER")

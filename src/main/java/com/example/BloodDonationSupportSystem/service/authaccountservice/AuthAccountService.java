@@ -48,11 +48,8 @@ public class AuthAccountService {
             user.setAddress(registerRequest.getAddress());
             user.setDateOfBirth(registerRequest.getDateOfBirth());
             user.setGender(registerRequest.getGender());
-
-
             user.setStatus(registerRequest.getStatus());
             user.setPasswordHash(passwordEncoder.encode(registerRequest.getConfirmPassword()));
-        System.out.println(user.getFullName() + " " +user.getGender() + " " + user.getStatus() + " " + user.getAddress());
             userRepository.save(user);
             reponse = new RegisterAccountReponse();
             reponse.setMessage("Registration successful");
@@ -65,10 +62,16 @@ public class AuthAccountService {
     }
 
     public LoginAccountResponse authAccount(LoginRequest loginRequest) {
+
         LoginAccountResponse loginAccountResponse;
         UserEntity user = userRepository.findByPhoneNumber(loginRequest.getPhoneNumber()).orElseThrow(() -> new BadRequestException("PhoneNumber doesn't exist"));
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getPhoneNumber(), loginRequest.getPassword()));
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getPhoneNumber(), loginRequest.getPassword()));
+        } catch (Exception e) {
+            throw new BadRequestException("Incorrect username or password!!!");
+        }
+
         String token = jwtService.generateToken(new User(user.getUserId().toString(), user.getPasswordHash(), Collections.singleton(new SimpleGrantedAuthority(user.getRole().getRoleName()))));
         loginAccountResponse = new LoginAccountResponse(token);
         return loginAccountResponse;

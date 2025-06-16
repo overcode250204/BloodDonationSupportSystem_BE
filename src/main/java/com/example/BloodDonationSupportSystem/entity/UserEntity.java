@@ -31,8 +31,6 @@ public class UserEntity {
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @Column(name = "avatar")
-    private String avatar;
 
     @Column(name = "full_name", columnDefinition = "nvarchar(255)")
     private String fullName;
