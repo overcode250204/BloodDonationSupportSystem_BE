@@ -18,7 +18,7 @@ public class BloodInventoryService {
 
     public List<BloodInventoryResponse> getBloodBagList(){
         List<BloodInventory> bloodTotalList = bloodInventoryRepository.findAll();
-        System.out.println("List danh sach mau: " + bloodTotalList.size());
+
         return  bloodTotalList.stream()
                 .map(allBloodBagInventory -> new BloodInventoryResponse(
                         allBloodBagInventory.getBloodTypeId(),

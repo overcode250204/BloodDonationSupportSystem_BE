@@ -23,7 +23,7 @@ public class BloodInventoryController {
     @GetMapping("/get-total-blood-volume-of-all-blood-types")
     public BaseReponse<List<BloodInventoryResponse>> getBloodBagList() {
         List<BloodInventoryResponse> bloodBagList = bloodBagService.getBloodBagList();
-        System.out.println("Danh sach tui máu ben controller: " + bloodBagList);
+
         return new BaseReponse<>(HttpStatus.OK.value(), "Get total of blood volume successfully", bloodBagList);
     }
 
