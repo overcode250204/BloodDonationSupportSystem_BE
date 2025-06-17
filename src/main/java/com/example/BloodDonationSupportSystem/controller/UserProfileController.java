@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/member")
-@PreAuthorize("hasRole('MEMBER')")
 public class UserProfileController {
 
     @Autowired

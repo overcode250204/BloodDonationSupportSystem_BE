@@ -19,7 +19,7 @@ public class AdminService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<UserAccountResponse> getAllUser() {
+    public List<UserAccountResponse> getAllUsers() {
         try {
             List<UserEntity> users = userRepository.findAll();
             return users.stream()

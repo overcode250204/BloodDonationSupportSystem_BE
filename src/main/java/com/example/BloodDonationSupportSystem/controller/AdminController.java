@@ -14,16 +14,15 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/admin")
-@PreAuthorize("hasRole('ADMIN')")
+@RequestMapping("/api/admin")
 public class AdminController {
 
     @Autowired
     private AdminService adminService;
 
     @GetMapping("/user")
-    public BaseReponse<?> getAllUser() {
-        List<UserAccountResponse> users = adminService.getAllUser();
+    public BaseReponse<?> getAllUsers() {
+        List<UserAccountResponse> users = adminService.getAllUsers();
         return new BaseReponse<>(HttpStatus.OK.value(), "Get all users successful", users);
     }
 
