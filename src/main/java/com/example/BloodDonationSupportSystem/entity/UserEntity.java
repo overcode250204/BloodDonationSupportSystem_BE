@@ -50,7 +50,7 @@ public class UserEntity {
     @Column(name = "gender")
     private String gender;
 
-    @Column(name = "bloodType")
+    @Column(name = "blood_type")
     private String bloodType;
 
     @Column(name = "status")

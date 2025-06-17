@@ -1,7 +1,6 @@
 package com.example.BloodDonationSupportSystem.controller;
 
-import com.example.BloodDonationSupportSystem.Utils.AuthUtils;
-import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.UserProfileDTO;
+import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.request.GoogleTokenRequest;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.request.LoginRequest;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.request.RegisterRequest;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.LoginAccountResponse;
@@ -11,12 +10,10 @@ import com.example.BloodDonationSupportSystem.service.authaccountservice.AuthAcc
 import com.example.BloodDonationSupportSystem.service.authaccountservice.GoogleOAuthService;
 import com.example.BloodDonationSupportSystem.service.authaccountservice.OauthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -58,27 +55,12 @@ public class AuthAccountController {
         return new BaseReponse<>(HttpStatus.OK.value(), "Login success", data);
     }
 
-    @GetMapping("/login/google")
-    public void redirectToGoogle(HttpServletResponse response) {
-     //   log.info("Redirecting to Google OAuth");
-        googleOAuthService.redirectToGoogle(response);
+
+
+    @PostMapping("/google/callback")
+    public BaseReponse<?> handleGoogleCallback(@RequestBody GoogleTokenRequest request) {
+        return googleOAuthService.handleGoogleCallback(request.getCredential());
     }
-
-    @GetMapping("/callback/google")
-    public BaseReponse<?> handleGoogleCallback(@RequestParam("code") String code) {
-        try {
-
-            return googleOAuthService.handleGoogleCallback(code);
-        } catch (Exception e) {
-            return new BaseReponse<>(
-                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                    "Error during Google OAuth callback: " + e.getMessage(),
-                    null
-            );
-        }
-    }
-
-
 
 
 }
