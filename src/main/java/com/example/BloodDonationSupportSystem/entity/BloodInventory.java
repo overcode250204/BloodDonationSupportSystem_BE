@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "blood_bag")
+@Table(name = "blood_inventory")
 public class BloodInventory {
 
     @Id
