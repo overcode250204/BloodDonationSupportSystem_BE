@@ -1,7 +1,6 @@
 package com.example.BloodDonationSupportSystem.service.adminservice;
 
-import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.request.UpdateUserStatusRequest;
-import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.UserAccountResponse;
+import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.UserProfileDTO;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -19,7 +18,7 @@ public class AdminService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<UserAccountResponse> getAllUsers() {
+    public List<UserProfileDTO> getAllUsers() {
         try {
             List<UserEntity> users = userRepository.findAll();
             return users.stream()
@@ -30,7 +29,7 @@ public class AdminService {
         }
     }
 
-    public UserAccountResponse updateStatusUser(UUID userID, @Valid UpdateUserStatusRequest request) {
+    public UserProfileDTO updateStatusUser(UUID userID, @Valid UserProfileDTO request) {
         try {
             Optional<UserEntity> optionalUser = userRepository.findByUserId(userID);
             if (optionalUser.isEmpty()) {
@@ -44,9 +43,9 @@ public class AdminService {
         }
     }
 
-    private UserAccountResponse convertToRespone(UserEntity user) {
-        return UserAccountResponse.builder()
-                .userId(user.getUserId())
+    private UserProfileDTO convertToRespone(UserEntity user) {
+        return UserProfileDTO.builder()
+                .id(user.getUserId())
                 .fullName(user.getFullName())
                 .dayOfBirth(user.getDateOfBirth())
                 .gender(user.getGender())

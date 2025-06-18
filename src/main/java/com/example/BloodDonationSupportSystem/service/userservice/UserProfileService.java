@@ -1,8 +1,7 @@
 package com.example.BloodDonationSupportSystem.service.userservice;
 
 import com.example.BloodDonationSupportSystem.Utils.AuthUtils;
-import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.request.UpdateUserProfileRequest;
-import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.UserProfileResponse;
+import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.UserProfileDTO;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -18,7 +17,7 @@ public class UserProfileService {
     @Autowired
     private UserRepository userRepository;
 
-    public UserProfileResponse getUserProfile() {
+    public UserProfileDTO getUserProfile() {
         try {
             UserDetails currentUser = AuthUtils.getCurrentUser();
             UUID userId;
@@ -35,7 +34,7 @@ public class UserProfileService {
         }
     }
 
-    public UserProfileResponse updateUserProfile(@Valid UpdateUserProfileRequest user) {
+    public UserProfileDTO updateUserProfile(@Valid UserProfileDTO user) {
         try {
             UserDetails currentUser = AuthUtils.getCurrentUser();
             UUID userId;
@@ -48,7 +47,7 @@ public class UserProfileService {
                     .orElseThrow(() -> new RuntimeException("UserId Not Found At updateUserProfile()" + currentUser.getUsername()));
             userEntity.setFullName(user.getFullName());
             userEntity.setAddress(user.getAddress());
-            userEntity.setDateOfBirth(user.getDateOfBirth());
+            userEntity.setDateOfBirth(user.getDayOfBirth());
             userEntity.setGender(user.getGender());
             return convertToRespone(userRepository.save(userEntity));
         } catch (Exception e) {
@@ -56,13 +55,14 @@ public class UserProfileService {
         }
     }
 
-    private UserProfileResponse convertToRespone(UserEntity user) {
-        return UserProfileResponse.builder()
+    private UserProfileDTO convertToRespone(UserEntity user) {
+        return UserProfileDTO.builder()
+                .id(user.getUserId())
                 .fullName(user.getFullName())
-                .dayOfBirth(user.getDateOfBirth())
-                .gender(user.getGender())
-                .address(user.getAddress())
                 .phoneNumber(user.getPhoneNumber())
+                .gender(user.getGender())
+                .dayOfBirth(user.getDateOfBirth())
+                .address(user.getAddress())
                 .bloodType(user.getBloodType())
                 .build();
     }
