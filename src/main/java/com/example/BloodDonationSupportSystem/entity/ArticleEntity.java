@@ -7,7 +7,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.util.Date;
-import java.util.List;
+import java.util.UUID;
 
 @Data
 @Entity(name = "article")
@@ -16,7 +16,7 @@ public class ArticleEntity {
     @GeneratedValue
     @JdbcTypeCode(SqlTypes.UUID)
     @Column(name = "article_id", columnDefinition = "uniqueidentifier")
-    private String articleId;
+    private UUID articleId;
 
     @Column(name = "title")
     private String title;
@@ -30,16 +30,16 @@ public class ArticleEntity {
     @Column(name = "status")
     private String status;
 
-    @ManyToOne
-    @JoinColumn(name = "article_type_id")
-    private ArticleTypeEntity articleTypeEntity;
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    @Column(name = "article_type")
+    private String articleType;
 
     @ManyToOne
     @JoinColumn(name = "created_by_admin_id")
     private UserEntity createdByAdminId;
 
-    @OneToMany(mappedBy = "imageId")
-    private List<ImageEntity> images;
 
 
 }

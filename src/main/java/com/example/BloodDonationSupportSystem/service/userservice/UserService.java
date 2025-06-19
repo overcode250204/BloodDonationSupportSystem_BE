@@ -1,6 +1,6 @@
 package com.example.BloodDonationSupportSystem.service.userservice;
 
-import com.example.BloodDonationSupportSystem.Utils.AuthUtils;
+import com.example.BloodDonationSupportSystem.utils.AuthUtils;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.UserProfileDTO;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
@@ -26,17 +26,7 @@ public class UserService {
             }
             UserEntity userEntity = userRepository.findByUserId(userId)
                     .orElseThrow(() -> new RuntimeException("UserId Not Found At getCurrentUserProfile()" + currentUser.getUsername()));
-            UserProfileDTO userProfileDTO = new UserProfileDTO();
-            userProfileDTO.setId(userEntity.getUserId());
-            userProfileDTO.setFullName(userEntity.getFullName());
-            userProfileDTO.setPhoneNumber(userEntity.getPhoneNumber());
-            userProfileDTO.setGender(userEntity.getGender());
-            userProfileDTO.setDayOfBirth(userEntity.getDateOfBirth());
-            userProfileDTO.setAddress(userEntity.getAddress());
-            userProfileDTO.setBloodType(userEntity.getBloodType());
-            userProfileDTO.setLongitude(userEntity.getLongitude());
-            userProfileDTO.setLatitude(userEntity.getLatitude());
-            userProfileDTO.setRole(userEntity.getRole().getRoleName());
+            UserProfileDTO userProfileDTO = getUserProfileDTO(userEntity);
             return userProfileDTO;
         } catch (Exception e) {
             throw new RuntimeException("Error while getting current user profile");
@@ -47,6 +37,21 @@ public class UserService {
 
 
 
+    }
+
+    private UserProfileDTO getUserProfileDTO(UserEntity userEntity) {
+        UserProfileDTO userProfileDTO = new UserProfileDTO();
+        userProfileDTO.setId(userEntity.getUserId());
+        userProfileDTO.setFullName(userEntity.getFullName());
+        userProfileDTO.setPhoneNumber(userEntity.getPhoneNumber());
+        userProfileDTO.setGender(userEntity.getGender());
+        userProfileDTO.setDayOfBirth(userEntity.getDateOfBirth());
+        userProfileDTO.setAddress(userEntity.getAddress());
+        userProfileDTO.setBloodType(userEntity.getBloodType());
+        userProfileDTO.setLongitude(userEntity.getLongitude());
+        userProfileDTO.setLatitude(userEntity.getLatitude());
+        userProfileDTO.setRole(userEntity.getRole().getRoleName());
+        return userProfileDTO;
     }
 
 
