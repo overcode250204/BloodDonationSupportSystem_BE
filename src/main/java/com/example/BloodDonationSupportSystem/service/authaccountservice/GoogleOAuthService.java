@@ -125,9 +125,7 @@ public class GoogleOAuthService {
         user.setFullName(name);
         user.setStatus("HOẠT ĐỘNG");
 
-        // tạo random phone number ,db phone number de unique
-        String tempPhone = "TEMP" + System.currentTimeMillis();
-        user.setPhoneNumber(tempPhone);
+
 
 
         RoleEntity memberRole = roleRepository.findByRoleName("ROLE_MEMBER")
