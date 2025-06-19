@@ -1,8 +1,9 @@
 package com.example.BloodDonationSupportSystem.controller;
 
+import com.example.BloodDonationSupportSystem.base.BaseReponse;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.request.BloodVolumeRequest;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.BloodInventoryResponse;
-import com.example.BloodDonationSupportSystem.dto.common.BaseReponse;
+
 import com.example.BloodDonationSupportSystem.service.BloodInventoryService.BloodInventoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
