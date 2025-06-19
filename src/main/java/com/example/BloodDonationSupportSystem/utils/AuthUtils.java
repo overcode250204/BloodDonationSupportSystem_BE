@@ -1,6 +1,5 @@
-package com.example.BloodDonationSupportSystem.Utils;
+package com.example.BloodDonationSupportSystem.utils;
 
-import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.UserProfileDTO;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,8 +11,6 @@ public class AuthUtils {
             return (UserDetails) authentication.getPrincipal();
         }
         throw new RuntimeException("User is not authenticated");
-
-
     }
 
 
