@@ -23,7 +23,7 @@ public class AdminService {
         try {
             List<UserEntity> users = userRepository.findAll();
             return users.stream()
-                    .map(this::convertToRespone)
+                    .map(this::convertToResponse)
                     .collect(Collectors.toList());
         } catch (Exception e) {
             throw new RuntimeException("Error while getting all users account");
@@ -38,13 +38,13 @@ public class AdminService {
             }
             UserEntity user = optionalUser.get();
             user.setStatus(request.getStatus());
-            return convertToRespone(userRepository.save(user));
+            return convertToResponse(userRepository.save(user));
         } catch (Exception e) {
             throw new RuntimeException("Error while updating user account status");
         }
     }
 
-    private UserProfileDTO convertToRespone(UserEntity user) {
+    private UserProfileDTO convertToResponse(UserEntity user) {
         return UserProfileDTO.builder()
                 .id(user.getUserId())
                 .fullName(user.getFullName())

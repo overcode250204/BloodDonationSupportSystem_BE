@@ -1,7 +1,7 @@
 package com.example.BloodDonationSupportSystem.config;
 
 
-import com.example.BloodDonationSupportSystem.security.JwtAuthenticationFilter;
+import com.example.BloodDonationSupportSystem.filter.JwtAuthenticationFilter;
 import com.example.BloodDonationSupportSystem.service.jwtservice.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

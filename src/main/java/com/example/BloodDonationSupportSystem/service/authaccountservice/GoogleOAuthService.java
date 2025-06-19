@@ -1,7 +1,7 @@
 package com.example.BloodDonationSupportSystem.service.authaccountservice;
 
 
-import com.example.BloodDonationSupportSystem.dto.common.BaseReponse;
+import com.example.BloodDonationSupportSystem.base.BaseReponse;
 import com.example.BloodDonationSupportSystem.entity.OauthAccountEntity;
 import com.example.BloodDonationSupportSystem.entity.RoleEntity;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;

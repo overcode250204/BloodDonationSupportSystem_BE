@@ -36,7 +36,7 @@ public class AuthAccountService {
     private PasswordEncoder passwordEncoder;
 
     public RegisterAccountReponse register(RegisterRequest registerRequest) {
-        RegisterAccountReponse reponse;
+        RegisterAccountReponse response;
         if (userRepository.existsByPhoneNumber(registerRequest.getPhoneNumber())) {
             throw new BadRequestException("Phone number already in use");
         }
@@ -51,14 +51,14 @@ public class AuthAccountService {
             user.setStatus(registerRequest.getStatus());
             user.setPasswordHash(passwordEncoder.encode(registerRequest.getConfirmPassword()));
             userRepository.save(user);
-            reponse = new RegisterAccountReponse();
-            reponse.setMessage("Registration successful");
+            response = new RegisterAccountReponse();
+            response.setMessage("Registration successful");
 
 
 
 
 
-        return reponse;
+        return response;
     }
 
     public LoginAccountResponse authAccount(LoginRequest loginRequest) {

@@ -29,7 +29,7 @@ public class UserProfileService {
             }
             UserEntity userEntity = userRepository.findByUserId(userId)
                     .orElseThrow(() -> new RuntimeException("UserId Not Found At getUserProfile()" + currentUser.getUsername()));
-            return convertToRespone(userEntity);
+            return convertToResponse(userEntity);
         } catch (Exception e) {
             throw new RuntimeException("Error while getting current user profile");
         }
@@ -50,13 +50,13 @@ public class UserProfileService {
             userEntity.setAddress(user.getAddress());
             userEntity.setDateOfBirth(user.getDayOfBirth());
             userEntity.setGender(user.getGender());
-            return convertToRespone(userRepository.save(userEntity));
+            return convertToResponse(userRepository.save(userEntity));
         } catch (Exception e) {
             throw new RuntimeException("Error while updating current user profile");
         }
     }
 
-    private UserProfileDTO convertToRespone(UserEntity user) {
+    private UserProfileDTO convertToResponse(UserEntity user) {
         return UserProfileDTO.builder()
                 .id(user.getUserId())
                 .fullName(user.getFullName())
