@@ -1,25 +1,25 @@
 package com.example.BloodDonationSupportSystem.entity;
 
-
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Entity
+import java.util.List;
+
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "blood_inventory")
+@Entity(name = "blood_inventory")
 public class BloodInventory {
 
     @Id
-    @Column(name="blood_type_id",length = 3,unique = true)
+    @Column(name = "blood_type_id", length = 3)
     private String bloodTypeId;
 
     @Column(name = "total_volume_ml")
-    private Integer totalVolumeMl;
+    private int totalVolumeMl;
 
+    @OneToMany(mappedBy = "bloodInventory")
+    private List<DonationProcessEntity> donationProcesses;
 
 }

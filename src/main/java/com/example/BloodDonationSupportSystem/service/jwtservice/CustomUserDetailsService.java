@@ -32,7 +32,6 @@ public class CustomUserDetailsService implements UserDetailsService {
             user = userRepository.findByUserId(uuid).orElseThrow(() -> new UsernameNotFoundException("User not found" + username));
         } catch (IllegalArgumentException e) {
             user = userRepository.findByPhoneNumber(username).orElseThrow(() -> new UsernameNotFoundException("User not found with phone: " + username));
-
         }
 
         return new User(user.getUserId().toString(),
