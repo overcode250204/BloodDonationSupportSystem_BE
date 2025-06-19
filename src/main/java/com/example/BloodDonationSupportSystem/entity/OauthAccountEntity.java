@@ -39,7 +39,7 @@ public class OauthAccountEntity {
     private String account;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", unique = true)
     private UserEntity user;
 }
 

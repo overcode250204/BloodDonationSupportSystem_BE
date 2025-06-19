@@ -5,38 +5,21 @@ import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.request.Login
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.request.RegisterRequest;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.LoginAccountResponse;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.RegisterAccountReponse;
-import com.example.BloodDonationSupportSystem.dto.common.BaseReponse;
+import com.example.BloodDonationSupportSystem.base.BaseReponse;
 import com.example.BloodDonationSupportSystem.service.authaccountservice.AuthAccountService;
 import com.example.BloodDonationSupportSystem.service.authaccountservice.GoogleOAuthService;
-import com.example.BloodDonationSupportSystem.service.authaccountservice.OauthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
 @Tag(name = "Authentication")
-@CrossOrigin()
 public class AuthAccountController {
 
-    private static final String GOOGLE_PROVIDER = "google";
-
-    @Value("${google.client.id}")
-    private String clientId;
-
-    @Value("${google.client.secret}")
-    private String clientSecret;
-
-    @Value("${google.redirect.uri}")
-    private String redirectUri;
-
-
-
-    @Autowired
-    private OauthService oauthService;
     @Autowired
     private AuthAccountService authAccountService;
     @Autowired
@@ -56,11 +39,12 @@ public class AuthAccountController {
     }
 
 
-
     @PostMapping("/google/callback")
     public BaseReponse<?> handleGoogleCallback(@RequestBody GoogleTokenRequest request) {
         return googleOAuthService.handleGoogleCallback(request.getCredential());
     }
+
+
 
 
 }

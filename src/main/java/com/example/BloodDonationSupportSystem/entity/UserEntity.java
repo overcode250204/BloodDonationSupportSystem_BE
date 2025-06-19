@@ -63,7 +63,26 @@ public class UserEntity {
     @OneToOne(mappedBy = "user")
     private OauthAccountEntity oauthAccount;
 
+    @OneToMany(mappedBy = "createdByAdminId")
+    private List<ArticleEntity> articles;
 
+    @OneToMany(mappedBy = "editedByStaffId")
+    private List<BloodDonationScheduleEntity> bloodDonationSchedules;
+
+    @OneToMany(mappedBy = "donorCertificate")
+    private List<DonationCertificateEntity> donorCertificates;
+
+    @OneToMany(mappedBy = "screenedByStaff")
+    private List<DonationRegistrationEntity> screenedDonationRegistrations;
+
+    @OneToMany(mappedBy = "donorCertificate")
+    private List<DonationCertificateEntity> donationCertificates;
+
+    @OneToMany(mappedBy = "registeredByStaff")
+    private List<EmergencyBloodRequestEntity> emergencyBloodRequests;
+
+    @OneToMany(mappedBy = "donorHistory")
+    private List<DonationHistoryEntity> donationHistories;
 
 
     public Collection<? extends GrantedAuthority> getAuthorities() {

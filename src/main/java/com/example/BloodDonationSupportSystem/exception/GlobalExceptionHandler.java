@@ -1,6 +1,6 @@
 package com.example.BloodDonationSupportSystem.exception;
 
-import com.example.BloodDonationSupportSystem.dto.common.BaseReponse;
+import com.example.BloodDonationSupportSystem.base.BaseReponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
