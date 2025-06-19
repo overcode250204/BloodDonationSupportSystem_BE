@@ -40,7 +40,7 @@ import java.util.Map;
 @CrossOrigin("*")
 public class GoogleOAuthService {
 
-    private static final String GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
+
     private static final String GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
     private static final String GOOGLE_USER_INFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo";
     private static final String GOOGLE_PROVIDER = "google";
@@ -69,21 +69,7 @@ public class GoogleOAuthService {
     @Autowired
     private RoleRepository roleRepository;
 
-    public void redirectToGoogle(HttpServletResponse response) {
-        try {
-            String url = UriComponentsBuilder.fromHttpUrl(GOOGLE_AUTH_URL)
-                    .queryParam("client_id", clientId)
-                    .queryParam("redirect_uri", redirectUri)
-                    .queryParam("response_type", "code")
-                    .queryParam("scope", "openid email profile")
-                    .queryParam("access_type", "offline")
-                    .build().toUriString();
-            response.sendRedirect(url);
-        } catch (IOException e) {
-            log.error("Error redirecting to Google", e);
-            throw new RuntimeException("Failed to redirect to Google", e);
-        }
-    }
+
 
     public BaseReponse<?> handleGoogleCallback(String credential) {
         try {
