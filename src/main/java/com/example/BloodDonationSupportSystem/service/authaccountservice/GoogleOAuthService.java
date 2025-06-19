@@ -8,6 +8,10 @@ import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import com.example.BloodDonationSupportSystem.repository.RoleRepository;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
 import com.example.BloodDonationSupportSystem.service.jwtservice.JwtService;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +40,7 @@ import java.util.Map;
 @CrossOrigin("*")
 public class GoogleOAuthService {
 
-    private static final String GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
+
     private static final String GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
     private static final String GOOGLE_USER_INFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo";
     private static final String GOOGLE_PROVIDER = "google";
@@ -65,43 +69,43 @@ public class GoogleOAuthService {
     @Autowired
     private RoleRepository roleRepository;
 
-    public void redirectToGoogle(HttpServletResponse response) {
+
+
+    public BaseReponse<?> handleGoogleCallback(String credential) {
         try {
-            String url = UriComponentsBuilder.fromHttpUrl(GOOGLE_AUTH_URL)
-                    .queryParam("client_id", clientId)
-                    .queryParam("redirect_uri", redirectUri)
-                    .queryParam("response_type", "code")
-                    .queryParam("scope", "openid email profile")
-                    .queryParam("access_type", "offline")
-                    .build().toUriString();
-            response.sendRedirect(url);
-        } catch (IOException e) {
-            log.error("Error redirecting to Google", e);
-            throw new RuntimeException("Failed to redirect to Google", e);
-        }
-    }
+            //xác thực token đến từ google
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
+                    new NetHttpTransport(),
+                    new GsonFactory())
+                    .setAudience(Collections.singletonList(clientId))
+                    .build();
 
-    public BaseReponse<?> handleGoogleCallback(String code) {
-        try {
-            String accessToken = getGoogleAccessToken(code);
-            Map<String, Object> userInfo = getGoogleUserInfo(accessToken);
+            GoogleIdToken idToken = verifier.verify(credential);
+            if (idToken == null) {
+                return new BaseReponse<>(
+                        HttpStatus.BAD_REQUEST.value(),
+                        "Invalid token",
+                        null
+                );
+            }
 
-            String providerUserId = (String) userInfo.get("sub");
+            GoogleIdToken.Payload payload = idToken.getPayload();
+            String email = payload.getEmail();
+            String name = (String) payload.get("name");
+            String providerUserId = payload.getSubject();
 
+           //lấy hoặc tạo người từ google
             var oauthAccountOpt = oauthService.getOauthAccount(GOOGLE_PROVIDER, providerUserId);
             UserEntity user = oauthAccountOpt.map(OauthAccountEntity::getUser)
-                    .orElseGet(() -> createNewGoogleUser(userInfo, providerUserId));
+                    .orElseGet(() -> createNewGoogleUser(name, email, providerUserId));
 
-            String jwtToken = jwtService.generateToken(
-                    new org.springframework.security.core.userdetails.User(
-                           user.getUserId().toString() , "", Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getRoleName()))
-                    )
-            );
-
+            String jwtToken = jwtService.generateToken(new org.springframework.security.core.userdetails.User(
+                    user.getUserId().toString() , "", Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getRoleName())))
+                                   );
 
             return new BaseReponse<>(
                     HttpStatus.OK.value(),
-                    "Login google successful",
+                    "Login Google successful",
                     jwtToken
             );
         } catch (Exception e) {
@@ -113,30 +117,16 @@ public class GoogleOAuthService {
         }
     }
 
-    private Map<String, Object> processGoogleUser(Map<String, Object> userInfo) {
-        String providerUserId = (String) userInfo.get("sub");
-        if (providerUserId == null) {
-            throw new IllegalStateException("Invalid user info received from Google: no providerUserId");
-        }
-
-        var oauthAccountOpt = oauthService.getOauthAccount(GOOGLE_PROVIDER, providerUserId);
-        UserEntity user = oauthAccountOpt.map(OauthAccountEntity::getUser)
-                .orElseGet(() -> createNewGoogleUser(userInfo, providerUserId));
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("name", user.getFullName());
-        result.put("picture", userInfo.get("picture"));
-        result.put("provider", GOOGLE_PROVIDER);
-        result.put("provider_user_id", providerUserId);
-        return result;
-    }
-
-    private UserEntity createNewGoogleUser(Map<String, Object> userInfo, String providerUserId) {
 
 
+
+    private UserEntity createNewGoogleUser(String name, String email, String providerUserId) {
         UserEntity user = new UserEntity();
-        user.setFullName((String) userInfo.get("name"));
-        user.setStatus("KÍCH HOẠT");
+        user.setFullName(name);
+        user.setStatus("HOẠT ĐỘNG");
+
+
+
 
         RoleEntity memberRole = roleRepository.findByRoleName("ROLE_MEMBER")
                 .orElseThrow(() -> new RuntimeException("ROLE_MEMBER not found"));
@@ -147,11 +137,9 @@ public class GoogleOAuthService {
         oauthAccount.setProvider(GOOGLE_PROVIDER);
         oauthAccount.setProviderUserId(providerUserId);
         oauthAccount.setCreatedAt(LocalDateTime.now());
-        oauthAccount.setAccount((String) userInfo.get("email"));
+        oauthAccount.setAccount(email);
         oauthAccount.setUser(user);
-        user.setOauthAccount(oauthAccount);
         oauthService.saveOauthAccount(oauthAccount);
-
 
         return user;
     }
