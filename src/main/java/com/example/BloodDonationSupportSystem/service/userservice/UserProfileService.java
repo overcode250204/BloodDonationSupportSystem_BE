@@ -3,6 +3,7 @@ package com.example.BloodDonationSupportSystem.service.userservice;
 import com.example.BloodDonationSupportSystem.Utils.AuthUtils;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.UserProfileDTO;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
+import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ public class UserProfileService {
                 throw new RuntimeException("Invalid UUID format for user ID: " + currentUser.getUsername());
             }
             UserEntity userEntity = userRepository.findByUserId(userId)
-                    .orElseThrow(() -> new RuntimeException("UserId Not Found At updateUserProfile()" + currentUser.getUsername()));
+                    .orElseThrow(() -> new ResourceNotFoundException("UserId Not Found At updateUserProfile()" + currentUser.getUsername()));
             userEntity.setFullName(user.getFullName());
             userEntity.setAddress(user.getAddress());
             userEntity.setDateOfBirth(user.getDayOfBirth());

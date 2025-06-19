@@ -18,7 +18,7 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    @GetMapping("/user")
+    @GetMapping("/users")
     public BaseReponse<?> getAllUsers() {
         List<UserProfileDTO> users = adminService.getAllUsers();
         return new BaseReponse<>(HttpStatus.OK.value(), "Get all users successful", users);
