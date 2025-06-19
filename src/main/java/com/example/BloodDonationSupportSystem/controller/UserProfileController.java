@@ -1,7 +1,7 @@
 package com.example.BloodDonationSupportSystem.controller;
 
+import com.example.BloodDonationSupportSystem.base.BaseReponse;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.UserProfileDTO;
-import com.example.BloodDonationSupportSystem.dto.common.BaseReponse;
 import com.example.BloodDonationSupportSystem.service.userservice.UserProfileService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

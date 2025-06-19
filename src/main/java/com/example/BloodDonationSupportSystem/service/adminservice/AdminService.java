@@ -2,6 +2,7 @@ package com.example.BloodDonationSupportSystem.service.adminservice;
 
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.UserProfileDTO;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
+import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class AdminService {
         try {
             Optional<UserEntity> optionalUser = userRepository.findByUserId(userID);
             if (optionalUser.isEmpty()) {
-                throw new RuntimeException("User not found with ID:" + userID);
+                throw new ResourceNotFoundException("User not found with ID:" + userID);
             }
             UserEntity user = optionalUser.get();
             user.setStatus(request.getStatus());
@@ -53,7 +54,7 @@ public class AdminService {
                 .phoneNumber(user.getPhoneNumber())
                 .bloodType(user.getBloodType())
                 .status(user.getStatus())
-                .roleName(user.getRole().getRoleName())
+                .role(user.getRole().getRoleName())
                 .build();
     }
 }
