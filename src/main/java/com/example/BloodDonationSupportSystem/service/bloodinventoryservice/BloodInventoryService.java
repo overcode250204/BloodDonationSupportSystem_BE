@@ -1,4 +1,4 @@
-package com.example.BloodDonationSupportSystem.service.BloodInventoryService;
+package com.example.BloodDonationSupportSystem.service.bloodinventoryservice;
 
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.BloodInventoryResponse;
 
