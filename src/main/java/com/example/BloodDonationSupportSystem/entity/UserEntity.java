@@ -42,10 +42,10 @@ public class UserEntity {
     private String phoneNumber;
 
     @Column(name = "longitude")
-    private String longitude;
+    private Double longitude;
 
     @Column(name = "latitude")
-    private String latitude;
+    private Double latitude;
 
     @Column(name = "gender")
     private String gender;

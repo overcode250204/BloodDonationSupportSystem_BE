@@ -21,8 +21,8 @@ public class UserProfileDTO {
     private String gender;
     private String address;
     private String phoneNumber;
-    private String longitude;
-    private String latitude;
+    private double longitude;
+    private double latitude;
     private String bloodType;
     private String role;
     private String status;
