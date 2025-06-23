@@ -1,9 +1,9 @@
 package com.example.BloodDonationSupportSystem.seed;
 
-import com.example.BloodDonationSupportSystem.entities.RoleEntity;
-import com.example.BloodDonationSupportSystem.entities.UserEntity;
-import com.example.BloodDonationSupportSystem.repositories.RoleRepository;
-import com.example.BloodDonationSupportSystem.repositories.UserRepository;
+import com.example.BloodDonationSupportSystem.entity.RoleEntity;
+import com.example.BloodDonationSupportSystem.entity.UserEntity;
+import com.example.BloodDonationSupportSystem.repository.RoleRepository;
+import com.example.BloodDonationSupportSystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;

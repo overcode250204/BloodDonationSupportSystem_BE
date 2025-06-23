@@ -1,8 +1,8 @@
 package com.example.BloodDonationSupportSystem.filter;
 
 import com.example.BloodDonationSupportSystem.base.BaseReponse;
-import com.example.BloodDonationSupportSystem.services.jwtservice.CustomUserDetailsService;
-import com.example.BloodDonationSupportSystem.services.jwtservice.JwtService;
+import com.example.BloodDonationSupportSystem.service.jwtservice.CustomUserDetailsService;
+import com.example.BloodDonationSupportSystem.service.jwtservice.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -36,7 +35,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 path.startsWith("/swagger-resources") ||
                 path.startsWith("/webjars") ||
                 path.startsWith("/api/auth") ||
-                path.startsWith("/homepage")) {
+                path.startsWith("/homepage") ||
+                path.startsWith("/images/uploads")){
             filterChain.doFilter(request, response);
             return;
         }

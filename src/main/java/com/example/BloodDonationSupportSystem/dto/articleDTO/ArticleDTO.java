@@ -10,6 +10,9 @@ import java.util.UUID;
 @Data
 public class ArticleDTO {
 
+
+    private UUID id;
+
     @NotBlank(message = "Title cannot blank")
     private String title;
 
@@ -19,7 +22,9 @@ public class ArticleDTO {
     private String status;
 
 
-    private MultipartFile image;
+    private String imageUrl;
+
+    private String fileName;
 
     @NotNull(message = "Must be have article type")
     private String articleType;
