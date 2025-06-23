@@ -1,5 +1,6 @@
 package com.example.BloodDonationSupportSystem.controller;
 
+import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.request.GoogleTokenRequest;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.request.LoginRequest;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.request.RegisterRequest;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.LoginAccountResponse;
@@ -37,23 +38,10 @@ public class AuthAccountController {
         return new BaseReponse<>(HttpStatus.OK.value(), "Login success", data);
     }
 
-    @GetMapping("/login/google")
-    public void redirectToGoogle(HttpServletResponse response) {
-        googleOAuthService.redirectToGoogle(response);
-    }
 
-    @GetMapping("/callback/google")
-    public BaseReponse<?> handleGoogleCallback(@RequestParam("code") String code) {
-        try {
-
-            return googleOAuthService.handleGoogleCallback(code);
-        } catch (Exception e) {
-            return new BaseReponse<>(
-                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                    "Error during Google OAuth callback: " + e.getMessage(),
-                    null
-            );
-        }
+    @PostMapping("/google/callback")
+    public BaseReponse<?> handleGoogleCallback(@RequestBody GoogleTokenRequest request) {
+        return googleOAuthService.handleGoogleCallback(request.getCredential());
     }
 
 
