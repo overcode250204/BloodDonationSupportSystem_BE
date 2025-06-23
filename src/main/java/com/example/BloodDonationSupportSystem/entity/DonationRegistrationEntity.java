@@ -5,6 +5,7 @@ import lombok.Data;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -19,19 +20,19 @@ public class DonationRegistrationEntity {
     private UUID donationRegistrationId;
 
     @Column(name = "registration_date")
-    private Date registrationDate;
+    private LocalDate registrationDate;
 
     @Column(name = "date_complete_donation")
-    private Date dateCompleteDonation;
+    private LocalDate dateCompleteDonation;
 
     @Column(name = "status")
     private String status;
 
     @Column(name = "start_date")
-    private Date startDate;
+    private LocalDate startDate;
 
     @Column(name = "end_date")
-    private Date endDate;
+    private LocalDate endDate;
 
     @ManyToOne()
     @JoinColumn(name = "donor_id")

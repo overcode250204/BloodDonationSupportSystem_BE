@@ -26,7 +26,7 @@ public class AdminController {
 
     @PutMapping("/users/{id}")
     public BaseReponse<?> updateStatusUser(@PathVariable("id") UUID userID, @Valid @RequestBody UserProfileDTO request) {
-        UserProfileDTO user = adminService.updateStatusUser(userID, request);
+        UserProfileDTO user = adminService.updateUser(userID, request);
         return new BaseReponse<>(HttpStatus.OK.value(), "Update status user successful", user);
     }
 }

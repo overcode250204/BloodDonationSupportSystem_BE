@@ -6,6 +6,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.sql.Time;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -23,7 +24,7 @@ public class BloodDonationScheduleEntity {
     private String addressHospital;
 
     @Column(name = "donation_date")
-    private Date donationDate;
+    private LocalDate donationDate;
 
     @Column(name = "start_time")
     private Time startTime;
