@@ -5,6 +5,7 @@ import lombok.Data;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
@@ -21,7 +22,7 @@ public class DonationCertificateEntity {
     private String title;
 
     @Column(name = "issued_at")
-    private Date issuedAt;
+    private LocalDate issuedAt;
 
     @Column(name = "type_certificate")
     private String typeCertificate;

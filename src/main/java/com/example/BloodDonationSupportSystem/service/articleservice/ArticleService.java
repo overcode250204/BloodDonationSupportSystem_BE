@@ -7,6 +7,8 @@ import com.example.BloodDonationSupportSystem.repository.ArticleRepository;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -36,17 +39,29 @@ public class ArticleService {
 
 
 
-    public ArticleDTO create(ArticleDTO dto, MultipartFile image) {
+    public ArticleDTO create(ArticleDTO dto) throws IOException {
         ArticleEntity article = new ArticleEntity();
         article.setTitle(dto.getTitle());
         article.setContent(dto.getContent());
         article.setCreatedAt(new Date());
         article.setStatus(dto.getStatus());
         article.setArticleType(dto.getArticleType());
-        if (image != null && !image.isEmpty()) {
-            String imageUrl =storeImage(image);
-            article.setImageUrl(imageUrl);
-        }
+
+            String base64Image = dto.getImageUrl();
+            if (base64Image.contains(",")) {
+                base64Image = base64Image.split(",")[1];
+            }
+
+            byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+
+            Path uploadDir = Paths.get("images\\uploads");
+            if (!Files.exists(uploadDir)) {
+                Files.createDirectories(uploadDir);
+            }
+            String filename = UUID.randomUUID() + "_" + dto.getFileName();
+            Path filePath = uploadDir.resolve(filename);
+            Files.write(filePath, imageBytes);
+            article.setImageUrl(filePath.toString());
 
         article.setCreatedByAdminId(userRepository.findById(dto.getCreatedByAdminId())
                 .orElseThrow(() -> new ResourceNotFoundException("Admin not found")));
@@ -54,22 +69,7 @@ public class ArticleService {
         return mapToDTO(article);
     }
 
-    private String storeImage(MultipartFile image) {
-        if (image != null && !image.isEmpty()) {
-            return null;
-        }
 
-        String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
-        try {
-            Path path = Paths.get(imagePath).resolve(fileName);
-            Files.createDirectories(path.getParent());
-            Files.copy(image.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-            return baseUrl + fileName;
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to store image " + image.getOriginalFilename());
-        }
-
-    }
 
 
     public ArticleDTO getById(UUID id) {
@@ -86,28 +86,36 @@ public class ArticleService {
     public ArticleDTO update(UUID id, ArticleDTO dto) {
         ArticleEntity article = articleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
+
         article.setTitle(dto.getTitle());
         article.setContent(dto.getContent());
         article.setStatus(dto.getStatus());
+        article.setArticleType(dto.getArticleType());
         articleRepository.save(article);
         return mapToDTO(article);
     }
 
-    public String delete(UUID id) {
+    public String delete(UUID id) throws IOException {
         ArticleEntity article = articleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
+        Path uploadDir = Paths.get(article.getImageUrl());
+        Files.deleteIfExists(uploadDir);
         articleRepository.delete(article);
         return "Deleted Article";
     }
 
+
+
     private ArticleDTO mapToDTO(ArticleEntity entity) {
-        ArticleDTO dto = new ArticleDTO();
-        dto.setTitle(entity.getTitle());
-        dto.setContent(entity.getContent());
-        dto.setStatus(entity.getStatus());
-        dto.setArticleType(entity.getArticleType());
-        dto.setCreatedByAdminId(entity.getCreatedByAdminId().getUserId());
-        return dto;
+        ArticleDTO response = new ArticleDTO();
+        response.setId(entity.getArticleId());
+        response.setTitle(entity.getTitle());
+        response.setContent(entity.getContent());
+        response.setStatus(entity.getStatus());
+        response.setArticleType(entity.getArticleType());
+        response.setImageUrl(entity.getImageUrl());
+        response.setCreatedByAdminId(entity.getCreatedByAdminId().getUserId());
+        return response;
     }
 
 

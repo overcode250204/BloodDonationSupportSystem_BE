@@ -10,9 +10,15 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,13 +30,6 @@ public class ArticleController {
     @Autowired
     private ArticleService articleService;
 
-    @PostMapping(value = "/article", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public BaseReponse<?> create(@RequestPart("data") @Valid ArticleDTO dto,
-                                 @RequestPart(value = "image", required = false) MultipartFile image) {
-        ArticleDTO response = articleService.create(dto, image);
-        return new BaseReponse<>(HttpStatus.OK.value(), "Create article successfully", response);
-    }
-
 
     @PutMapping("/article/{id}")
     public BaseReponse<?> update(@RequestBody @Valid ArticleDTO dto, @PathVariable UUID id) {
@@ -39,7 +38,7 @@ public class ArticleController {
     }
 
     @DeleteMapping("/article/{id}")
-    public BaseReponse<?> delete(@PathVariable UUID id) {
+    public BaseReponse<?> delete(@PathVariable UUID id) throws IOException {
         String response = articleService.delete(id);
         return new BaseReponse<>(HttpStatus.OK.value(), "Delete article successfully", response);
     }
@@ -56,6 +55,13 @@ public class ArticleController {
         return new BaseReponse<>(HttpStatus.OK.value(), "Get all articles successfully", response);
     }
 
+    @PostMapping("/article/create")
+    public BaseReponse<ArticleDTO> create(@RequestBody @Valid ArticleDTO req) throws IOException {
+
+
+        ArticleDTO response = articleService.create(req);
+        return new BaseReponse<>(HttpStatus.OK.value(), "Create article successfully", response);
+    }
 
 
 }
