@@ -30,13 +30,6 @@ public class ArticleController {
     @Autowired
     private ArticleService articleService;
 
-//    @PostMapping(value = "/article", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    public BaseReponse<?> create(@RequestPart("data") @Valid ArticleDTO dto,
-//                                 @RequestPart(value = "image", required = false) MultipartFile image) {
-//        ArticleDTO response = articleService.create(dto, image);
-//        return new BaseReponse<>(HttpStatus.OK.value(), "Create article successfully", response);
-//    }
-
 
     @PutMapping("/article/{id}")
     public BaseReponse<?> update(@RequestBody @Valid ArticleDTO dto, @PathVariable UUID id) {
