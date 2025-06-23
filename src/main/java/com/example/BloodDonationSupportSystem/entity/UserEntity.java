@@ -56,6 +56,9 @@ public class UserEntity {
     @Column(name = "status")
     private String status;
 
+    @Column(name="created_at")
+    private LocalDate createdAt;
+
     @ManyToOne
     @JoinColumn(name = "role_id")
     private RoleEntity role;
