@@ -23,7 +23,8 @@ public interface DonationRegistrationRepository extends JpaRepository<DonationRe
         bds.startTime,
         bds.endTime,
         COALESCE(dp.volumeMl, 0),
-        bds.donationDate,dr.registrationDate)
+        bds.donationDate,
+        dr.registrationDate)
     FROM donation_registration dr
     JOIN dr.bloodDonationSchedule bds
     LEFT JOIN dr.donationProcess dp

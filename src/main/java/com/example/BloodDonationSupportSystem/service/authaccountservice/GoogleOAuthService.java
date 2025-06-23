@@ -92,6 +92,7 @@ public class GoogleOAuthService {
 
            //lấy hoặc tạo người từ google
             var oauthAccountOpt = oauthService.getOauthAccount(GOOGLE_PROVIDER, providerUserId);
+
             UserEntity user = oauthAccountOpt.map(OauthAccountEntity::getUser)
                     .orElseGet(() -> createNewGoogleUser(name, email, providerUserId));
 

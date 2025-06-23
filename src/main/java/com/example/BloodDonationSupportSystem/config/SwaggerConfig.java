@@ -39,7 +39,7 @@ public class SwaggerConfig {
     }
     @Bean
     public GroupedOpenApi bloodDonationSupportSystemGroup() {
-        return GroupedOpenApi.builder().group("rest-api").packagesToScan("com.example.BloodDonationSupportSystem.controllers").build();
+        return GroupedOpenApi.builder().group("rest-api").packagesToScan("com.example.BloodDonationSupportSystem.controller").build();
     }
 
 }
