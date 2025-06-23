@@ -65,6 +65,9 @@ public class AuthAccountService {
 
         LoginAccountResponse loginAccountResponse;
         UserEntity user = userRepository.findByPhoneNumber(loginRequest.getPhoneNumber()).orElseThrow(() -> new BadRequestException("PhoneNumber doesn't exist"));
+        if (!user.getStatus().equals("HOẠT ĐỘNG")) {
+            throw new BadRequestException("Account is locked or inactive!");
+        }
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getPhoneNumber(), loginRequest.getPassword()));

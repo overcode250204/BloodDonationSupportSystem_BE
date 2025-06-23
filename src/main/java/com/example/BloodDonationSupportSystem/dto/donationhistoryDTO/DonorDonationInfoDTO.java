@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.sql.Time;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
@@ -16,8 +17,8 @@ public class DonorDonationInfoDTO {
     private Time startTime;
     private Time endTime;
     private int volumeMl;
-    private Date donationDate;
-    private Date registrationDate;
+    private LocalDate donationDate;
+    private LocalDate registrationDate;
 
     public DonorDonationInfoDTO(UUID donationRegistrationId,
                                 String status,
@@ -25,8 +26,8 @@ public class DonorDonationInfoDTO {
                                 Time startTime,
                                 Time endTime,
                                 int volumeMl,
-                                Date donationDate,
-                                Date registrationDate) {
+                                LocalDate donationDate,
+                                LocalDate registrationDate) {
         this.donationRegistrationId = donationRegistrationId;
         this.status = status;
         this.addressHospital = addressHospital;
