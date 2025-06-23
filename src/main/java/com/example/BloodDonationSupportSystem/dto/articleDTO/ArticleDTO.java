@@ -19,7 +19,7 @@ public class ArticleDTO {
     private String status;
 
 
-    private String imageUrl;
+    private MultipartFile image;
 
     @NotNull(message = "Must be have article type")
     private String articleType;
