@@ -26,4 +26,5 @@ public class UserProfileDTO {
     private String bloodType;
     private String role;
     private String status;
+    private LocalDate createdAt;
 }

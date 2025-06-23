@@ -65,6 +65,7 @@ public class UserProfileService {
                 .dayOfBirth(user.getDateOfBirth())
                 .address(user.getAddress())
                 .bloodType(user.getBloodType())
+                .createdAt(user.getCreatedAt())
                 .build();
     }
 }
