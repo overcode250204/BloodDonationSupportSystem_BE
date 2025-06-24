@@ -13,6 +13,7 @@ public class DonationRegistrationDTO {
 
     private LocalDate completeDonationDate;
 
+    @NotNull(message = "Status can not null!")
     private String status;
     @NotNull(message = "Start date can not null!")
     private LocalDate startDate;

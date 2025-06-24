@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,6 +15,32 @@ import java.util.UUID;
 @Repository
 public interface DonationRegistrationRepository extends JpaRepository<DonationRegistrationEntity, UUID> {
     Optional<DonationRegistrationEntity> findByDonationRegistrationId(UUID id);
+
+
+    @Query("""
+    SELECT dr
+    FROM donation_registration dr
+    WHERE dr.status = 'CHƯA HIẾN' AND dr.bloodDonationSchedule IS NULL AND :donationDate BETWEEN dr.startDate AND dr.endDate
+    ORDER BY dr.registrationDate ASC
+""")
+    List<DonationRegistrationEntity> findEligibleRegistrations(@Param("donationDate")LocalDate donationDate);
+
+
+    @Query("""
+    SELECT dr
+    FROM donation_registration dr
+    WHERE dr.donor.userId = :donorId AND dr.status = :status
+""")
+    List<DonationRegistrationEntity> findUncompletedRegistrations(@Param("donorId") UUID donorId, @Param("status") String status);
+
+
+    @Query("""
+    SELECT dr
+    FROM donation_registration dr
+    WHERE dr.donor.userId = :donorId AND dr.dateCompleteDonation IS NOT NULL
+    ORDER BY dr.dateCompleteDonation DESC
+""")
+    List<DonationRegistrationEntity> findLatestRegistrationByDonor(@Param("donorId") UUID donorId);
 
     @Query("""
     SELECT new com.example.BloodDonationSupportSystem.dto.donationhistoryDTO.DonorDonationInfoDTO(
