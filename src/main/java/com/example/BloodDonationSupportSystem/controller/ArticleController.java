@@ -23,7 +23,6 @@ public class ArticleController {
     private ArticleService articleService;
 
 
-
     @PutMapping("/article/{id}")
     public BaseReponse<?> update(@RequestBody @Valid ArticleRequest dto, @PathVariable UUID id) throws IOException {
         ArticleResponse response = articleService.update(id, dto);
