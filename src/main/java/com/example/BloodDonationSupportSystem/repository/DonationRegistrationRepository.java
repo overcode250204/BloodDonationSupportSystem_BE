@@ -51,11 +51,17 @@ public interface DonationRegistrationRepository extends JpaRepository<DonationRe
         bds.endTime,
         COALESCE(dp.volumeMl, 0),
         bds.donationDate,
-        dr.registrationDate
+        dr.registrationDate,
+        bds.bloodDonationScheduleId,
+        dr.startDate,
+        dr.endDate,
+        de.donationEmergencyId,
+        de.assignedDate
     )
     FROM donation_registration dr
-    JOIN dr.bloodDonationSchedule bds
+    LEFT JOIN dr.bloodDonationSchedule bds
     LEFT JOIN dr.donationProcess dp
+    LEFT JOIN dr.donationEmergencies de
     WHERE dr.donor.userId = :donorId
     ORDER BY dr.registrationDate DESC
 """)
@@ -70,11 +76,17 @@ public interface DonationRegistrationRepository extends JpaRepository<DonationRe
         bds.endTime,
         COALESCE(dp.volumeMl, 0),
         bds.donationDate,
-        dr.registrationDate
+        dr.registrationDate,
+        bds.bloodDonationScheduleId,
+        dr.startDate,
+        dr.endDate,
+        de.donationEmergencyId,
+        de.assignedDate
     )
     FROM donation_registration dr
-    JOIN dr.bloodDonationSchedule bds
+    LEFT JOIN dr.bloodDonationSchedule bds
     LEFT JOIN dr.donationProcess dp
+    LEFT JOIN dr.donationEmergencies de
     WHERE dr.donationRegistrationId = :registrationId
 """)
     DonorDonationInfoDTO findDonationHistoryById(@Param("registrationId") UUID registrationId);

@@ -1,4 +1,4 @@
-package com.example.BloodDonationSupportSystem.service.userservice;
+package com.example.BloodDonationSupportSystem.service.historyservice;
 
 import com.example.BloodDonationSupportSystem.dto.donationhistoryDTO.DonorDonationInfoDTO;
 import com.example.BloodDonationSupportSystem.entity.DonationRegistrationEntity;

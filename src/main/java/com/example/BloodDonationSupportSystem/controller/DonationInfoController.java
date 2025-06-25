@@ -2,7 +2,7 @@ package com.example.BloodDonationSupportSystem.controller;
 
 import com.example.BloodDonationSupportSystem.base.BaseReponse;
 import com.example.BloodDonationSupportSystem.dto.donationhistoryDTO.DonorDonationInfoDTO;
-import com.example.BloodDonationSupportSystem.service.userservice.DonationInfoService;
+import com.example.BloodDonationSupportSystem.service.historyservice.DonationInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
