@@ -1,17 +1,13 @@
-package com.example.BloodDonationSupportSystem.dto.articleDTO;
+package com.example.BloodDonationSupportSystem.dto.articleDTO.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
 @Data
-public class ArticleDTO {
-
-
-    private UUID id;
+public class ArticleRequest {
 
     @NotBlank(message = "Title cannot blank")
     private String title;
@@ -21,8 +17,7 @@ public class ArticleDTO {
     @NotNull(message = "Status cannot null")
     private String status;
 
-
-    private String imageUrl;
+    private String imageData;
 
     private String fileName;
 
@@ -31,5 +26,4 @@ public class ArticleDTO {
 
     @NotNull(message = "Must be have created by admin id")
     private UUID createdByAdminId;
-
 }
