@@ -25,9 +25,6 @@ public class DonationProcessEntity {
     @Column(name = "status")
     private String status;
 
-    @Column(name = "type_donation")
-    private String typeDonation;
-
     @OneToOne
     @JoinColumn(name = "donation_registration_id")
     private DonationRegistrationEntity donationRegistrationProcess;
