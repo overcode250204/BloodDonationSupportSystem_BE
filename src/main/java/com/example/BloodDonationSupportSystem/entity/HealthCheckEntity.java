@@ -28,6 +28,9 @@ public class HealthCheckEntity {
     @Column(name = "health_status")
     private String healthStatus;
 
+    @Column(name = "note")
+    private String note;
+
     @OneToOne
     @JoinColumn(name = "donation_registration_id")
     private DonationRegistrationEntity donationRegistrationHealthCheck;
