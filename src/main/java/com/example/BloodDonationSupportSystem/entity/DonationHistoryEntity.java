@@ -5,6 +5,7 @@ import lombok.Data;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
@@ -18,7 +19,7 @@ public class DonationHistoryEntity {
     private UUID donationHistoryId;
 
     @Column(name = "registration_date")
-    private Date registrationDate;
+    private LocalDate registrationDate;
 
     @Column(name = "address_hospital")
     private String addressHospital;
