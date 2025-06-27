@@ -2,15 +2,18 @@ package com.example.BloodDonationSupportSystem.service.donationregistrationservi
 
 import com.example.BloodDonationSupportSystem.dto.donationregistrationDTO.DonationRegistrationDTO;
 import com.example.BloodDonationSupportSystem.entity.DonationRegistrationEntity;
+import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import com.example.BloodDonationSupportSystem.exception.BadRequestException;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
 import com.example.BloodDonationSupportSystem.repository.BloodDonationScheduleRepository;
 import com.example.BloodDonationSupportSystem.repository.DonationRegistrationRepository;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,13 +25,33 @@ public class DonationRegistrationService {
     @Autowired
     private UserRepository userRepository;
 
+
     @Autowired
     private BloodDonationScheduleRepository bloodDonationScheduleRepository;
 
 
+
+
     public DonationRegistrationDTO create(DonationRegistrationDTO dto) {
+        UserEntity donor = userRepository.findByUserId(dto.getDonorId()).orElseThrow(()-> new ResourceNotFoundException("Donor Not Found"));
+
+        List<DonationRegistrationEntity> uncompleted = donationRegistrationRepository.findUncompletedRegistrations(donor.getUserId(), "CHƯA HIẾN");
+        if (!uncompleted.isEmpty()) {
+            throw new BadRequestException("You already have a pending registration!");
+        }
+
+        DonationRegistrationEntity latestRegistration = donationRegistrationRepository.findLatestRegistrationByDonor(donor.getUserId()).stream().findFirst().orElse(null);
+        if (latestRegistration != null) {
+            LocalDate today = LocalDate.now();
+            LocalDate lastRegistrationDate  = latestRegistration.getDateCompleteDonation();
+            if (lastRegistrationDate != null && ChronoUnit.DAYS.between(lastRegistrationDate, today) < 90) {
+                throw new BadRequestException("You have donated within the last 90 days. Please wait a little longer !!!");
+            }
+        }
+
         DonationRegistrationEntity entity = new DonationRegistrationEntity();
         entity.setRegistrationDate(LocalDate.now());
+        entity.setStatus(dto.getStatus());
         entity.setStartDate(dto.getStartDate());
         entity.setEndDate(dto.getEndDate());
 
@@ -85,6 +108,10 @@ public class DonationRegistrationService {
         return dtos;
     }
 
+//    @Transactional
+//    public void cancelOtherRegistrationsOfDonor(UUID donorId, UUID keepId) {
+//        donationRegistrationRepository.cancelOtherPendingRegistrations(donorId, keepId);
+//    }
 
 
     private DonationRegistrationDTO mapToDTO(DonationRegistrationEntity entity) {
