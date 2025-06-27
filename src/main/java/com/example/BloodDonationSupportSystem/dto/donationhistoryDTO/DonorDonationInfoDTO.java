@@ -1,12 +1,9 @@
 package com.example.BloodDonationSupportSystem.dto.donationhistoryDTO;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 
 import java.sql.Time;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.UUID;
 
 @Data
@@ -19,6 +16,11 @@ public class DonorDonationInfoDTO {
     private int volumeMl;
     private LocalDate donationDate;
     private LocalDate registrationDate;
+    private UUID bloodDonationScheduleId;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private UUID emergencyBloodRequestId;
+    private LocalDate assignedDate;
 
     public DonorDonationInfoDTO(UUID donationRegistrationId,
                                 String status,
@@ -27,7 +29,13 @@ public class DonorDonationInfoDTO {
                                 Time endTime,
                                 int volumeMl,
                                 LocalDate donationDate,
-                                LocalDate registrationDate) {
+                                LocalDate registrationDate,
+                                UUID bloodDonationScheduleId,
+                                LocalDate startDate,
+                                LocalDate endDate,
+                                UUID emergencyBloodRequestId,
+                                LocalDate assignedDate
+    ) {
         this.donationRegistrationId = donationRegistrationId;
         this.status = status;
         this.addressHospital = addressHospital;
@@ -36,5 +44,11 @@ public class DonorDonationInfoDTO {
         this.volumeMl = volumeMl;
         this.donationDate = donationDate;
         this.registrationDate = registrationDate;
+        this.bloodDonationScheduleId = bloodDonationScheduleId;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.emergencyBloodRequestId = emergencyBloodRequestId;
+        this.assignedDate = assignedDate;
     }
+
 }

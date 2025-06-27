@@ -23,7 +23,7 @@ public class DonationRegistrationController {
     @PostMapping("/registration")
     public BaseReponse<?> create(@RequestBody @Valid DonationRegistrationDTO dto) {
         DonationRegistrationDTO response = donationRegistrationService.create(dto);
-        return new BaseReponse<>(HttpStatus.CREATED.value(), "Created successfully", response);
+        return new BaseReponse<>(HttpStatus.OK.value(), "Created successfully", response);
     }
 
     @PutMapping("/registration/{id}")
