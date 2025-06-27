@@ -16,14 +16,17 @@ public class DonationProcessEntity {
     @Column(name = "donation_process_id", columnDefinition = "uniqueidentifier")
     private UUID donationProcessId;
 
-    @Column(name = "is_passed")
-    private boolean isPassed;
+    @Column(name = "blood_test")
+    private String bloodTest;
 
     @Column(name = "volume_ml")
     private int volumeMl;
 
     @Column(name = "status")
     private String status;
+
+    @Column(name = "type_donation")
+    private String typeDonation;
 
     @OneToOne
     @JoinColumn(name = "donation_registration_id")
