@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BloodVolumeRequest {
-
     @Min(value = 250, message = "Total volume must be at least 250ml")
     @Max(value = 450, message = "Total volume must not exceed 450ml")
     private int volumeMl;
-
 }
