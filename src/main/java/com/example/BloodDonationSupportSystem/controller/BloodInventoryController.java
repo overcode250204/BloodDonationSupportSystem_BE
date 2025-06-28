@@ -2,19 +2,20 @@ package com.example.BloodDonationSupportSystem.controller;
 
 import com.example.BloodDonationSupportSystem.base.BaseReponse;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.request.BloodVolumeRequest;
+import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.request.UpdateProcessTestRequest;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.BloodInventoryResponse;
 
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.DonationProcessResponse;
-import com.example.BloodDonationSupportSystem.entity.DonationProcessEntity;
 import com.example.BloodDonationSupportSystem.service.bloodinventoryservice.BloodInventoryService;
 import com.example.BloodDonationSupportSystem.service.donationprocesservice.BloodDonationProcessService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -41,10 +42,10 @@ public class BloodInventoryController {
     }
 
     @PutMapping("/update-blood-volume/{bloodTypeId}")
-    public BaseReponse<BloodInventoryResponse> updateBloodVolume(@PathVariable String bloodTypeId,
-                                                                 @RequestBody BloodVolumeRequest bloodVolumeRequest){
-        BloodInventoryResponse bloodBagUpdate = bloodBagService.updateBloodVolume(bloodTypeId, bloodVolumeRequest.getVolumeMl());
-        return new BaseReponse<>(HttpStatus.OK.value(), "Update blood volume successfully",bloodBagUpdate);
+    public BaseReponse<?> updateBloodVolume(@PathVariable String bloodTypeId,
+                                            @RequestBody @Valid BloodVolumeRequest request){
+
+        return  bloodBagService.updateBloodVolume(bloodTypeId,request.getDonationRegisId(),request.getProcessId() ,request.getVolumeMl());
     }
 
 
@@ -59,10 +60,12 @@ public class BloodInventoryController {
         );
     }
 
-//    @PutMapping("/update-process-is-passed/{donationProcessId}")
-//    public BaseReponse<DonationProcessResponse> updateProcessIsPassed(@PathVariable String donationProcessId,
-//                                                                      @RequestBody BloodVolumeRequest bloodCheckingRequest) {
-//        DonationProcessResponse donationProcessResponse = donationProcessService.updateProcessIsPassed(donationProcessId);
-//        return new BaseReponse<>(HttpStatus.OK.value(), "Update process is passed successfully", donationProcessResponse);
-//    }
+    @PutMapping("/update-process-is-passed/{processId}")
+    public BaseReponse<DonationProcessResponse> updateProcessIsPassed(@PathVariable UUID processId,
+                                                                      @RequestBody  @Valid UpdateProcessTestRequest request) {
+        System.out.println("at contrller Process ID: " + processId+", Blood Test: " + request.getBloodTest() + ", Blood Type ID: " + request.getBloodTypeId());
+
+        DonationProcessResponse donationProcessResponse = donationProcessService.updateProcessIsPassed(processId,request.getBloodTest(),request.getBloodTypeId());
+        return new BaseReponse<>(HttpStatus.OK.value(), "Update process is passed successfully", donationProcessResponse);
+    }
 }

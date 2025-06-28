@@ -16,6 +16,6 @@ public class DonationProcessResponse {
     private int volumeMl;
     private String status;
     private String bloodTypeId;
-    private String typeDonation;
+
     private UUID donationRegisId;
 }

@@ -1,8 +1,10 @@
 package com.example.BloodDonationSupportSystem.service.donationprocesservice;
 
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.DonationProcessResponse;
+import com.example.BloodDonationSupportSystem.entity.BloodInventory;
 import com.example.BloodDonationSupportSystem.entity.DonationProcessEntity;
 import com.example.BloodDonationSupportSystem.repository.BloodDonationProcessRepository;
+import com.example.BloodDonationSupportSystem.repository.BloodInventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,26 +18,45 @@ public class BloodDonationProcessService {
     @Autowired
     private BloodDonationProcessRepository bloodDonationProcessRepository;
 
+    @Autowired
+    private BloodInventoryRepository bloodInventoryRepository;
+
     public List<DonationProcessResponse> getCompletedDonationProcess() {
         List<DonationProcessEntity> donationProcessList = bloodDonationProcessRepository.getUncheckedDonatedProcessesList();
-        //id,bloodTest,volumeMl,status,bloodTypeId,typeDonation,donationRegisId
+
+
         return donationProcessList.stream()
                 .map(entity -> new DonationProcessResponse(
                         entity.getDonationProcessId(),
                         entity.getBloodTest(),
                         entity.getVolumeMl(),
                         entity.getStatus(),
-                        entity.getBloodInventory().getBloodTypeId(),
-                        entity.getTypeDonation(),
+                        entity.getBloodInventory() != null ? entity.getBloodInventory().getBloodTypeId() : null,
                         entity.getDonationRegistrationProcess().getDonationRegistrationId()))
                 .collect(Collectors.toList());
     }
 
-//    public DonationProcessResponse updateProcessIsPassed(UUID processId,String is_passed) {
-//        DonationProcessEntity donationProcess = (DonationProcessEntity) bloodDonationProcessRepository.findById(processId)
-//                .orElseThrow(() -> new RuntimeException("Donation process not found with id: " + processId));
-//
-//        donationProcess.setIsPassed("");
-//        return null;
-//    }
+    public DonationProcessResponse updateProcessIsPassed(UUID processId, String bloodTest, String bloodTypeId) {
+        DonationProcessEntity donationProcess = bloodDonationProcessRepository.findById(processId)
+                .orElseThrow(() -> new RuntimeException("Donation process not found with id: " + processId));
+
+        donationProcess.setBloodTest(bloodTest);
+
+        BloodInventory bloodInventory = bloodInventoryRepository.findById(bloodTypeId)
+                .orElseThrow(() -> new RuntimeException("Blood inventory not found with id: " + bloodTypeId));
+
+        donationProcess.setBloodInventory(bloodInventory);
+
+        DonationProcessEntity updatedProcess = bloodDonationProcessRepository.save(donationProcess);
+
+
+        return new DonationProcessResponse(
+                updatedProcess.getDonationProcessId(),
+                updatedProcess.getBloodTest(),
+                updatedProcess.getVolumeMl(),
+                updatedProcess.getStatus(),
+                updatedProcess.getBloodInventory().getBloodTypeId(),
+                updatedProcess.getDonationRegistrationProcess().getDonationRegistrationId()
+        );
+    }
 }
