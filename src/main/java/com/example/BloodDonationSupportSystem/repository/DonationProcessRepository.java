@@ -12,5 +12,5 @@ import java.util.UUID;
 
 @Repository
 public interface DonationProcessRepository extends JpaRepository<DonationProcessEntity, UUID> {
-
+    boolean existsByDonationRegistrationProcess_DonationRegistrationId(UUID donationRegistrationId);
 }
