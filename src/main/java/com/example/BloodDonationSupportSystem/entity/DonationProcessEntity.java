@@ -1,4 +1,4 @@
-package com.example.BloodDonationSupportSystem.entity;
+      package com.example.BloodDonationSupportSystem.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
