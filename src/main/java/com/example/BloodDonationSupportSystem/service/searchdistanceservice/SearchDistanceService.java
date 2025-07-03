@@ -28,8 +28,7 @@ public class SearchDistanceService {
     //Vị trí tìm kiếm bắt đầu từ Đại học FPT HCM
     private static final double FPT_HCM_LATITUDE = 10.841416800000001;
     private static final double FPT_HCM_LONGTITUDE = 106.81007447258705;
-    @Autowired
-    private  RestTemplate restTemplate;
+
     @Autowired
     private UserRepository userRepository;
     public List<DonorResponse> getEligibleDonors(List<String> bloodTypes, double maxDistanceKm) {

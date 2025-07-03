@@ -4,11 +4,10 @@ import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.UserProfileDT
 import com.example.BloodDonationSupportSystem.base.BaseReponse;
 import com.example.BloodDonationSupportSystem.service.userservice.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -21,5 +20,9 @@ public class UserController {
         UserProfileDTO currentUser = userService.getCurrentUserProfile();
         return new BaseReponse<>(HttpStatus.OK.value(), "Get current user successful", currentUser);
     }
-
+    @PutMapping("/profile")
+    public BaseReponse<?> updateProfile(@RequestBody UserProfileDTO request) {
+        UserProfileDTO currentUser = userService.updateUserProfile(request);
+        return new BaseReponse<>(HttpStatus.OK.value(), "Update user profile successful", currentUser);
+    }
 }

@@ -1,22 +1,22 @@
 package com.example.BloodDonationSupportSystem.service.articleservice;
 
-import com.example.BloodDonationSupportSystem.dto.articleDTO.ArticleDTO;
+import com.example.BloodDonationSupportSystem.dto.articleDTO.request.ArticleRequest;
+import com.example.BloodDonationSupportSystem.dto.articleDTO.response.ArticleResponse;
 import com.example.BloodDonationSupportSystem.entity.ArticleEntity;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
 import com.example.BloodDonationSupportSystem.repository.ArticleRepository;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -39,15 +39,98 @@ public class ArticleService {
 
 
 
-    public ArticleDTO create(ArticleDTO dto) throws IOException {
+    public ArticleResponse create(ArticleRequest request) throws IOException {
         ArticleEntity article = new ArticleEntity();
-        article.setTitle(dto.getTitle());
-        article.setContent(dto.getContent());
+        article.setTitle(request.getTitle());
+        article.setContent(request.getContent());
         article.setCreatedAt(new Date());
-        article.setStatus(dto.getStatus());
-        article.setArticleType(dto.getArticleType());
+        article.setStatus(request.getStatus());
+        article.setArticleType(request.getArticleType());
 
-            String base64Image = dto.getImageUrl();
+        Path filePath = saveImage(request.getImageData(), request.getFileName());
+        if(filePath != null) {
+            article.setImageUrl(mapToUrl(filePath.toString()));
+        }
+
+        article.setCreatedByAdminId(userRepository.findById(request.getCreatedByAdminId())
+                .orElseThrow(() -> new ResourceNotFoundException("Admin not found")));
+        articleRepository.save(article);
+        return mapToArticleResponse(article);
+    }
+
+
+
+
+    public ArticleResponse getById(UUID id) {
+        return articleRepository.findById(id)
+                .map(article -> this.mapToArticleResponse(article))
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
+    }
+
+    public List<ArticleResponse> getAll() {
+        return articleRepository.findAll().stream().map(article -> this.mapToArticleResponse(article)).toList();
+    }
+
+
+    public ArticleResponse update(UUID id, ArticleRequest request) throws IOException {
+        ArticleEntity article = articleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
+        article.setTitle(request.getTitle());
+        article.setContent(request.getContent());
+        article.setCreatedAt(new Date());
+        article.setStatus(request.getStatus());
+        article.setArticleType(request.getArticleType());
+        if(!article.getImageUrl().equals(mapToUrl(request.getImageData()))) {
+            Path deletePath = mapToPath(article.getImageUrl());
+            Files.deleteIfExists(deletePath);
+            Path filePath = saveImage(request.getImageData(), request.getFileName());
+            if(filePath != null) {
+                article.setImageUrl(mapToUrl(filePath.toString()));
+            }
+        }else{
+            article.setImageUrl(request.getImageData());
+        }
+        article.setCreatedByAdminId(userRepository.findById(request.getCreatedByAdminId())
+                .orElseThrow(() -> new ResourceNotFoundException("Admin not found")));
+        articleRepository.save(article);
+        return mapToArticleResponse(article);
+    }
+
+    public String delete(UUID id) throws IOException {
+        ArticleEntity article = articleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
+        deleteImage(mapToPath(article.getImageUrl()));
+        articleRepository.delete(article);
+        return "Deleted Article";
+    }
+
+
+
+    private ArticleResponse mapToArticleResponse(ArticleEntity entity) {
+        ArticleResponse response = new ArticleResponse();
+        response.setId(entity.getArticleId());
+        response.setTitle(entity.getTitle());
+        response.setContent(entity.getContent());
+        response.setStatus(entity.getStatus());
+        response.setArticleType(entity.getArticleType());
+        response.setImageUrl(entity.getImageUrl());
+        return response;
+    }
+
+    private Path mapToPath(String url) {
+        String pathText = url.replace("/", "\\");
+        return Paths.get(pathText);
+    }
+    private String mapToUrl(String path) {
+        return path.replace("\\", "/");
+    }
+
+    private Path saveImage (String imageData, String fileName) throws IOException {
+        if(imageData == null || imageData.isEmpty()) {
+            return null;
+        }else{
+            String base64Image = imageData;
+
             if (base64Image.contains(",")) {
                 base64Image = base64Image.split(",")[1];
             }
@@ -58,66 +141,14 @@ public class ArticleService {
             if (!Files.exists(uploadDir)) {
                 Files.createDirectories(uploadDir);
             }
-            String filename = UUID.randomUUID() + "_" + dto.getFileName();
+            String filename = UUID.randomUUID() + "_" + fileName;
             Path filePath = uploadDir.resolve(filename);
             Files.write(filePath, imageBytes);
-            article.setImageUrl(filePath.toString());
-
-        article.setCreatedByAdminId(userRepository.findById(dto.getCreatedByAdminId())
-                .orElseThrow(() -> new ResourceNotFoundException("Admin not found")));
-        articleRepository.save(article);
-        return mapToDTO(article);
+            return filePath;
+        }
     }
 
-
-
-
-    public ArticleDTO getById(UUID id) {
-        return articleRepository.findById(id)
-                .map(article -> this.mapToDTO(article))
-                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
+    private void deleteImage(Path imagePath) throws IOException {
+        Files.deleteIfExists(imagePath);
     }
-
-    public List<ArticleDTO> getAll() {
-        return articleRepository.findAll().stream().map(article -> this.mapToDTO(article)).toList();
-    }
-
-
-    public ArticleDTO update(UUID id, ArticleDTO dto) {
-        ArticleEntity article = articleRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
-
-        article.setTitle(dto.getTitle());
-        article.setContent(dto.getContent());
-        article.setStatus(dto.getStatus());
-        article.setArticleType(dto.getArticleType());
-        articleRepository.save(article);
-        return mapToDTO(article);
-    }
-
-    public String delete(UUID id) throws IOException {
-        ArticleEntity article = articleRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
-        Path uploadDir = Paths.get(article.getImageUrl());
-        Files.deleteIfExists(uploadDir);
-        articleRepository.delete(article);
-        return "Deleted Article";
-    }
-
-
-
-    private ArticleDTO mapToDTO(ArticleEntity entity) {
-        ArticleDTO response = new ArticleDTO();
-        response.setId(entity.getArticleId());
-        response.setTitle(entity.getTitle());
-        response.setContent(entity.getContent());
-        response.setStatus(entity.getStatus());
-        response.setArticleType(entity.getArticleType());
-        response.setImageUrl(entity.getImageUrl());
-        response.setCreatedByAdminId(entity.getCreatedByAdminId().getUserId());
-        return response;
-    }
-
-
-
 }
