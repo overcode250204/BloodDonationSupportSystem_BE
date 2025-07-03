@@ -5,12 +5,10 @@ import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.Bloo
 
 import com.example.BloodDonationSupportSystem.entity.BloodInventory;
 import com.example.BloodDonationSupportSystem.entity.DonationProcessEntity;
+import com.example.BloodDonationSupportSystem.entity.EmergencyBloodRequestEntity;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
-import com.example.BloodDonationSupportSystem.repository.BloodDonationRegistrionRepository;
-import com.example.BloodDonationSupportSystem.repository.BloodInventoryRepository;
-import com.example.BloodDonationSupportSystem.repository.DonationProcessRepository;
-import com.example.BloodDonationSupportSystem.repository.UserRepository;
-import com.example.BloodDonationSupportSystem.service.donationemergencyservicemid.DonationEmergencyServiceMid;
+import com.example.BloodDonationSupportSystem.repository.*;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import static java.rmi.server.LogStream.log;
 
 @Slf4j
 @Service
@@ -27,7 +24,10 @@ public class BloodInventoryService {
     private BloodInventoryRepository bloodInventoryRepository;
 
     @Autowired
-    private DonationEmergencyServiceMid donationEmergencyServiceMid;
+    private DonationEmergencyRepository donationEmergencyRepository;
+
+    @Autowired
+    private  DonationEmergencyRequestRepository donationEmergencyRequestRepository;
     @Autowired
     private BloodDonationRegistrionRepository bloodDonationRegistrionRepository;
     @Autowired
@@ -58,9 +58,14 @@ public class BloodInventoryService {
 
 
 
-        boolean checkRegistrationId = donationEmergencyServiceMid.isInEmergency(donationRegisId);
+        boolean checkRegistrationId = donationEmergencyRepository.existsByDonationRegistration_DonationRegistrationId(donationRegisId);
         if (checkRegistrationId) {
-            return new BaseReponse<>(200, "Update blood volume for emergency donation registration success", null);
+            EmergencyBloodRequestEntity emergencyRequest = donationEmergencyRepository.findTopEmergencyRequestByDateAndUrgency(donationRegisId, bloodTypeId)
+                    .orElseThrow(() -> new RuntimeException("No emergency request found for the given donation registration ID and blood type"));
+
+            emergencyRequest.setVolumeMl(emergencyRequest.getVolumeMl() - volumeToAdd);
+            donationEmergencyRequestRepository.save(emergencyRequest);
+            return new BaseReponse<>(200, "Update blood volume for emergency donation registration success", emergencyRequest);
         }
 
         int updatedVolume = bloodInventory.getTotalVolumeMl() + volumeToAdd;
@@ -117,3 +122,6 @@ public class BloodInventoryService {
         return checkUser;
     }
 }
+
+
+

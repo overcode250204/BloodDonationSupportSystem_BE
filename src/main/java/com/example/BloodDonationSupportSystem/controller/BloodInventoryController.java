@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/staff")
+@RequestMapping("/staff")
 public class BloodInventoryController {
 
     @Autowired
@@ -63,7 +63,7 @@ public class BloodInventoryController {
     @PutMapping("/update-process-is-passed/{processId}")
     public BaseReponse<DonationProcessResponse> updateProcessIsPassed(@PathVariable UUID processId,
                                                                       @RequestBody  @Valid UpdateProcessTestRequest request) {
-        System.out.println("at contrller Process ID: " + processId+", Blood Test: " + request.getBloodTest() + ", Blood Type ID: " + request.getBloodTypeId());
+
 
         DonationProcessResponse donationProcessResponse = donationProcessService.updateProcessIsPassed(processId,request.getBloodTest(),request.getBloodTypeId());
         return new BaseReponse<>(HttpStatus.OK.value(), "Update process is passed successfully", donationProcessResponse);
