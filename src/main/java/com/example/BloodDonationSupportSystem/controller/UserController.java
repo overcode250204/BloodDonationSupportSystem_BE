@@ -21,7 +21,7 @@ public class UserController {
         return new BaseReponse<>(HttpStatus.OK.value(), "Get current user successful", currentUser);
     }
     @PutMapping("/profile")
-    public BaseReponse<?> updateProfile(@Valid @RequestBody UserProfileDTO request) {
+    public BaseReponse<?> updateProfile(@RequestBody UserProfileDTO request) {
         UserProfileDTO currentUser = userService.updateUserProfile(request);
         return new BaseReponse<>(HttpStatus.OK.value(), "Update user profile successful", currentUser);
     }
