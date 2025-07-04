@@ -3,6 +3,7 @@ package com.example.BloodDonationSupportSystem.service.bloodinventoryservice;
 import com.example.BloodDonationSupportSystem.base.BaseReponse;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.BloodInventoryResponse;
 
+import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.EmergencyBloodEntityResponse;
 import com.example.BloodDonationSupportSystem.entity.BloodInventory;
 import com.example.BloodDonationSupportSystem.entity.DonationProcessEntity;
 import com.example.BloodDonationSupportSystem.entity.EmergencyBloodRequestEntity;
@@ -52,20 +53,43 @@ public class BloodInventoryService {
                 bloodInventory.getTotalVolumeMl());
     }
 
-    public BaseReponse<?> updateBloodVolume(String bloodTypeId, UUID donationRegisId,UUID processId, int volumeToAdd) {
+    public BaseReponse<?> updateBloodVolume(String bloodTypeId, UUID donationRegisId, UUID processId, int volumeToAdd) {
         BloodInventory bloodInventory = bloodInventoryRepository.findById(bloodTypeId)
                 .orElseThrow(() -> new RuntimeException("Blood type not found with id: " + bloodTypeId));
 
 
-
-        boolean checkRegistrationId = donationEmergencyRepository.existsByDonationRegistration_DonationRegistrationId(donationRegisId);
+        boolean checkRegistrationId = donationEmergencyRepository.existsByDonationRegistrationDonationRegistrationId(donationRegisId);
         if (checkRegistrationId) {
-            EmergencyBloodRequestEntity emergencyRequest = donationEmergencyRepository.findTopEmergencyRequestByDateAndUrgency(donationRegisId, bloodTypeId)
-                    .orElseThrow(() -> new RuntimeException("No emergency request found for the given donation registration ID and blood type"));
-
-            emergencyRequest.setVolumeMl(emergencyRequest.getVolumeMl() - volumeToAdd);
-            donationEmergencyRequestRepository.save(emergencyRequest);
-            return new BaseReponse<>(200, "Update blood volume for emergency donation registration success", emergencyRequest);
+            Optional<EmergencyBloodRequestEntity> optionalEmergencyRequest =
+                    donationEmergencyRequestRepository.findEmergencyBloodRequestEntityByDonationRegistrationId(donationRegisId);
+            if (optionalEmergencyRequest.isPresent()) {
+                EmergencyBloodRequestEntity emergencyRequest = optionalEmergencyRequest.get();
+                boolean checkBloodType = emergencyRequest.getBloodType().equals(bloodTypeId);
+                if(checkBloodType){
+                    if(emergencyRequest.getVolumeMl() > volumeToAdd){
+                        emergencyRequest.setVolumeMl(emergencyRequest.getVolumeMl() - volumeToAdd);
+                        donationEmergencyRequestRepository.save(emergencyRequest);
+                        return new BaseReponse<>(200, "Update blood volume successfully. Emergency request volume updated.", new EmergencyBloodEntityResponse(
+                                emergencyRequest.getEmergencyBloodRequestId(),
+                                emergencyRequest.getPatientName(),
+                                emergencyRequest.getLocationOfPatient(),
+                                emergencyRequest.getBloodType(),
+                                emergencyRequest.getVolumeMl(),
+                                emergencyRequest.getLevelOfUrgency()));
+                    }
+                    if (emergencyRequest.getVolumeMl() <= volumeToAdd  ) {
+                        emergencyRequest.setVolumeMl(0);
+                        donationEmergencyRequestRepository.save(emergencyRequest);
+                        return new BaseReponse<>(200, "Update blood volume successfully. Emergency request volume updated and completed for emergency.", new EmergencyBloodEntityResponse(
+                                emergencyRequest.getEmergencyBloodRequestId(),
+                                emergencyRequest.getPatientName(),
+                                emergencyRequest.getLocationOfPatient(),
+                                emergencyRequest.getBloodType(),
+                                emergencyRequest.getVolumeMl(),
+                                emergencyRequest.getLevelOfUrgency()));
+                    }
+                }
+            }
         }
 
         int updatedVolume = bloodInventory.getTotalVolumeMl() + volumeToAdd;
@@ -74,8 +98,6 @@ public class BloodInventoryService {
 
 
         boolean checkUpdateUserBloodType = updateUserBloodType(processId);
-
-
         String message = checkUpdateUserBloodType
                 ? "User has been updated with blood type from process"
                 : "User already has a blood type set, no update needed";
@@ -83,7 +105,7 @@ public class BloodInventoryService {
         BloodInventoryResponse updatedBloodInventory = new BloodInventoryResponse(
                 bloodInventory.getBloodTypeId(),
                 bloodInventory.getTotalVolumeMl());
-        return new BaseReponse<>(200, "Update blood volume successfully. " +message, updatedBloodInventory);
+        return new BaseReponse<>(200, "Update blood volume successfully. " + message, updatedBloodInventory);
     }
 
 

@@ -47,5 +47,13 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
             @Param("fptLng") double fptLng,
             @Param("threeMonthsAgo") LocalDate threeMonthsAgo
     );
+    @Query(value = """
+    SELECT u.*
+    FROM user_table u
+    JOIN donation_registration d ON d.donor_id = u.user_id
+    JOIN donation_process dp ON dp.donation_registration_id = d.donation_registration_id
+    WHERE dp.donation_process_id = :processId
+    AND d.status = N'ĐÃ HIẾN'
+""", nativeQuery = true)
     Optional<UserEntity> findUserByProcessId(@Param("processId") UUID processId);
 }

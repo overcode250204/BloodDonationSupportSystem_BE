@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @Slf4j
 @RestController
-@RequestMapping("/staff")
+@RequestMapping("/api/staff")
 public class BloodInventoryController {
 
     @Autowired
