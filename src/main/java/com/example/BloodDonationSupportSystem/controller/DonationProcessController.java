@@ -1,8 +1,9 @@
 package com.example.BloodDonationSupportSystem.controller;
 
+import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.request.DonationProcessRequest;
+import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.response.DonationProcessResponse;
 import com.example.BloodDonationSupportSystem.dto.healthcheckDTO.request.HealthCheckRequest;
-import com.example.BloodDonationSupportSystem.dto.healthcheckDTO.response.HealthCheckResponse;
-import com.example.BloodDonationSupportSystem.service.healthcheckservice.HealthCheckService;
+import com.example.BloodDonationSupportSystem.service.donationprocess.DonationProcessService;
 import com.example.BloodDonationSupportSystem.utils.AuthUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -16,30 +17,27 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("api/staff")
-@Tag(name = "Health Check Controller")
-public class HealthCheckController {
+@Tag(name = "Donation Process Controller")
+public class DonationProcessController {
 
     @Autowired
-    private HealthCheckService healthCheckService;
+    private DonationProcessService donationProcessService;
 
-    @GetMapping("/health-checks")
-    public ResponseEntity<List<HealthCheckResponse>> getHealthChecksForCurrentStaff() {
+    @GetMapping("/process-list")
+    public ResponseEntity<List<DonationProcessResponse>> getDonationProcessForCurrentStaff() {
         UUID staffId = UUID.fromString(AuthUtils.getCurrentUser().getUsername());
-        List<HealthCheckResponse> list = healthCheckService.getHealthChecksByStaffId(staffId);
+        List<DonationProcessResponse> list = donationProcessService.getDonationProcessByStaffId(staffId);
         return ResponseEntity.ok(list);
     }
 
-    @PutMapping("/update-health-check")
-    public ResponseEntity<?> updateHealthCheck(@RequestBody @Valid HealthCheckRequest request) {
+    @PutMapping("/update-process")
+    public ResponseEntity<?> updateDonationProcess(@RequestBody @Valid DonationProcessRequest request) {
         try {
-            healthCheckService.updateHealthCheck(request);
+            donationProcessService.updateDonationProcess(request);
             return ResponseEntity.ok("Update Succesfully.");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error: " + e.getMessage());
         }
     }
-
-
-
 }

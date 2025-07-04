@@ -8,6 +8,7 @@ import com.example.BloodDonationSupportSystem.entity.HealthCheckEntity;
 import com.example.BloodDonationSupportSystem.repository.DonationProcessRepository;
 import com.example.BloodDonationSupportSystem.repository.DonationRegistrationRepository;
 import com.example.BloodDonationSupportSystem.repository.HealthCheckRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +48,7 @@ public class HealthCheckService {
         )).toList();
     }
 
+    @Transactional
     public void updateHealthCheck(HealthCheckRequest request) {
         HealthCheckEntity healthCheck = healthCheckRepository.findById(request.getHealthCheckId())
                 .orElseThrow(() -> new RuntimeException("Not found."));
@@ -57,12 +59,13 @@ public class HealthCheckService {
         healthCheck.setNote(request.getNote());
         healthCheckRepository.save(healthCheck);
 
+        DonationRegistrationEntity registration = donationRepository.findById(request.getRegistrationId())
+                .orElseThrow(() -> new RuntimeException("Not found."));
+
         if ("ĐÃ ĐẠT".equalsIgnoreCase(request.getHealthStatus())) {
 
             boolean exists = donationProcessRepository.existsByDonationRegistrationProcess_DonationRegistrationId(request.getRegistrationId());
             if (!exists) {
-                DonationRegistrationEntity registration = donationRepository.findById(request.getRegistrationId())
-                        .orElseThrow(() -> new RuntimeException("Not found."));
 
                 DonationProcessEntity donationProcess = new DonationProcessEntity();
                 donationProcess.setBloodTest("CHƯA KIỂM TRA");
@@ -72,6 +75,10 @@ public class HealthCheckService {
 
                 donationProcessRepository.save(donationProcess);
             }
+        } else if("CHƯA ĐẠT".equalsIgnoreCase(request.getHealthStatus())) {
+            // Nếu không đạt, cập nhật trạng thái đơn đăng ký
+            registration.setStatus("HỦY");
+            donationRegistrationRepository.save(registration);
         }
     }
 
