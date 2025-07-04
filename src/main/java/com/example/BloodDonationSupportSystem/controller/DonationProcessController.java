@@ -1,5 +1,6 @@
 package com.example.BloodDonationSupportSystem.controller;
 
+import com.example.BloodDonationSupportSystem.base.BaseReponse;
 import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.request.DonationProcessRequest;
 import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.response.DonationProcessResponse;
 import com.example.BloodDonationSupportSystem.dto.healthcheckDTO.request.HealthCheckRequest;
@@ -24,20 +25,20 @@ public class DonationProcessController {
     private DonationProcessService donationProcessService;
 
     @GetMapping("/process-list")
-    public ResponseEntity<List<DonationProcessResponse>> getDonationProcessForCurrentStaff() {
+    public BaseReponse<List<DonationProcessResponse>> getDonationProcessForCurrentStaff() {
         UUID staffId = UUID.fromString(AuthUtils.getCurrentUser().getUsername());
         List<DonationProcessResponse> list = donationProcessService.getDonationProcessByStaffId(staffId);
-        return ResponseEntity.ok(list);
+        return new BaseReponse<>(HttpStatus.OK.value(), "Get donation process list successfully", list);
     }
 
     @PutMapping("/update-process")
-    public ResponseEntity<?> updateDonationProcess(@RequestBody @Valid DonationProcessRequest request) {
+    public BaseReponse<?> updateDonationProcess(@RequestBody @Valid DonationProcessRequest request) {
         try {
             donationProcessService.updateDonationProcess(request);
-            return ResponseEntity.ok("Update Succesfully.");
+            return new BaseReponse<>(HttpStatus.OK.value(), "Update successfully", null);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error: " + e.getMessage());
+            return new BaseReponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error: " + e.getMessage(), null);
         }
     }
+
 }

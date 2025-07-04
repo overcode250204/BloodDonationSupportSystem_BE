@@ -35,13 +35,12 @@ public class DonationRegistrationController {
     }
 
     @PutMapping("/staff/cancel-registration")
-    public ResponseEntity<?> updateRegistrationStatus(@RequestBody DonationRegistrationUpdateStatusRequest request) {
+    public BaseReponse<?> updateRegistrationStatus(@RequestBody DonationRegistrationUpdateStatusRequest request) {
         try {
             donationRegistrationService.updateCancelStatus(request.getDonationRegistrationId(), request.getStatus());
-            return ResponseEntity.ok("Update Successfully.");
+            return new BaseReponse<>(HttpStatus.OK.value(), "Update successfully", null);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while updating the status.");
+            return new BaseReponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An error occurred while updating the status.", null);
         }
     }
 

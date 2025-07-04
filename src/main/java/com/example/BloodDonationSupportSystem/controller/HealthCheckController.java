@@ -1,5 +1,6 @@
 package com.example.BloodDonationSupportSystem.controller;
 
+import com.example.BloodDonationSupportSystem.base.BaseReponse;
 import com.example.BloodDonationSupportSystem.dto.healthcheckDTO.request.HealthCheckRequest;
 import com.example.BloodDonationSupportSystem.dto.healthcheckDTO.response.HealthCheckResponse;
 import com.example.BloodDonationSupportSystem.service.healthcheckservice.HealthCheckService;
@@ -23,20 +24,19 @@ public class HealthCheckController {
     private HealthCheckService healthCheckService;
 
     @GetMapping("/health-checks")
-    public ResponseEntity<List<HealthCheckResponse>> getHealthChecksForCurrentStaff() {
+    public BaseReponse<List<HealthCheckResponse>> getHealthChecksForCurrentStaff() {
         UUID staffId = UUID.fromString(AuthUtils.getCurrentUser().getUsername());
         List<HealthCheckResponse> list = healthCheckService.getHealthChecksByStaffId(staffId);
-        return ResponseEntity.ok(list);
+        return new BaseReponse<>(HttpStatus.OK.value(), "Get health check list successfully", list);
     }
 
     @PutMapping("/update-health-check")
-    public ResponseEntity<?> updateHealthCheck(@RequestBody @Valid HealthCheckRequest request) {
+    public BaseReponse<?> updateHealthCheck(@RequestBody @Valid HealthCheckRequest request) {
         try {
             healthCheckService.updateHealthCheck(request);
-            return ResponseEntity.ok("Update Succesfully.");
+            return new BaseReponse<>(HttpStatus.OK.value(), "Update successfully", null);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error: " + e.getMessage());
+            return new BaseReponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error: " + e.getMessage(), null);
         }
     }
 
