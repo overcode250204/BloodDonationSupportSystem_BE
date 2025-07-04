@@ -31,11 +31,11 @@ public class DonationRegistrationService {
     public void updateCancelStatus(UUID registrationId, String status) {
 
         if (!"HỦY".equalsIgnoreCase(status)) {
-            throw new IllegalArgumentException("Invalid status.");
+            throw new BadRequestException("Invalid status.");
         }
 
         DonationRegistrationEntity registration = donationRegistrationRepository.findById(registrationId)
-                .orElseThrow(() -> new RuntimeException("Registration not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Registration not found."));
 
         registration.setStatus("HỦY");
         donationRegistrationRepository.save(registration);

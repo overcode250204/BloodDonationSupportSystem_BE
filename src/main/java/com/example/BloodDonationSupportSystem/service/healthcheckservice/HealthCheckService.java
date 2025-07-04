@@ -5,6 +5,7 @@ import com.example.BloodDonationSupportSystem.dto.healthcheckDTO.response.Health
 import com.example.BloodDonationSupportSystem.entity.DonationProcessEntity;
 import com.example.BloodDonationSupportSystem.entity.DonationRegistrationEntity;
 import com.example.BloodDonationSupportSystem.entity.HealthCheckEntity;
+import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
 import com.example.BloodDonationSupportSystem.repository.DonationProcessRepository;
 import com.example.BloodDonationSupportSystem.repository.DonationRegistrationRepository;
 import com.example.BloodDonationSupportSystem.repository.HealthCheckRepository;
@@ -51,7 +52,7 @@ public class HealthCheckService {
     @Transactional
     public void updateHealthCheck(HealthCheckRequest request) {
         HealthCheckEntity healthCheck = healthCheckRepository.findById(request.getHealthCheckId())
-                .orElseThrow(() -> new RuntimeException("Not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Not found."));
 
         healthCheck.setHealthStatus(request.getHealthStatus());
         healthCheck.setHeight(request.getHeight());
@@ -60,7 +61,7 @@ public class HealthCheckService {
         healthCheckRepository.save(healthCheck);
 
         DonationRegistrationEntity registration = donationRepository.findById(request.getRegistrationId())
-                .orElseThrow(() -> new RuntimeException("Not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Not found."));
 
         if ("ĐÃ ĐẠT".equalsIgnoreCase(request.getHealthStatus())) {
 

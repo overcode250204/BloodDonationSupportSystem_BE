@@ -5,6 +5,7 @@ import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.response.Do
 import com.example.BloodDonationSupportSystem.dto.healthcheckDTO.response.HealthCheckResponse;
 import com.example.BloodDonationSupportSystem.entity.DonationProcessEntity;
 import com.example.BloodDonationSupportSystem.entity.DonationRegistrationEntity;
+import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
 import com.example.BloodDonationSupportSystem.repository.DonationProcessRepository;
 import com.example.BloodDonationSupportSystem.repository.DonationRegistrationRepository;
 import jakarta.transaction.Transactional;
@@ -34,7 +35,7 @@ public class DonationProcessService {
                 row[3] != null ? row[3].toString() : null, // urgency
                 row[4].toString(),                  // status
                 row[5].toString(),                  // process_status
-                row[6].toString(),                  // note
+                row[6] != null ? row[6].toString() : null,                  // note
                 UUID.fromString(row[7].toString()), // donation_registration_id
                 UUID.fromString(row[8].toString())  // screened_by_staff_id
         )).toList();
@@ -43,7 +44,7 @@ public class DonationProcessService {
     @Transactional
     public void updateDonationProcess(DonationProcessRequest request){
         DonationProcessEntity process = donationProcessRepository.findById(request.getDonationProcessId())
-                .orElseThrow(() -> new RuntimeException("Not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Not found."));
 
         process.setStatus(request.getProcessStatus());
 
@@ -53,8 +54,9 @@ public class DonationProcessService {
 
             // Cập nhật trạng thái đơn đăng ký
             DonationRegistrationEntity registration = donationRegistrationRepository.findById(request.getDonationRegistrationId())
-                    .orElseThrow(() -> new RuntimeException("Not found."));
+                    .orElseThrow(() -> new ResourceNotFoundException("Not found."));
             registration.setStatus("ĐÃ HIẾN");
+            registration.setDateCompleteDonation(LocalDate.now());
             donationRegistrationRepository.save(registration);
         }
 
