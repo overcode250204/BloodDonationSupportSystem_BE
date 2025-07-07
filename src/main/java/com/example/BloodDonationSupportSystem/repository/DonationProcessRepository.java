@@ -16,7 +16,7 @@ public interface DonationProcessRepository extends JpaRepository<DonationProcess
 
     @Query(value = """
         SELECT dp.donation_process_id, us.full_name, dr.registration_date, ebr.level_of_urgency,
-        	   dr.status, dp.status, hc.note, dr.donation_registration_id, dr.screened_by_staff_id
+        	   dr.status, dp.status, hc.note, dp.volume_ml,dr.donation_registration_id, dr.screened_by_staff_id
         FROM donation_process AS dp
         LEFT JOIN donation_registration AS dr ON dr.donation_registration_id = dp.donation_registration_id
         LEFT JOIN user_table AS us ON us.user_id = dr.donor_id

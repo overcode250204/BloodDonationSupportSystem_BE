@@ -34,10 +34,10 @@ public class DonationRegistrationController {
         return new BaseReponse<>(HttpStatus.OK.value(), "Updated successfully", response);
     }
 
-    @PutMapping("/staff/cancel-registration")
-    public BaseReponse<?> updateRegistrationStatus(@RequestBody DonationRegistrationUpdateStatusRequest request) {
+    @PutMapping("/staff/cancel-registration/{id}")
+    public BaseReponse<?> updateRegistrationStatus(@PathVariable UUID id, @RequestBody @Valid DonationRegistrationUpdateStatusRequest request) {
         try {
-            donationRegistrationService.updateCancelStatus(request.getDonationRegistrationId(), request.getStatus());
+            donationRegistrationService.updateCancelStatus(id, request.getStatus());
             return new BaseReponse<>(HttpStatus.OK.value(), "Update successfully", null);
         } catch (Exception e) {
             return new BaseReponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An error occurred while updating the status.", null);

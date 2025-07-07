@@ -1,16 +1,13 @@
 package com.example.BloodDonationSupportSystem.controller;
 
 import com.example.BloodDonationSupportSystem.base.BaseReponse;
-import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.request.DonationProcessRequest;
-import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.response.DonationProcessResponse;
-import com.example.BloodDonationSupportSystem.dto.healthcheckDTO.request.HealthCheckRequest;
+import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.DonationProcessDTO;
 import com.example.BloodDonationSupportSystem.service.donationprocess.DonationProcessService;
 import com.example.BloodDonationSupportSystem.utils.AuthUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,15 +22,16 @@ public class DonationProcessController {
     private DonationProcessService donationProcessService;
 
     @GetMapping("/process-list")
-    public BaseReponse<List<DonationProcessResponse>> getDonationProcessForCurrentStaff() {
+    public BaseReponse<List<DonationProcessDTO>> getDonationProcessForCurrentStaff() {
         UUID staffId = UUID.fromString(AuthUtils.getCurrentUser().getUsername());
-        List<DonationProcessResponse> list = donationProcessService.getDonationProcessByStaffId(staffId);
+        List<DonationProcessDTO> list = donationProcessService.getDonationProcessByStaffId(staffId);
         return new BaseReponse<>(HttpStatus.OK.value(), "Get donation process list successfully", list);
     }
 
-    @PutMapping("/update-process")
-    public BaseReponse<?> updateDonationProcess(@RequestBody @Valid DonationProcessRequest request) {
+    @PutMapping("/update-process/{id}")
+    public BaseReponse<?> updateDonationProcess(@PathVariable("id") UUID donationProcessId , @RequestBody @Valid DonationProcessDTO request) {
         try {
+            request.setDonationProcessId(donationProcessId);
             donationProcessService.updateDonationProcess(request);
             return new BaseReponse<>(HttpStatus.OK.value(), "Update successfully", null);
         } catch (RuntimeException e) {

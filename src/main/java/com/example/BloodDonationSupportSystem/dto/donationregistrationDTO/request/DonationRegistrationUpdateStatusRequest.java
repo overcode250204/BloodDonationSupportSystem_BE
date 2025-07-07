@@ -11,10 +11,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 public class DonationRegistrationUpdateStatusRequest {
-
-    @NotNull(message = "Donation Registration ID is null")
-    private UUID donationRegistrationId;
-
     @NotNull(message = "Status is null")
     private String status;
 }

@@ -1,4 +1,4 @@
-package com.example.BloodDonationSupportSystem.dto.healthcheckDTO.response;
+package com.example.BloodDonationSupportSystem.dto.healthcheckDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +10,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class HealthCheckResponse {
+public class HealthCheckDTO {
     private UUID healthCheckId;
     private String donorFullName;
     private LocalDate registrationDate;
@@ -19,6 +19,7 @@ public class HealthCheckResponse {
     private String healthStatus;
     private float height;
     private float weight;
+    private String note;
     private UUID donationRegistrationId;
     private UUID screenedByStaffId;
 }

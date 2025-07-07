@@ -1,8 +1,6 @@
 package com.example.BloodDonationSupportSystem.service.donationprocess;
 
-import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.request.DonationProcessRequest;
-import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.response.DonationProcessResponse;
-import com.example.BloodDonationSupportSystem.dto.healthcheckDTO.response.HealthCheckResponse;
+import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.DonationProcessDTO;
 import com.example.BloodDonationSupportSystem.entity.DonationProcessEntity;
 import com.example.BloodDonationSupportSystem.entity.DonationRegistrationEntity;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
@@ -25,24 +23,25 @@ public class DonationProcessService {
     @Autowired
     private DonationRegistrationRepository donationRegistrationRepository;
 
-    public List<DonationProcessResponse> getDonationProcessByStaffId(UUID staffId){
+    public List<DonationProcessDTO> getDonationProcessByStaffId(UUID staffId){
         List<Object[]> donationProcesses = donationProcessRepository.findDonationProcessByStaffId(staffId);
 
-        return donationProcesses.stream().map(row -> new DonationProcessResponse(
+        return donationProcesses.stream().map(row -> new DonationProcessDTO(
                 UUID.fromString(row[0].toString()), // donation_process_id
                 row[1].toString(),                  // donor full name
                 LocalDate.parse(row[2].toString()),                 // registration_date
                 row[3] != null ? row[3].toString() : null, // urgency
                 row[4].toString(),                  // status
                 row[5].toString(),                  // process_status
-                row[6] != null ? row[6].toString() : null,                  // note
-                UUID.fromString(row[7].toString()), // donation_registration_id
-                UUID.fromString(row[8].toString())  // screened_by_staff_id
+                row[6] != null ? row[6].toString() : null,   // note
+                row[7] != null ? ((Number) row[7]).intValue() : 0, //volumeMl
+                UUID.fromString(row[8].toString()), // donation_registration_id
+                UUID.fromString(row[9].toString())  // screened_by_staff_id
         )).toList();
     }
 
     @Transactional
-    public void updateDonationProcess(DonationProcessRequest request){
+    public void updateDonationProcess(DonationProcessDTO request){
         DonationProcessEntity process = donationProcessRepository.findById(request.getDonationProcessId())
                 .orElseThrow(() -> new ResourceNotFoundException("Not found."));
 

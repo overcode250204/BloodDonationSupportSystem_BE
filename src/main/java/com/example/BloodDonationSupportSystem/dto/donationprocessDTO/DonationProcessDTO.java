@@ -1,4 +1,4 @@
-package com.example.BloodDonationSupportSystem.dto.donationprocessDTO.request;
+package com.example.BloodDonationSupportSystem.dto.donationprocessDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,9 +10,15 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class DonationProcessRequest {
+public class DonationProcessDTO {
     private UUID donationProcessId;
+    private String donorFullName;
+    private LocalDate registrationDate;
+    private String levelOfUrgency;
+    private String registrationStatus;
     private String processStatus;
+    private String note;
     private int volumeMl;
     private UUID donationRegistrationId;
+    private UUID screenedByStaffId;
 }

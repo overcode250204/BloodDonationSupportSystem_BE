@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface HealthCheckRepository extends JpaRepository<HealthCheckEntity, UUID> {
     @Query(value = """
         SELECT hc.health_check_id, us.full_name, dr.registration_date, ebr.level_of_urgency,
-               dr.status, hc.health_status, hc.height, hc.weight,
+               dr.status, hc.health_status, hc.height, hc.weight, hc.note,
                dr.donation_registration_id, dr.screened_by_staff_id
         FROM health_check AS hc
         LEFT JOIN donation_registration AS dr ON dr.donation_registration_id = hc.donation_registration_id
