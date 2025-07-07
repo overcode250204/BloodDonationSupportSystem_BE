@@ -26,6 +26,13 @@ public class DonationRegistrationController {
         return new BaseReponse<>(HttpStatus.OK.value(), "Created successfully", response);
     }
 
+
+    @PostMapping("/emergency-registrations")
+    public BaseReponse<?> registerEmergencyDonation(@RequestParam String emergencyDonationId) {
+        DonationRegistrationDTO response = donationRegistrationService.registerEmergencyDonation(emergencyDonationId);
+        return new BaseReponse<>(HttpStatus.OK.value(), "Registered emergency donation successfully", response);
+    }
+
     @PutMapping("/registration/{id}")
     public BaseReponse<?> update(@PathVariable UUID id, @RequestBody @Valid DonationRegistrationDTO dto) {
         DonationRegistrationDTO response = donationRegistrationService.update(id, dto);

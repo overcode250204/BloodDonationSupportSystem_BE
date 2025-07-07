@@ -6,7 +6,6 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,7 +55,7 @@ public class DonationRegistrationEntity {
     private DonationCertificateEntity donationCertificate;
 
     @OneToMany(mappedBy = "donationRegistration")
-    private List<DonationEmergencyEntity> donationEmergencies;
+    private List<EmergencyDonationEntity> donationEmergencies;
 
     @OneToMany(mappedBy = "donationRegistration")
     private List<DonationHistoryEntity> donationHistories;

@@ -38,15 +38,18 @@ public class EmergencyBloodRequestEntity {
     @Column(name = "level_of_urgency")
     private String levelOfUrgency;
 
+    @Column(name = "is_fulfill")
+    private boolean isFulfill;
+
     @Column(name = "note")
     private String note;
 
     @ManyToOne()
     @JoinColumn(name = "registered_by_staff_id")
-    private UserEntity registeredByStaff;
+        private UserEntity registeredByStaff;
 
     @OneToMany(mappedBy = "emergencyBloodRequest")
-    private List<DonationEmergencyEntity> donationEmergencyRequests;
+    private List<EmergencyDonationEntity> donationEmergencyRequests;
 
 
 

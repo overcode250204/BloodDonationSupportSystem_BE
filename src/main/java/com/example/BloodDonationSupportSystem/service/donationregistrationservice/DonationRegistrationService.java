@@ -2,13 +2,14 @@ package com.example.BloodDonationSupportSystem.service.donationregistrationservi
 
 import com.example.BloodDonationSupportSystem.dto.donationregistrationDTO.DonationRegistrationDTO;
 import com.example.BloodDonationSupportSystem.entity.DonationRegistrationEntity;
+import com.example.BloodDonationSupportSystem.entity.EmergencyBloodRequestEntity;
+import com.example.BloodDonationSupportSystem.entity.EmergencyDonationEntity;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import com.example.BloodDonationSupportSystem.exception.BadRequestException;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
-import com.example.BloodDonationSupportSystem.repository.BloodDonationScheduleRepository;
-import com.example.BloodDonationSupportSystem.repository.DonationRegistrationRepository;
-import com.example.BloodDonationSupportSystem.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import com.example.BloodDonationSupportSystem.repository.*;
+import com.example.BloodDonationSupportSystem.utils.AuthUtils;
+import com.example.BloodDonationSupportSystem.utils.DonationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +30,51 @@ public class DonationRegistrationService {
     @Autowired
     private BloodDonationScheduleRepository bloodDonationScheduleRepository;
 
+    @Autowired
+    private EmergencyBloodRequestRepository emergencyBloodRequestRepository;
 
+
+    @Autowired
+    private EmergencyDonationRepository emergencyDonationRepository;
+
+
+    @Autowired
+    private DonationUtils donationUtils;
+
+
+    public DonationRegistrationDTO registerEmergencyDonation(String emergencyRequestId) {
+        UUID memberId = UUID.fromString(AuthUtils.getCurrentUser().getUsername());
+        UUID emergencyRequestIdUUID = UUID.fromString(emergencyRequestId);
+        UserEntity donor = userRepository.findByUserId(memberId)
+                .orElseThrow(() -> new ResourceNotFoundException("Donor not found"));
+
+        EmergencyBloodRequestEntity emergencyBloodRequest = emergencyBloodRequestRepository.findById(emergencyRequestIdUUID)
+                .orElseThrow(() -> new ResourceNotFoundException("Cannot found emergency request"));
+
+        donationUtils.validateDonorEligibility(memberId);
+
+        DonationRegistrationEntity registration = new DonationRegistrationEntity();
+        registration.setRegistrationDate(LocalDate.now());
+        registration.setStatus("CHƯA HIẾN");
+        registration.setStartDate(LocalDate.now());
+        LocalDate endDate = switch (emergencyBloodRequest.getLevelOfUrgency()) {
+            case "CỰC KÌ KHẨN CẤP" -> LocalDate.now().plusDays(1);
+            case "RẤT KHẨN CẤP" -> LocalDate.now().plusDays(2);
+            default -> LocalDate.now().plusDays(3);
+        };
+        registration.setEndDate(endDate);
+        registration.setDonor(donor);
+
+        DonationRegistrationEntity saved = donationRegistrationRepository.save(registration);
+        EmergencyDonationEntity emergencyLink = new EmergencyDonationEntity();
+        emergencyLink.setDonationRegistration(saved);
+        emergencyLink.setEmergencyBloodRequest(emergencyBloodRequest);
+        emergencyLink.setStatus("CHỜ XÁC NHẬN");
+        emergencyLink.setAssignedDate(LocalDate.now());
+        emergencyDonationRepository.save(emergencyLink);
+
+        return mapToDTO(saved);
+    }
 
 
     public DonationRegistrationDTO create(DonationRegistrationDTO dto) {
