@@ -28,11 +28,20 @@ public class DonationRegistrationController {
         return new BaseReponse<>(HttpStatus.OK.value(), "Created successfully", response);
     }
 
+
+
+    @PostMapping("/member/emergency-registrations")
+    public BaseReponse<?> registerEmergencyDonation(@RequestParam String emergencyDonationId) {
+        DonationRegistrationDTO response = donationRegistrationService.registerEmergencyDonation(emergencyDonationId);
+        return new BaseReponse<>(HttpStatus.OK.value(), "Registered emergency donation successfully", response);
+    }
+
     @PutMapping("/member/registration/{id}")
     public BaseReponse<?> update(@PathVariable UUID id, @RequestBody @Valid DonationRegistrationDTO dto) {
         DonationRegistrationDTO response = donationRegistrationService.update(id, dto);
         return new BaseReponse<>(HttpStatus.OK.value(), "Updated successfully", response);
     }
+
 
     @PutMapping("/staff/cancel-registration/{id}")
     public BaseReponse<?> updateRegistrationStatus(@PathVariable UUID id, @RequestBody @Valid DonationRegistrationUpdateStatusRequest request) {
