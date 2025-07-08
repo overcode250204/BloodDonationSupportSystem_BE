@@ -25,12 +25,21 @@ public class DonationRegistrationService {
     @Autowired
     private UserRepository userRepository;
 
-
     @Autowired
     private BloodDonationScheduleRepository bloodDonationScheduleRepository;
 
+    public void updateCancelStatus(UUID registrationId, String status) {
 
+        if (!"HỦY".equalsIgnoreCase(status)) {
+            throw new BadRequestException("Invalid status.");
+        }
 
+        DonationRegistrationEntity registration = donationRegistrationRepository.findById(registrationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Registration not found."));
+
+        registration.setStatus("HỦY");
+        donationRegistrationRepository.save(registration);
+    }
 
     public DonationRegistrationDTO create(DonationRegistrationDTO dto) {
         UserEntity donor = userRepository.findByUserId(dto.getDonorId()).orElseThrow(()-> new ResourceNotFoundException("Donor Not Found"));
