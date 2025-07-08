@@ -39,7 +39,8 @@ public class SecurityConfig{
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/homepage/**").permitAll()
-//                        .requestMatchers("/homepage/uploads/**").permitAll()
+                        .requestMatchers("/api/emergencies-notification/**").permitAll()
+                        .requestMatchers("/emergencies-notification/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/images/uploads/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
