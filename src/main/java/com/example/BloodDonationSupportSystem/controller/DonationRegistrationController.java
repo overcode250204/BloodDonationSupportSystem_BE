@@ -13,45 +13,45 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/member")
+@RequestMapping("/api")
 @Tag(name = "Donation Registration Controller")
 public class DonationRegistrationController {
 
     @Autowired
     private DonationRegistrationService donationRegistrationService;
 
-    @PostMapping("/registration")
+    @PostMapping("/member/registration")
     public BaseReponse<?> create(@RequestBody @Valid DonationRegistrationDTO dto) {
         DonationRegistrationDTO response = donationRegistrationService.create(dto);
         return new BaseReponse<>(HttpStatus.OK.value(), "Created successfully", response);
     }
 
 
-    @PostMapping("/emergency-registrations")
+    @PostMapping("/member/emergency-registrations")
     public BaseReponse<?> registerEmergencyDonation(@RequestParam String emergencyDonationId) {
         DonationRegistrationDTO response = donationRegistrationService.registerEmergencyDonation(emergencyDonationId);
         return new BaseReponse<>(HttpStatus.OK.value(), "Registered emergency donation successfully", response);
     }
 
-    @PutMapping("/registration/{id}")
+    @PutMapping("/member/registration/{id}")
     public BaseReponse<?> update(@PathVariable UUID id, @RequestBody @Valid DonationRegistrationDTO dto) {
         DonationRegistrationDTO response = donationRegistrationService.update(id, dto);
         return new BaseReponse<>(HttpStatus.OK.value(), "Updated successfully", response);
     }
 
-    @DeleteMapping("/registration/{id}")
+    @DeleteMapping("/member/registration/{id}")
     public BaseReponse<?> delete(@PathVariable UUID id) {
         donationRegistrationService.delete(id);
         return new BaseReponse<>(HttpStatus.OK.value(), "deleted successfully", null);
     }
 
-    @GetMapping("/registration/{id}")
+    @GetMapping("/member/registration/{id}")
     public BaseReponse<?> getById(@PathVariable UUID id) {
         DonationRegistrationDTO response = donationRegistrationService.getById(id);
         return new BaseReponse<>(HttpStatus.OK.value(), "Fetched successfully", response);
     }
 
-    @GetMapping("/registrations")
+    @GetMapping("/member/registrations")
     public BaseReponse<?> getAll() {
         List<DonationRegistrationDTO> response = donationRegistrationService.getAll();
         return new BaseReponse<>(HttpStatus.OK.value(), "Fetched all successfully", response);

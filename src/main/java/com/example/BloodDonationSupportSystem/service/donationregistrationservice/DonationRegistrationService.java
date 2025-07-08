@@ -11,6 +11,7 @@ import com.example.BloodDonationSupportSystem.repository.*;
 import com.example.BloodDonationSupportSystem.utils.AuthUtils;
 import com.example.BloodDonationSupportSystem.utils.DonationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -37,10 +38,11 @@ public class DonationRegistrationService {
     @Autowired
     private EmergencyDonationRepository emergencyDonationRepository;
 
-
     @Autowired
     private DonationUtils donationUtils;
 
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     public DonationRegistrationDTO registerEmergencyDonation(String emergencyRequestId) {
         UUID memberId = UUID.fromString(AuthUtils.getCurrentUser().getUsername());
@@ -72,8 +74,10 @@ public class DonationRegistrationService {
         emergencyLink.setStatus("CHỜ XÁC NHẬN");
         emergencyLink.setAssignedDate(LocalDate.now());
         emergencyDonationRepository.save(emergencyLink);
+        DonationRegistrationDTO dto = mapToDTO(saved);
+        messagingTemplate.convertAndSend("/emergency/response", dto);
 
-        return mapToDTO(saved);
+        return dto;
     }
 
 

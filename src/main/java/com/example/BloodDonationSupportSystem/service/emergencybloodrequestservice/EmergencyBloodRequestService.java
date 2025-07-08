@@ -1,9 +1,7 @@
 package com.example.BloodDonationSupportSystem.service.emergencybloodrequestservice;
 
 import com.example.BloodDonationSupportSystem.dto.emergencybloodrequestDTO.EmergencyBloodRequestDTO;
-import com.example.BloodDonationSupportSystem.entity.DonationRegistrationEntity;
 import com.example.BloodDonationSupportSystem.entity.EmergencyBloodRequestEntity;
-import com.example.BloodDonationSupportSystem.entity.EmergencyDonationEntity;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
 import com.example.BloodDonationSupportSystem.repository.DonationRegistrationRepository;
@@ -15,6 +13,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 
@@ -46,6 +45,7 @@ public class EmergencyBloodRequestService {
         entity.setLocationOfPatient(dto.getLocationOfPatient());
         entity.setBloodType(dto.getBloodType());
         entity.setVolumeMl(dto.getVolumeMl());
+        entity.setRegistrationDate(LocalDate.now());
         entity.setFulfill(false);
         entity.setLevelOfUrgency(dto.getLevelOfUrgency());
         entity.setNote(dto.getNote());
@@ -60,7 +60,7 @@ public class EmergencyBloodRequestService {
     }
 
     //Call in process when staff update donation process with Status "ĐÃ HIẾN" And "ĐÃ ĐẠT" include registration is "ĐÃ HIẾN"
-//    @Transactional
+    @Transactional
     public void updateFulfilledEmergencyRequests() {
         emergencyBloodRequestRepository.markFulfilledRequests("ĐÃ HIẾN", "ĐÃ HIẾN", "ĐÃ ĐẠT");
     }
@@ -96,6 +96,7 @@ public class EmergencyBloodRequestService {
             dto.setLevelOfUrgency(entity.getLevelOfUrgency());
             dto.setNote(entity.getNote());
             dto.setRegisteredByStaff(staff.getUserId());
+            dto.setStaffName(entity.getRegisteredByStaff().getFullName());
         }
 
         return dto;

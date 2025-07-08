@@ -3,6 +3,7 @@ package com.example.BloodDonationSupportSystem.dto.emergencybloodrequestDTO;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Data
@@ -34,7 +35,12 @@ public class EmergencyBloodRequestDTO {
     @NotNull(message = "Note can not null")
     private String note;
 
+    private LocalDate registrationDate;
+
     @NotNull(message = "Registered By Staff can not null")
     private UUID registeredByStaff;
+
+    @NotNull(message = "Staff name can not null")
+    private String staffName;
 
 }
