@@ -1,6 +1,8 @@
 package com.example.BloodDonationSupportSystem.dto.authenaccountDTO;
 
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,10 +23,10 @@ public class UserProfileDTO {
     private String gender;
     private String address;
     private String phoneNumber;
-    private String longitude;
-    private String latitude;
+    private Double longitude;
+    private Double latitude;
     private String bloodType;
     private String role;
     private String status;
-    private LocalDate createdAt;
+
 }

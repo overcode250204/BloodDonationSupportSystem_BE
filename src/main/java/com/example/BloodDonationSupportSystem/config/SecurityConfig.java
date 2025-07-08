@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.client.RestTemplate;
 
 @EnableWebSecurity
 @Configuration
@@ -45,6 +46,7 @@ public class SecurityConfig{
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/staff/**").hasRole("STAFF")
                         .requestMatchers("/api/member/**").hasRole("MEMBER")
+                        .requestMatchers("/api/profile").hasAnyRole("MEMBER", "ADMIN", "STAFF")
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
@@ -53,7 +55,6 @@ public class SecurityConfig{
                                 "/webjars/**").permitAll()
                         .anyRequest().authenticated()
                 )
-
                 .build();
     }
 

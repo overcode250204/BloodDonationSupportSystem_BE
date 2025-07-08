@@ -2,11 +2,13 @@ package com.example.BloodDonationSupportSystem.controller;
 
 import com.example.BloodDonationSupportSystem.base.BaseReponse;
 import com.example.BloodDonationSupportSystem.dto.donationregistrationDTO.DonationRegistrationDTO;
+import com.example.BloodDonationSupportSystem.dto.donationregistrationDTO.request.DonationRegistrationUpdateStatusRequest;
 import com.example.BloodDonationSupportSystem.service.donationregistrationservice.DonationRegistrationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +29,7 @@ public class DonationRegistrationController {
     }
 
 
+
     @PostMapping("/member/emergency-registrations")
     public BaseReponse<?> registerEmergencyDonation(@RequestParam String emergencyDonationId) {
         DonationRegistrationDTO response = donationRegistrationService.registerEmergencyDonation(emergencyDonationId);
@@ -37,6 +40,17 @@ public class DonationRegistrationController {
     public BaseReponse<?> update(@PathVariable UUID id, @RequestBody @Valid DonationRegistrationDTO dto) {
         DonationRegistrationDTO response = donationRegistrationService.update(id, dto);
         return new BaseReponse<>(HttpStatus.OK.value(), "Updated successfully", response);
+    }
+
+
+    @PutMapping("/staff/cancel-registration/{id}")
+    public BaseReponse<?> updateRegistrationStatus(@PathVariable UUID id, @RequestBody @Valid DonationRegistrationUpdateStatusRequest request) {
+        try {
+            donationRegistrationService.updateCancelStatus(id, request.getStatus());
+            return new BaseReponse<>(HttpStatus.OK.value(), "Update successfully", null);
+        } catch (Exception e) {
+            return new BaseReponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An error occurred while updating the status.", null);
+        }
     }
 
     @DeleteMapping("/member/registration/{id}")
