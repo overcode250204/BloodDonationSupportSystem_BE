@@ -6,12 +6,11 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.UUID;
 
 @Data
 @Entity(name = "donation_emergency")
-public class DonationEmergencyEntity {
+public class EmergencyDonationEntity {
     @Id
     @GeneratedValue
     @JdbcTypeCode(SqlTypes.UUID)
