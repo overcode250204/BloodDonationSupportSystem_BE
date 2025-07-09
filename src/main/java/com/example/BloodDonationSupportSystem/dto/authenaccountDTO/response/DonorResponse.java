@@ -16,5 +16,5 @@ public class DonorResponse {
     private String donorName;
     private String bloodType;
     private Date lastDonationDate;
-    private String phoneNumber;
+    private String contact;
 }
