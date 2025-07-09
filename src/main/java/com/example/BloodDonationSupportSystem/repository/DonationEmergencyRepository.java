@@ -1,15 +1,12 @@
 package com.example.BloodDonationSupportSystem.repository;
 
-import com.example.BloodDonationSupportSystem.entity.DonationEmergencyEntity;
-import com.example.BloodDonationSupportSystem.entity.EmergencyBloodRequestEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import com.example.BloodDonationSupportSystem.entity.EmergencyDonationEntity;
 
-import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+
 import java.util.UUID;
 
-public interface DonationEmergencyRepository extends JpaRepository<DonationEmergencyEntity, UUID> {
+public interface DonationEmergencyRepository extends JpaRepository<EmergencyDonationEntity, UUID> {
     boolean existsByDonationRegistrationDonationRegistrationId(UUID donationRegistrationId);
 
 }

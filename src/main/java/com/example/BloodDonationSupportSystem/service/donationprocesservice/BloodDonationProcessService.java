@@ -3,6 +3,7 @@ package com.example.BloodDonationSupportSystem.service.donationprocesservice;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.DonationProcessResponse;
 import com.example.BloodDonationSupportSystem.entity.BloodInventory;
 import com.example.BloodDonationSupportSystem.entity.DonationProcessEntity;
+import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
 import com.example.BloodDonationSupportSystem.repository.BloodDonationProcessRepository;
 import com.example.BloodDonationSupportSystem.repository.BloodInventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +39,12 @@ public class BloodDonationProcessService {
 
     public DonationProcessResponse updateProcessIsPassed(UUID processId, String bloodTest, String bloodTypeId) {
         DonationProcessEntity donationProcess = bloodDonationProcessRepository.findById(processId)
-                .orElseThrow(() -> new RuntimeException("Donation process not found with id: " + processId));
+                .orElseThrow(() -> new ResourceNotFoundException("Donation process not found with id: " + processId));
 
         donationProcess.setBloodTest(bloodTest);
 
         BloodInventory bloodInventory = bloodInventoryRepository.findById(bloodTypeId)
-                .orElseThrow(() -> new RuntimeException("Blood inventory not found with id: " + bloodTypeId));
+                .orElseThrow(() -> new ResourceNotFoundException("Blood inventory not found with id: " + bloodTypeId));
 
         donationProcess.setBloodInventory(bloodInventory);
 
