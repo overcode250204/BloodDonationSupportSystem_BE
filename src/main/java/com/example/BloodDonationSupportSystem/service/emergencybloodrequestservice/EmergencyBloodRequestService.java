@@ -59,7 +59,6 @@ public class EmergencyBloodRequestService {
         return dto;
     }
 
-    //Call in process when staff update donation process with Status "ĐÃ HIẾN" And "ĐÃ ĐẠT" include registration is "ĐÃ HIẾN"
     @Transactional
     public void updateFulfilledEmergencyRequests() {
         emergencyBloodRequestRepository.markFulfilledRequests("ĐÃ HIẾN", "ĐÃ HIẾN", "ĐÃ ĐẠT");
@@ -93,6 +92,7 @@ public class EmergencyBloodRequestService {
             dto.setBloodType(entity.getBloodType());
             dto.setVolumeMl(entity.getVolumeMl());
             dto.setLevelOfUrgency(entity.getLevelOfUrgency());
+            dto.setRegistrationDate(entity.getRegistrationDate());
             dto.setNote(entity.getNote());
             dto.setRegisteredByStaff(staff.getUserId());
             dto.setStaffName(entity.getRegisteredByStaff().getFullName());

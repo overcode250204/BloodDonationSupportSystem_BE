@@ -1,7 +1,9 @@
 package com.example.BloodDonationSupportSystem.service.searchdistanceservice;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.DonorResponse;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.GeoLocation;
+import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
+import com.example.BloodDonationSupportSystem.utils.AuthUtils;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +34,10 @@ public class SearchDistanceService {
 
     @Autowired
     private UserRepository userRepository;
+
+
+
+
     public List<DonorResponse> getEligibleDonors(List<String> bloodTypes, double maxDistanceKm) {
 
         LocalDate threeMonthsAgo = LocalDate.now().minusMonths(3);
@@ -49,6 +56,17 @@ public class SearchDistanceService {
                 ))
                 .collect(Collectors.toList());
     }
+
+
+    public void updateCoordinate() {
+        UUID userUUID = UUID.fromString(AuthUtils.getCurrentUser().getUsername());
+        UserEntity user = userRepository.findByUserId(userUUID).orElseThrow(() -> new RuntimeException("User Not Found"));
+        GeoLocation location = getCoordinates(user.getAddress());
+        user.setLatitude(location.getLatitude());
+        user.setLongitude(location.getLongitude());
+    }
+
+
 
     // Hàm này sẽ lấy tọa độ của địa chỉ xử lí cho trước khi lưu vào DB
     public GeoLocation getCoordinates(String address) {

@@ -1,6 +1,7 @@
 package com.example.BloodDonationSupportSystem.service.userservice;
 
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
+import com.example.BloodDonationSupportSystem.service.searchdistanceservice.SearchDistanceService;
 import com.example.BloodDonationSupportSystem.utils.AuthUtils;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.UserProfileDTO;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
@@ -17,6 +18,8 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private SearchDistanceService searchDistanceService;
     public UserProfileDTO getCurrentUserProfile() {
         try {
             UserDetails currentUser = AuthUtils.getCurrentUser();
@@ -49,6 +52,9 @@ public class UserService {
                     .orElseThrow(() -> new ResourceNotFoundException("UserId Not Found At updateUserProfile()" + currentUser.getUsername()));
             userEntity.setFullName(user.getFullName());
             userEntity.setAddress(user.getAddress());
+            if (user.getAddress() != null) {
+                searchDistanceService.updateCoordinate();
+            }
             userEntity.setDateOfBirth(user.getDayOfBirth());
             userEntity.setGender(user.getGender());
             return getUserProfileDTO(userRepository.save(userEntity));

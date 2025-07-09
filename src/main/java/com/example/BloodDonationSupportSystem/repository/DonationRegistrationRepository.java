@@ -16,6 +16,15 @@ import java.util.UUID;
 public interface DonationRegistrationRepository extends JpaRepository<DonationRegistrationEntity, UUID> {
     Optional<DonationRegistrationEntity> findByDonationRegistrationId(UUID id);
 
+    @Query("""
+    SELECT COUNT(dr)
+    FROM donation_registration dr
+    WHERE dr.status = :donationRegistrationStatus AND :date BETWEEN dr.startDate AND dr.endDate
+""")
+    Long countByDateBetweenStartAndEndDate(@Param("date") LocalDate date, @Param("donationRegistrationStatus") String donationRegistrationStatus);
+
+
+
 
     @Query("""
     SELECT dr
