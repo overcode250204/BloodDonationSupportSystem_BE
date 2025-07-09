@@ -2,13 +2,11 @@ package com.example.BloodDonationSupportSystem.controller;
 
 import com.example.BloodDonationSupportSystem.base.BaseReponse;
 import com.example.BloodDonationSupportSystem.dto.donationregistrationDTO.DonationRegistrationDTO;
-import com.example.BloodDonationSupportSystem.dto.donationregistrationDTO.request.DonationRegistrationUpdateStatusRequest;
 import com.example.BloodDonationSupportSystem.service.donationregistrationservice.DonationRegistrationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,9 +42,9 @@ public class DonationRegistrationController {
 
 
     @PutMapping("/staff/cancel-registration/{id}")
-    public BaseReponse<?> updateRegistrationStatus(@PathVariable UUID id, @RequestBody @Valid DonationRegistrationUpdateStatusRequest request) {
+    public BaseReponse<?> updateRegistrationStatus(@PathVariable UUID id) {
         try {
-            donationRegistrationService.updateCancelStatus(id, request.getStatus());
+            donationRegistrationService.updateCancelStatus(id);
             return new BaseReponse<>(HttpStatus.OK.value(), "Update successfully", null);
         } catch (Exception e) {
             return new BaseReponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An error occurred while updating the status.", null);

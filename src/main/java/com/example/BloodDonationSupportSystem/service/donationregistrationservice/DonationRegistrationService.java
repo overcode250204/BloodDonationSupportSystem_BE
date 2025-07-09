@@ -80,16 +80,10 @@ public class DonationRegistrationService {
         return dto;
     }
 
-    public void updateCancelStatus(UUID registrationId, String status) {
-
-        if (!"HỦY".equalsIgnoreCase(status)) {
-            throw new BadRequestException("Invalid status.");
-        }
+    public void updateCancelStatus(UUID registrationId) {
 
         DonationRegistrationEntity registration = donationRegistrationRepository.findById(registrationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Registration not found."));
-
-
         registration.setStatus("HỦY");
         donationRegistrationRepository.save(registration);
     }
