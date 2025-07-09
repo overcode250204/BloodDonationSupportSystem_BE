@@ -75,6 +75,7 @@ public class UserService {
         userProfileDTO.setLongitude(userEntity.getLongitude());
         userProfileDTO.setLatitude(userEntity.getLatitude());
         userProfileDTO.setRole(userEntity.getRole().getRoleName());
+        userProfileDTO.setEmail(userEntity.getOauthAccount().getAccount());
         return userProfileDTO;
     }
 
