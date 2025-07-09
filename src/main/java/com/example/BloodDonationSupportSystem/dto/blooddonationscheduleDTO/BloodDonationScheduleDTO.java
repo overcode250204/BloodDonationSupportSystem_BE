@@ -1,14 +1,17 @@
 package com.example.BloodDonationSupportSystem.dto.blooddonationscheduleDTO;
 
-import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.sql.Time;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 public class BloodDonationScheduleDTO {
+
+    private UUID bloodDonationScheduleId;
+
     @NotNull(message = "Address hospital can not null")
     private String addressHospital;
 
@@ -24,8 +27,9 @@ public class BloodDonationScheduleDTO {
     @NotNull(message = "Amount of Registration can not null")
     private int amountRegistration;
 
-    @NotNull(message = "Edited By StaffId can not null")
-    private UserEntity editedByStaffId;
+    private int registrationMatching;
+
+    private UUID editedByStaffId;
 
 
 

@@ -20,6 +20,7 @@ public class UserService {
 
     @Autowired
     private SearchDistanceService searchDistanceService;
+
     public UserProfileDTO getCurrentUserProfile() {
         try {
             UserDetails currentUser = AuthUtils.getCurrentUser();
