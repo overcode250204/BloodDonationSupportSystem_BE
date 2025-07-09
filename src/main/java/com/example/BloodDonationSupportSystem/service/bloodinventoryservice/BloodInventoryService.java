@@ -116,29 +116,26 @@ public class BloodInventoryService {
             return checkUser;
         }
         DonationProcessEntity process = donationProcessRepository.findById(processId)
-                .orElseThrow(() -> new RuntimeException("Donation Process not found with id: " + processId));
+                .orElseThrow(() -> new ResourceNotFoundException("Donation Process not found with id: " + processId));
         UserEntity user = optionalUser.get();
 
         if (process.getBloodInventory() == null) {
-            System.err.println("Process has no blood inventory information");
             checkUser=false;
             return checkUser;
         }
 
         String bloodType = process.getBloodInventory().getBloodTypeId();
         if (bloodType == null) {
-            System.err.println("No blood type available in process");
             checkUser=false;
             return checkUser;
         }
-        //chỗ này check lại xem nhen vd update r thì ko update loại máu mới sẽ lỗi vd nhân test loại B trc đó A thì ko lưu lại nhé
+
         if (user.getBloodType() == null || user.getBloodType().isBlank()) {
             user.setBloodType(bloodType);
             userRepository.save(user);
             checkUser=true;
             return checkUser;
         }
-        System.err.println("User already has blood type: " + user.getBloodType());
         checkUser=false;
         return checkUser;
     }
