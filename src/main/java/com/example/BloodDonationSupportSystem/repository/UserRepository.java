@@ -18,8 +18,8 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     boolean existsByPhoneNumber(String phoneNumber);
     @Query(value = "SELECT COUNT(*) FROM user_table u " +
             "WHERE "+
-            " YEAR(u.created_at) = :year " +
-            "AND MONTH(u.created_at) = :month",
+            " YEAR(u.created_at) < :year " +
+            "OR (MONTH(u.created_at) <= :month AND YEAR(u.created_at) = :year) ",
             nativeQuery = true)
     long countFilter(
             @Param("year") int year,

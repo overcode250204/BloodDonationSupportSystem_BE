@@ -31,6 +31,9 @@ public class ReportService {
     @Autowired
     BloodInventoryRepository bloodInventoryRepository;
 
+    @Autowired
+    DonationRegistrationRepository bloodDonationRegistrationRepository;
+
 //    public void exportDonationReportToExcel(ReportFilterRequest filter, OutputStream out) throws IOException {
 //        List<DonationRegistrationReportDTO> data =
 //                donationRegistrationRepository.getDonationReport(filter.getFromDate(), filter.getToDate());
@@ -94,8 +97,14 @@ public class ReportService {
     public OverviewReportDTO getOverview(ReportFilterRequest request){
         OverviewReportDTO overviewReportDTO = new OverviewReportDTO();
         overviewReportDTO.setNumberAccount(userRepository.countFilter(request.getYear(), request.getMonth()));
+        overviewReportDTO.setNumberBloodDonationsRegistration(bloodDonationRegistrationRepository.countFilter(request.getYear(), request.getMonth()));
+        overviewReportDTO.setNumberSuccessDonation(bloodDonationRegistrationRepository.countNumberSuccessDonationFilter(request.getYear(), request.getMonth()));
+        overviewReportDTO.setNumberFailureDonation(bloodDonationRegistrationRepository.countNumberFailureDonationFilter(request.getYear(), request.getMonth()));
+        overviewReportDTO.setNumberNotCompleteDonation(bloodDonationRegistrationRepository.countNumberNotCompleteDonationFilter(request.getYear(), request.getMonth()));
+        overviewReportDTO.setNumberNotAcceptedDonation(bloodDonationRegistrationRepository.countNumberNotAcceptedDonationFilter(request.getYear(), request.getMonth()));
         return overviewReportDTO;
     }
+
 
 
 }
