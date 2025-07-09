@@ -20,6 +20,7 @@ public class UserService {
 
     @Autowired
     private SearchDistanceService searchDistanceService;
+
     public UserProfileDTO getCurrentUserProfile() {
         try {
             UserDetails currentUser = AuthUtils.getCurrentUser();
@@ -75,7 +76,11 @@ public class UserService {
         userProfileDTO.setLongitude(userEntity.getLongitude());
         userProfileDTO.setLatitude(userEntity.getLatitude());
         userProfileDTO.setRole(userEntity.getRole().getRoleName());
-        userProfileDTO.setEmail(userEntity.getOauthAccount().getAccount());
+        if (userEntity.getOauthAccount() != null) {
+            userProfileDTO.setEmail(userEntity.getOauthAccount().getAccount());
+        } else {
+            userProfileDTO.setEmail(null);
+        }
         return userProfileDTO;
     }
 
