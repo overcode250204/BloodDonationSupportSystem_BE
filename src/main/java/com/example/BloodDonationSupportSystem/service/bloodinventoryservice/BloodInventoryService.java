@@ -112,7 +112,6 @@ public class BloodInventoryService {
         Optional<UserEntity> optionalUser = userRepository.findUserByProcessId(processId);
         boolean checkUser =false;
         if (!optionalUser.isPresent()) {
-            System.err.println("User not found for process ID: " + processId);
             return checkUser;
         }
         DonationProcessEntity process = donationProcessRepository.findById(processId)
