@@ -3,6 +3,8 @@ package com.example.BloodDonationSupportSystem.controller;
 import com.example.BloodDonationSupportSystem.base.BaseReponse;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.UserProfileDTO;
 import com.example.BloodDonationSupportSystem.service.adminservice.AdminService;
+import com.example.BloodDonationSupportSystem.service.emailservice.EmailService;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,9 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
+    @Autowired
+    private EmailService emailService;
+
     @GetMapping("/users")
     public BaseReponse<?> getAllUsers() {
         List<UserProfileDTO> users = adminService.getAllUsers();
@@ -29,4 +34,5 @@ public class AdminController {
         UserProfileDTO user = adminService.updateStatusUser(userID, request);
         return new BaseReponse<>(HttpStatus.OK.value(), "Update status user successful", user);
     }
+
 }

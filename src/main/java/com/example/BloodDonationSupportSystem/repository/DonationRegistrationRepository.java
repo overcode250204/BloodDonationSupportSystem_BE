@@ -14,5 +14,5 @@ import java.util.UUID;
 
 @Repository
 public interface DonationRegistrationRepository extends JpaRepository<DonationRegistrationEntity, UUID> {
-    List<DonationRegistrationReportDTO> getDonationReport(@Param("from") Date from, @Param("to") Date to);
+//    List<DonationRegistrationReportDTO> getDonationReport(@Param("from") Date from, @Param("to") Date to);
 }
