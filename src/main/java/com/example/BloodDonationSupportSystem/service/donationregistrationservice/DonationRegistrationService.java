@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -50,8 +51,16 @@ public class DonationRegistrationService {
         UserEntity donor = userRepository.findByUserId(memberId)
                 .orElseThrow(() -> new ResourceNotFoundException("Donor not found"));
 
+
         EmergencyBloodRequestEntity emergencyBloodRequest = emergencyBloodRequestRepository.findById(emergencyRequestIdUUID)
                 .orElseThrow(() -> new ResourceNotFoundException("Cannot found emergency request"));
+
+
+
+        if (!Objects.equals(donor.getBloodType(), emergencyBloodRequest.getBloodType())) {
+            throw new BadRequestException("Your blood type mismatch in request");
+        }
+
 
         donationUtils.validateDonorEligibility(memberId);
 
@@ -170,10 +179,7 @@ public class DonationRegistrationService {
         return dtos;
     }
 
-//    @Transactional
-//    public void cancelOtherRegistrationsOfDonor(UUID donorId, UUID keepId) {
-//        donationRegistrationRepository.cancelOtherPendingRegistrations(donorId, keepId);
-//    }
+
 
 
     private DonationRegistrationDTO mapToDTO(DonationRegistrationEntity entity) {

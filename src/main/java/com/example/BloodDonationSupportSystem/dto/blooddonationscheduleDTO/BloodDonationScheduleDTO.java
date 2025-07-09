@@ -1,4 +1,4 @@
-package com.example.BloodDonationSupportSystem.dto.scheduleDTO;
+package com.example.BloodDonationSupportSystem.dto.blooddonationscheduleDTO;
 
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import jakarta.validation.constraints.NotNull;
@@ -8,7 +8,7 @@ import java.sql.Time;
 import java.time.LocalDate;
 
 @Data
-public class ScheduleDTO {
+public class BloodDonationScheduleDTO {
     @NotNull(message = "Address hospital can not null")
     private String addressHospital;
 

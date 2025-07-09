@@ -40,7 +40,6 @@ public class EmergencyBloodRequestDTO {
     @NotNull(message = "Registered By Staff can not null")
     private UUID registeredByStaff;
 
-    @NotNull(message = "Staff name can not null")
     private String staffName;
 
 }
