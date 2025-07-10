@@ -16,7 +16,12 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ReportService {
@@ -34,39 +39,7 @@ public class ReportService {
     @Autowired
     DonationRegistrationRepository bloodDonationRegistrationRepository;
 
-//    public void exportDonationReportToExcel(ReportFilterRequest filter, OutputStream out) throws IOException {
-//        List<DonationRegistrationReportDTO> data =
-//                donationRegistrationRepository.getDonationReport(filter.getFromDate(), filter.getToDate());
-//
-//        Workbook workbook = new XSSFWorkbook();
-//        Sheet sheet = workbook.createSheet("Báo cáo ĐK hiến máu");
-//
-//        String[] headers = {"STT", "Họ tên", "SĐT", "Nhóm máu", "Ngày ĐK", "Ngày hoàn thành", "Trạng thái", "Địa chỉ", "Nhân viên xử lý", "Bệnh viện"};
-//
-//        Row headerRow = sheet.createRow(0);
-//        for (int i = 0; i < headers.length; i++) {
-//            headerRow.createCell(i).setCellValue(headers[i]);
-//        }
-//
-//        int rowNum = 1;
-//        int index = 1;
-//        for (DonationRegistrationReportDTO dto : data) {
-//            Row row = sheet.createRow(rowNum++);
-//            row.createCell(0).setCellValue(index++);
-//            row.createCell(1).setCellValue(dto.getFullName());
-//            row.createCell(2).setCellValue(dto.getPhoneNumber());
-//            row.createCell(3).setCellValue(dto.getBloodType());
-//            row.createCell(4).setCellValue(dto.getRegistrationDate().toString());
-//            row.createCell(5).setCellValue(dto.getDateCompleteDonation() != null ? dto.getDateCompleteDonation().toString() : "");
-//            row.createCell(6).setCellValue(dto.getStatus());
-//            row.createCell(7).setCellValue(dto.getAddress());
-//            row.createCell(8).setCellValue(dto.getStaffName() != null ? dto.getStaffName() : "");
-//            row.createCell(9).setCellValue(dto.getHospitalAddress() != null ? dto.getHospitalAddress() : "");
-//        }
-//
-//        workbook.write(out);
-//        workbook.close();
-//    }
+
 
     public void exportBloodInventoryReportToExcel( OutputStream out) throws IOException {
         List<BloodInventory> data = bloodInventoryRepository.findAll();
@@ -105,6 +78,51 @@ public class ReportService {
         return overviewReportDTO;
     }
 
+    public Map<Integer, Map<String, Integer>> getMonthlyStats(ReportFilterRequest request) {
+        List<Object[]> results = bloodDonationRegistrationRepository.getMonthlyDonationStats(request.getYear());
+
+        Map<Integer, Map<String, Integer>> monthlyData = new HashMap<>();
+
+        for (int i = 1; i <= 12; i++) {
+            Map<String, Integer> counts = new HashMap<>();
+            counts.put("successCount", 0);
+            counts.put("failedCount", 0);
+            monthlyData.put(i, counts);
+        }
+
+
+        for (Object[] row : results) {
+            Integer month = ((Number) row[0]).intValue();
+            Integer successCount = ((Number) row[1]).intValue();
+            Integer failedCount = ((Number) row[2]).intValue();
+
+            Map<String, Integer> counts = new HashMap<>();
+            counts.put("successCount", successCount);
+            counts.put("failedCount", failedCount);
+            monthlyData.put(month, counts);
+        }
+
+        return monthlyData;
+    }
+
+    public Map<String, Object> getCumulativeVolume(ReportFilterRequest request) {
+
+        LocalDate endDate = LocalDate.of(request.getYear(), request.getMonth(), 1).withDayOfMonth(
+                LocalDate.of(request.getYear(), request.getMonth(), 1).lengthOfMonth()
+        );
+
+        List<Object[]> results = bloodInventoryRepository.getCumulativeVolume(Date.valueOf(endDate));
+
+
+        Map<String, Integer> bloodVolumeData = new LinkedHashMap<>();
+        for (Object[] row : results) {
+            String bloodTypeId = row[0].toString();
+            Integer totalVolume = ((Number) row[1]).intValue();
+            bloodVolumeData.put(bloodTypeId, totalVolume);
+        }
+
+        return  Map.of("bloodVolumeData", bloodVolumeData);
+    }
 
 
 }

@@ -19,13 +19,13 @@ public class EmailService {
     public void sendHealthReminder(String username, String userEmail ) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
 
-        // true = multipart, UTF-8 để hiển thị tiếng Việt chuẩn
+
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
         helper.setTo(userEmail);
         helper.setSubject("Đăng Ký Hiến Máu Thành Công");
 
-        // Nội dung email dạng plain text (fallback)
+
         String plainText = "Xin chào " + username + ",\n\n" +
                 "Cảm ơn bạn đã tham gia hiến máu tình nguyện.\n\n" +
                 "Vui lòng theo dõi tình trạng sức khỏe trong 48 giờ tới. " +
@@ -33,7 +33,7 @@ public class EmailService {
                 "Trân trọng,\n" +
                 "Trung tâm Hiến máu";
 
-        // Nội dung email dạng HTML
+
         String htmlContent = """
         <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; color: #333;">
             <h2 style="color: #d32f2f;">Cảm ơn bạn đã đăng ký hiến máu!</h2>
@@ -50,10 +50,10 @@ public class EmailService {
         </div>
         """.formatted(username);
 
-        // Cả plain text và HTML (để client tự chọn hiển thị)
+
         helper.setText(plainText, htmlContent);
 
-        helper.setFrom(email); // email này là email gửi đi (bạn set đúng ở cấu hình Spring Boot)
+        helper.setFrom(email);
         mailSender.send(message);
     }
 
@@ -66,7 +66,7 @@ public class EmailService {
         helper.setTo(userEmail);
         helper.setSubject("Đăng ký hiến máu thành công – Cảm ơn bạn đã chung tay vì cộng đồng!");
 
-        // Nội dung plain text (fallback)
+
         String plainText = "Xin chào " + username + ",\n\n" +
                 "Chúc mừng bạn đã đăng ký hiến máu thành công!\n\n" +
                 "Thời gian hiến máu: " + dateTime + "\n" +
@@ -82,7 +82,7 @@ public class EmailService {
                 "Trân trọng,\n" +
                 "Trung tâm Hiến máu";
 
-        // Nội dung HTML
+
         String htmlContent = """
         <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; color: #333;">
             <h2 style="color: #d32f2f;">Đăng ký hiến máu thành công – Cảm ơn bạn đã chung tay vì cộng đồng!</h2>
@@ -114,7 +114,7 @@ public class EmailService {
         """.formatted(username, dateTime, location, email);
 
         helper.setText(plainText, htmlContent);
-        helper.setFrom(email); // địa chỉ email gửi đi
+        helper.setFrom(email);
 
         mailSender.send(message);
     }
@@ -126,7 +126,7 @@ public class EmailService {
         helper.setTo(userEmail);
         helper.setSubject("🎉 Cảm ơn bạn đã đăng ký hiến máu – Chúng tôi sẽ phản hồi sớm nhất!");
 
-        // Plain text fallback
+
         String plainText = "Xin chào " + username + ",\n\n" +
                 "Chúng tôi đã nhận được đăng ký hiến máu của bạn. \n\n" +
                 "Trung tâm xin chân thành cảm ơn tấm lòng nhân ái của bạn. " +
@@ -137,7 +137,7 @@ public class EmailService {
                 "Trân trọng,\n" +
                 "Trung tâm Hiến máu";
 
-        // HTML content
+
         String htmlContent = """
         <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; color: #333;">
             <h2 style="color: #d32f2f;">Cảm ơn bạn đã đăng ký hiến máu!</h2>
@@ -170,7 +170,7 @@ public class EmailService {
         helper.setTo(userEmail);
         helper.setSubject("Đơn đăng ký hiến máu không thành công – Hiện chưa có lịch phù hợp");
 
-        // Plain text fallback
+
         String plainText = "Xin chào " + username + ",\n\n" +
                 "Chúng tôi rất tiếc phải thông báo rằng đơn đăng ký hiến máu của bạn không thành công " +
                 "vì hiện tại không có lịch hiến máu nào phù hợp với khoảng thời gian mà bạn đã chọn.\n\n" +
@@ -183,7 +183,7 @@ public class EmailService {
                 "Trân trọng,\n" +
                 "Trung tâm Hiến máu";
 
-        // HTML content
+
         String htmlContent = """
         <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; color: #333;">
             <h2 style="color: #d32f2f;">Đơn đăng ký hiến máu không thành công</h2>
@@ -210,7 +210,7 @@ public class EmailService {
         """.formatted(username, email);
 
         helper.setText(plainText, htmlContent);
-        helper.setFrom(email); // Địa chỉ email gửi đi
+        helper.setFrom(email);
         mailSender.send(message);
     }
 

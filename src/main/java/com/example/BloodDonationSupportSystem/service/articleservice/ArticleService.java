@@ -141,7 +141,7 @@ public class ArticleService {
             if (!Files.exists(uploadDir)) {
                 Files.createDirectories(uploadDir);
             }
-            String filename = UUID.randomUUID() + "_" + fileName;
+            String filename = UUID.randomUUID().toString();
             Path filePath = uploadDir.resolve(filename);
             Files.write(filePath, imageBytes);
             return filePath;
