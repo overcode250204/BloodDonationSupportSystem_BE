@@ -24,6 +24,27 @@ public class BloodDonationScheduleController {
     @Autowired
     private BloodDonationScheduleService bloodDonationScheduleService;
 
+    @PutMapping("/admin/schedule/{id}")
+    public BaseReponse<?> updateSchedule(@PathVariable String id, @Valid @RequestBody BloodDonationScheduleDTO dto) {
+
+        BloodDonationScheduleDTO updated = bloodDonationScheduleService.updateSchedule(id, dto);
+        return new BaseReponse<>(HttpStatus.OK.value(), "Update successful", updated);
+
+    }
+
+    @DeleteMapping("/admin/schedule/{id}")
+    public BaseReponse<?> deleteSchedule(@PathVariable UUID id) {
+        bloodDonationScheduleService.deleteSchedule(id);
+        return new BaseReponse<>(HttpStatus.OK.value(), "Delete successful", null);
+    }
+
+
+    @GetMapping("/admin/schedules")
+    public BaseReponse<?> getAdminSchedules() {
+        List<BloodDonationScheduleDTO> response = bloodDonationScheduleService.getAllByAdmin();
+        return new BaseReponse<>(HttpStatus.OK.value(), "Get All Schedules successfully", response);
+    }
+
     @GetMapping("/staff/schedules")
     public BaseReponse<?> getSchedules() {
         List<BloodDonationScheduleDTO> response = bloodDonationScheduleService.getAll();
