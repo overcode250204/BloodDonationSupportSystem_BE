@@ -11,7 +11,7 @@ import java.util.UUID;
 @Repository
 public interface BloodDonationScheduleRepository extends JpaRepository<BloodDonationScheduleEntity, UUID> {
     List<BloodDonationScheduleEntity> findAllByDonationDateBetween(LocalDate startDate, LocalDate endDate);
-
+    BloodDonationScheduleEntity findByAddressHospitalAndDonationDate(String addressHospital, LocalDate donationDate);
 
 
 

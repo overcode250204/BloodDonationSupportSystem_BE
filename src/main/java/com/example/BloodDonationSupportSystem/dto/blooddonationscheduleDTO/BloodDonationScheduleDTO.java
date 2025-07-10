@@ -2,9 +2,12 @@ package com.example.BloodDonationSupportSystem.dto.blooddonationscheduleDTO;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 
 @Data
@@ -19,10 +22,10 @@ public class BloodDonationScheduleDTO {
     private LocalDate donationDate;
 
     @NotNull(message = "Start Time can not null")
-    private Time startTime;
+    private LocalTime startTime;
 
     @NotNull(message = "End Time can not null")
-    private Time endTime;
+    private LocalTime endTime;
 
     @NotNull(message = "Amount of Registration can not null")
     private int amountRegistration;
