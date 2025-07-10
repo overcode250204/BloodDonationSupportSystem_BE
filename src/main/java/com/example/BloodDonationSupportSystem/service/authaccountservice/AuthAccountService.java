@@ -36,6 +36,7 @@ public class AuthAccountService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private SearchDistanceService searchDistanceService;
+
     public RegisterAccountReponse register(RegisterRequest registerRequest) {
         RegisterAccountReponse response;
         if (userRepository.existsByPhoneNumber(registerRequest.getPhoneNumber())) {
@@ -43,26 +44,23 @@ public class AuthAccountService {
         }
 
         UserEntity user = new UserEntity();
-            user.setPhoneNumber(registerRequest.getPhoneNumber());
-            Optional<RoleEntity> roleMember = roleRepository.findByRoleName("ROLE_MEMBER");
-            user.setRole(roleMember.orElseThrow(() -> new ResourceNotFoundException("Cannot find role")));
-            user.setFullName(registerRequest.getFullName());
-            user.setAddress(registerRequest.getAddress());
-            if (user.getAddress() != null) {
-                GeoLocation location = searchDistanceService.getCoordinates(registerRequest.getAddress());
-                user.setLongitude(location.getLongitude());
-                user.setLatitude(location.getLatitude());
-            }
-            user.setDateOfBirth(registerRequest.getDateOfBirth());
-            user.setGender(registerRequest.getGender());
-            user.setStatus(registerRequest.getStatus());
-            user.setPasswordHash(passwordEncoder.encode(registerRequest.getConfirmPassword()));
-            userRepository.save(user);
-            response = new RegisterAccountReponse();
-            response.setMessage("Registration successful");
-
-
-
+        user.setPhoneNumber(registerRequest.getPhoneNumber());
+        Optional<RoleEntity> roleMember = roleRepository.findByRoleName("ROLE_MEMBER");
+        user.setRole(roleMember.orElseThrow(() -> new ResourceNotFoundException("Cannot find role")));
+        user.setFullName(registerRequest.getFullName());
+        user.setAddress(registerRequest.getAddress());
+//            if (user.getAddress() != null) {
+//                GeoLocation location = searchDistanceService.getCoordinates(registerRequest.getAddress());
+//                user.setLongitude(location.getLongitude());
+//                user.setLatitude(location.getLatitude());
+//            }
+        user.setDateOfBirth(registerRequest.getDateOfBirth());
+        user.setGender(registerRequest.getGender());
+        user.setStatus(registerRequest.getStatus());
+        user.setPasswordHash(passwordEncoder.encode(registerRequest.getConfirmPassword()));
+        userRepository.save(user);
+        response = new RegisterAccountReponse();
+        response.setMessage("Registration successful");
 
 
         return response;

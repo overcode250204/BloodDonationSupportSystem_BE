@@ -44,7 +44,7 @@ public class BloodDonationScheduleService {
     }
 
 
-    public String createSchedule(BloodDonationScheduleDTO dto, UUID staffId) {
+    public BloodDonationScheduleDTO createSchedule(BloodDonationScheduleDTO dto, UUID staffId) {
 
         BloodDonationScheduleEntity schedule = new BloodDonationScheduleEntity();
         schedule.setEditedByStaffId(userRepository.findById(staffId).orElseThrow(()-> new ResourceNotFoundException("Staff not found")));
@@ -54,14 +54,18 @@ public class BloodDonationScheduleService {
         schedule.setAddressHospital(dto.getAddressHospital());
         schedule.setAmountRegistration(dto.getAmountRegistration());
 
-
         BloodDonationScheduleEntity saved = bloodDonationScheduleRepository.save(schedule);
+        int matched = assignRegistrationsToSchedule(saved);
+        BloodDonationScheduleDTO result = mapToDTO(saved);
+        result.setRegistrationMatching(matched);
 
-        return assignRegistrationsToSchedule(saved);
+        return result;
     }
 
 
-    public String assignRegistrationsToSchedule(BloodDonationScheduleEntity schedule) {
+
+
+    public int assignRegistrationsToSchedule(BloodDonationScheduleEntity schedule) {
         List<DonationRegistrationEntity> eligibleRegistrations = donationRegistrationRepository.findEligibleRegistrations(schedule.getDonationDate());
 
         int max = schedule.getAmountRegistration();
@@ -74,10 +78,48 @@ public class BloodDonationScheduleService {
 
         donationRegistrationRepository.saveAll(selectedRegistration);
 
-        return "Successfully assigned " + selectedRegistration.size() + " registrations to the schedule";
+        return selectedRegistration.size();
     }
 
 
+    public List<BloodDonationScheduleDTO> getAll() {
+        List<BloodDonationScheduleEntity> schedules = bloodDonationScheduleRepository.findAll();
+        if (schedules.isEmpty()) {
+            throw new ResourceNotFoundException("Schedules not found");
+        }
+        return schedules.stream().map(s -> mapToDTO(s)).toList();
+    }
+
+    public List<BloodDonationScheduleDTO> getSchedulesInDateRange(LocalDate startDate, LocalDate endDate) {
+        List<BloodDonationScheduleEntity> schedules = bloodDonationScheduleRepository.findAllByDonationDateBetween(startDate, endDate);
+
+        return schedules.stream()
+                .map(s -> {
+                    BloodDonationScheduleDTO dto = new BloodDonationScheduleDTO();
+                    dto.setBloodDonationScheduleId(s.getBloodDonationScheduleId());
+                    dto.setDonationDate(s.getDonationDate());
+                    dto.setStartTime(s.getStartTime());
+                    dto.setEndTime(s.getEndTime());
+                    dto.setAddressHospital(s.getAddressHospital());
+                    dto.setAmountRegistration(s.getAmountRegistration());
+                    return dto;
+                }).toList();
+    }
+
+
+    public BloodDonationScheduleDTO mapToDTO(BloodDonationScheduleEntity entity) {
+        BloodDonationScheduleDTO dto = new BloodDonationScheduleDTO();
+        dto.setDonationDate(entity.getDonationDate());
+        dto.setStartTime(entity.getStartTime());
+        dto.setEndTime(entity.getEndTime());
+        dto.setAddressHospital(entity.getAddressHospital());
+        dto.setAmountRegistration(entity.getAmountRegistration());
+        int matchedCount = entity.getDonationRegistrations() != null ? entity.getDonationRegistrations().size() : 0;
+        dto.setRegistrationMatching(matchedCount);
+        dto.setEditedByStaffId(entity.getEditedByStaffId().getUserId());
+        return dto;
+
+    }
 
 
 }
