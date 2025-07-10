@@ -35,11 +35,11 @@ public class BloodDonationScheduleEntity {
     @Column(name = "amount_registration")
     private int amountRegistration;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "edited_by_staff")
     private UserEntity editedByStaffId;
 
-    @OneToMany(mappedBy = "bloodDonationSchedule")
+    @OneToMany(mappedBy = "bloodDonationSchedule", fetch = FetchType.LAZY)
     private List<DonationRegistrationEntity> donationRegistrations;
 
 

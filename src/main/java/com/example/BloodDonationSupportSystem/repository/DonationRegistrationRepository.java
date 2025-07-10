@@ -1,5 +1,6 @@
 package com.example.BloodDonationSupportSystem.repository;
 
+import com.example.BloodDonationSupportSystem.dto.reportDTO.DonationRegistrationReportDTO;
 import com.example.BloodDonationSupportSystem.dto.donationhistoryDTO.DonorDonationInfoDTO;
 import com.example.BloodDonationSupportSystem.entity.DonationRegistrationEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,6 +35,8 @@ public interface DonationRegistrationRepository extends JpaRepository<DonationRe
     ORDER BY dr.registrationDate ASC
 """)
     List<DonationRegistrationEntity> findEligibleRegistrations(@Param("donationDate")LocalDate donationDate);
+
+//    List<DonationRegistrationReportDTO> getDonationReport(@Param("from") Date from, @Param("to") Date to);
 
 
     @Query("""
