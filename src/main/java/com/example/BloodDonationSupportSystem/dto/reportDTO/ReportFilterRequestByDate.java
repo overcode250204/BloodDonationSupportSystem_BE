@@ -7,13 +7,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReportFilterRequestByDate {
-    @NotBlank(message = "Start Date can not empty")
-    private String startDate;
-    @NotBlank(message = "Start Date can not empty")
-    private String endDate;
+    @NotNull(message = "Start Date can not null")
+    private LocalDate  startDate;
+    @NotNull(message = "Start Date can not null")
+    private LocalDate endDate;
 }

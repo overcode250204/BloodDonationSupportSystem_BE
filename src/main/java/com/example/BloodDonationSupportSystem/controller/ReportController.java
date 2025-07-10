@@ -25,9 +25,8 @@ public class ReportController {
 
     @GetMapping("/blood-inventory/export")
     public void exportDonationReport( HttpServletResponse response) throws IOException {
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setHeader("Content-Disposition", "attachment; filename=Kho_Mau.xlsx");
-        reportService.exportBloodInventoryReportToExcel( response.getOutputStream());
+
+        reportService.exportBloodInventoryReportToExcel( response);
     }
 
     @PostMapping("/overview")
@@ -51,7 +50,14 @@ public class ReportController {
     }
 
     @PostMapping("/blood-donation")
-    public BaseReponse<?> getBloodDonation(@RequestBody @Valid ReportFilterRequestByDate request) {
-        return  null;
+    public BaseReponse<?> getBloodDonationReport(@RequestBody @Valid ReportFilterRequestByDate request) {
+        var getBloodDonationReport = reportService.getDonationReport(request);
+        return new BaseReponse<>(HttpStatus.OK.value(), "Get Blood Donation Report", getBloodDonationReport);
+    }
+
+    @PostMapping("/blood-donation/export")
+    public void exportDonationReport(@RequestBody @Valid ReportFilterRequestByDate request, HttpServletResponse response) throws IOException {
+
+        reportService.exportBloodDonationReportToExcel( request, response);
     }
 }
