@@ -47,7 +47,7 @@ public interface DonationRegistrationRepository extends JpaRepository<DonationRe
             "AND MONTH(dr.registration_date) = :month ",
             nativeQuery = true)
     long countNumberNotAcceptedDonationFilter(int year, int month);
-//    List<DonationRegistrationReportDTO> getDonationReport(@Param("from") Date from, @Param("to") Date to);
+
 @Query(value = "SELECT MONTH(bs.donation_date) AS month, " +
         "SUM(CASE WHEN dr.status = N'ĐÃ HIẾN' THEN 1 ELSE 0 END) AS successCount, " +
         "SUM(CASE WHEN dr.status = N'HỦY' THEN 1 ELSE 0 END) AS failedCount " +
