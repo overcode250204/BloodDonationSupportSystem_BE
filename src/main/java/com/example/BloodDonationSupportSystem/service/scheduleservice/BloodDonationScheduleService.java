@@ -35,7 +35,7 @@ public class BloodDonationScheduleService {
         LocalDate today = LocalDate.now();
         List<StatByDateDTO> result = new ArrayList<>();
 
-        for (int i = 0; i <= 90; i++) {
+        for (int i = 0; i <= 30; i++) {
             LocalDate date = today.plusDays(i);
             Long count = donationRegistrationRepository.countByDateBetweenStartAndEndDate(date, "CHƯA HIẾN");
             result.add(new StatByDateDTO(date, count));
@@ -46,9 +46,13 @@ public class BloodDonationScheduleService {
 
     public BloodDonationScheduleDTO createSchedule(BloodDonationScheduleDTO dto, UUID staffId) {
 
+        BloodDonationScheduleEntity exist = bloodDonationScheduleRepository.findByAddressHospitalAndDonationDate(dto.getAddressHospital(), dto.getDonationDate());
+        if (exist != null) {
+            throw new ResourceNotFoundException("Schedule already exists");
+        }
+
         BloodDonationScheduleEntity schedule = new BloodDonationScheduleEntity();
-        schedule.setEditedByStaffId(userRepository.findById(staffId).orElseThrow(()-> new ResourceNotFoundException("Staff not found")));
-        schedule.setDonationDate(dto.getDonationDate());
+        schedule.setEditedByStaffId(userRepository.findById(staffId).orElseThrow(()-> new ResourceNotFoundException("Staff not found")));schedule.setDonationDate(dto.getDonationDate());
         schedule.setStartTime(dto.getStartTime());
         schedule.setEndTime(dto.getEndTime());
         schedule.setAddressHospital(dto.getAddressHospital());
@@ -66,7 +70,7 @@ public class BloodDonationScheduleService {
 
 
     public int assignRegistrationsToSchedule(BloodDonationScheduleEntity schedule) {
-        List<DonationRegistrationEntity> eligibleRegistrations = donationRegistrationRepository.findEligibleRegistrations(schedule.getDonationDate());
+        List<DonationRegistrationEntity> eligibleRegistrations = donationRegistrationRepository.findEligibleRegistrations(schedule.getDonationDate(), "CHƯA HIẾN");
 
         int max = schedule.getAmountRegistration();
 
@@ -83,7 +87,8 @@ public class BloodDonationScheduleService {
 
 
     public List<BloodDonationScheduleDTO> getAll() {
-        List<BloodDonationScheduleEntity> schedules = bloodDonationScheduleRepository.findAll();
+        LocalDate today = LocalDate.now();
+        List<BloodDonationScheduleEntity> schedules = bloodDonationScheduleRepository.findAllByDonationDateBetween(today, today.plusDays(90));
         if (schedules.isEmpty()) {
             throw new ResourceNotFoundException("Schedules not found");
         }
