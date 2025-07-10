@@ -5,10 +5,13 @@ import com.example.BloodDonationSupportSystem.entity.BloodDonationScheduleEntity
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 
 import java.util.Date;
+import java.util.List;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,6 +32,10 @@ public interface BloodDonationScheduleRepository extends JpaRepository<BloodDona
             nativeQuery = true)
     List<Object[]> getDonationReport(@Param("startDate") Date startDate,
                                      @Param("endDate") Date endDate);
+
+
+
+    List<BloodDonationScheduleEntity> findAllByDonationDateBetween(LocalDate startDate, LocalDate endDate);
 
 
 

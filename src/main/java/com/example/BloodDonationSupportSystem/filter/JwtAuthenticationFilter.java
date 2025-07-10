@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -36,7 +36,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 path.startsWith("/webjars") ||
                 path.startsWith("/api/auth") ||
                 path.startsWith("/homepage") ||
-                path.startsWith("/images/uploads")){
+                path.startsWith("/images/uploads") ||
+                path.startsWith("/emergencies-notification") ||
+                path.startsWith("/api/emergencies-notification")){
             filterChain.doFilter(request, response);
             return;
         }
@@ -62,8 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
-            User userDetails = (User) customUserDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
             if (jwtService.isTokenValid(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(

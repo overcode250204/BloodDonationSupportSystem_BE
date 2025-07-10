@@ -20,8 +20,7 @@ import java.util.UUID;
 public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private OauthAccountRepository oauthAccountRepository;
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
