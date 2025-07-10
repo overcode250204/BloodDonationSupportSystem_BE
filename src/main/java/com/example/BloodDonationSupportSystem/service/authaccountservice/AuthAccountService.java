@@ -18,10 +18,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.Collections;
 import java.util.Optional;
-
+import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.GeoLocation;
+import com.example.BloodDonationSupportSystem.service.searchdistanceservice.SearchDistanceService;
 @Service
 public class AuthAccountService {
     @Autowired
@@ -34,28 +34,33 @@ public class AuthAccountService {
     private JwtService jwtService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private SearchDistanceService searchDistanceService;
 
     public RegisterAccountReponse register(RegisterRequest registerRequest) {
         RegisterAccountReponse response;
         if (userRepository.existsByPhoneNumber(registerRequest.getPhoneNumber())) {
             throw new BadRequestException("Phone number already in use");
         }
-            UserEntity user = new UserEntity();
-            user.setPhoneNumber(registerRequest.getPhoneNumber());
-            Optional<RoleEntity> roleMember = roleRepository.findByRoleName("ROLE_MEMBER");
-            user.setRole(roleMember.orElseThrow(() -> new ResourceNotFoundException("Cannot find role")));
-            user.setFullName(registerRequest.getFullName());
-            user.setAddress(registerRequest.getAddress());
-            user.setDateOfBirth(registerRequest.getDateOfBirth());
-            user.setGender(registerRequest.getGender());
-            user.setStatus(registerRequest.getStatus());
-            user.setPasswordHash(passwordEncoder.encode(registerRequest.getConfirmPassword()));
-            userRepository.save(user);
-            response = new RegisterAccountReponse();
-            response.setMessage("Registration successful");
 
-
-
+        UserEntity user = new UserEntity();
+        user.setPhoneNumber(registerRequest.getPhoneNumber());
+        Optional<RoleEntity> roleMember = roleRepository.findByRoleName("ROLE_MEMBER");
+        user.setRole(roleMember.orElseThrow(() -> new ResourceNotFoundException("Cannot find role")));
+        user.setFullName(registerRequest.getFullName());
+        user.setAddress(registerRequest.getAddress());
+//            if (user.getAddress() != null) {
+//                GeoLocation location = searchDistanceService.getCoordinates(registerRequest.getAddress());
+//                user.setLongitude(location.getLongitude());
+//                user.setLatitude(location.getLatitude());
+//            }
+        user.setDateOfBirth(registerRequest.getDateOfBirth());
+        user.setGender(registerRequest.getGender());
+        user.setStatus(registerRequest.getStatus());
+        user.setPasswordHash(passwordEncoder.encode(registerRequest.getConfirmPassword()));
+        userRepository.save(user);
+        response = new RegisterAccountReponse();
+        response.setMessage("Registration successful");
 
 
         return response;
@@ -65,6 +70,9 @@ public class AuthAccountService {
 
         LoginAccountResponse loginAccountResponse;
         UserEntity user = userRepository.findByPhoneNumber(loginRequest.getPhoneNumber()).orElseThrow(() -> new BadRequestException("PhoneNumber doesn't exist"));
+        if (!user.getStatus().equals("HOẠT ĐỘNG")) {
+            throw new BadRequestException("Account is locked or inactive!");
+        }
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getPhoneNumber(), loginRequest.getPassword()));

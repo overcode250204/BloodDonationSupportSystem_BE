@@ -1,54 +1,54 @@
 package com.example.BloodDonationSupportSystem.controller;
 
 import com.example.BloodDonationSupportSystem.base.BaseReponse;
-import com.example.BloodDonationSupportSystem.dto.blooddonationscheduleDTO.request.BloodDonationScheduleRequest;
-import com.example.BloodDonationSupportSystem.dto.blooddonationscheduleDTO.response.BloodDonationScheduleResponse;
-import com.example.BloodDonationSupportSystem.service.blooddonationscheduleservice.BloodDonationScheduleService;
+import com.example.BloodDonationSupportSystem.dto.blooddonationscheduleDTO.BloodDonationScheduleDTO;
+import com.example.BloodDonationSupportSystem.dto.donationregistrationDTO.StatByDateDTO;
+import com.example.BloodDonationSupportSystem.entity.BloodDonationScheduleEntity;
+import com.example.BloodDonationSupportSystem.service.scheduleservice.BloodDonationScheduleService;
+import com.example.BloodDonationSupportSystem.utils.AuthUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/staff/schedule")
-@Tag(name = "Blood Donation Schedule Controller")
+@RequestMapping("/api")
+@Tag(name = "Schedule")
 public class BloodDonationScheduleController {
 
     @Autowired
     private BloodDonationScheduleService bloodDonationScheduleService;
 
-    @PostMapping("/create")
-    public BaseReponse<BloodDonationScheduleResponse> create(@RequestBody @Valid BloodDonationScheduleRequest request) {
-         var response = bloodDonationScheduleService.createBloodDonationSchedule(request);
-         return new BaseReponse<>(HttpStatus.OK.value(), "Create Schedule", response);
+    @GetMapping("/staff/schedules")
+    public BaseReponse<?> getSchedules() {
+        List<BloodDonationScheduleDTO> response = bloodDonationScheduleService.getAll();
+        return new BaseReponse<>(HttpStatus.OK.value(), "Get All Schedules successfully", response);
     }
 
-    @GetMapping("/all")
-    public BaseReponse<?> getAllBloodDonationSchedule() {
-        var response = bloodDonationScheduleService.getAllBloodDonationSchedule();
-        return new BaseReponse<>(HttpStatus.OK.value(), "Get All Blood Donation Schedule", response);
+    @GetMapping("/staff/registration/stat-by-day")
+    public BaseReponse<?> getStatByDay() {
+        List<StatByDateDTO> response = bloodDonationScheduleService.getStatByDate();
+        return new BaseReponse<>(HttpStatus.OK.value(), "Count registration in each day", response);
     }
 
-    @GetMapping("/{id}")
-    public BaseReponse<?> getBloodDonationSchedule(@PathVariable UUID id) {
-        var response = bloodDonationScheduleService.getBloodDonationSchedule(id);
-        return new BaseReponse<>(HttpStatus.OK.value(), "Get Blood Donation Schedule", response);
+    @PostMapping("/staff/schedule")
+    public BaseReponse<?> createSchedule(@RequestBody @Valid BloodDonationScheduleDTO dto) {
+        UUID staffId = UUID.fromString(AuthUtils.getCurrentUser().getUsername());
+        BloodDonationScheduleDTO response = bloodDonationScheduleService.createSchedule(dto, staffId);
+
+        return new BaseReponse<>(HttpStatus.OK.value(), "Created and Matching success!!", response);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public BaseReponse<?> delete(@PathVariable UUID id) {
-        bloodDonationScheduleService.deleteBloodDonationSchedule(id);
-        return new BaseReponse<>(HttpStatus.OK.value(), "Delete Schedule", null);
+    @GetMapping("/member/schedules/suggestion")
+    public BaseReponse<?> getSuggestedSchedules(@RequestParam LocalDate start, @RequestParam LocalDate end) {
+        List<BloodDonationScheduleDTO> result = bloodDonationScheduleService.getSchedulesInDateRange(start, end);
+        return new BaseReponse<>(HttpStatus.OK.value(), "Having list schedule matching with registration", result);
     }
 
-    @PutMapping("/update/{id}")
-    public BaseReponse<?> update(@PathVariable UUID id, @RequestBody @Valid BloodDonationScheduleRequest request) {
-        var response = bloodDonationScheduleService.updateBloodDonationSchedule(id, request);
-        return new BaseReponse<>(HttpStatus.OK.value(), "Update Schedule", response);
-    }
+
 }
