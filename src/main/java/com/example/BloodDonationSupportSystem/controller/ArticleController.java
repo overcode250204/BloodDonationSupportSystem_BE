@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/")
 @Tag(name = "ArticleController")
 public class ArticleController {
 
@@ -23,31 +23,37 @@ public class ArticleController {
     private ArticleService articleService;
 
 
-    @PutMapping("/article/{id}")
+
+    @PutMapping("api/admin/article/{id}")
     public BaseReponse<?> update(@RequestBody @Valid ArticleRequest dto, @PathVariable UUID id) throws IOException {
         ArticleResponse response = articleService.update(id, dto);
         return new BaseReponse<>(HttpStatus.OK.value(), "Update article successfully", response);
     }
 
-    @DeleteMapping("/article/{id}")
+    @DeleteMapping("api/admin/article/{id}")
     public BaseReponse<?> delete(@PathVariable UUID id) throws IOException {
         String response = articleService.delete(id);
         return new BaseReponse<>(HttpStatus.OK.value(), "Delete article successfully", response);
     }
 
-    @GetMapping("/article/{id}")
+    @GetMapping("api/homepage/article/{id}")
     public BaseReponse<?> get(@PathVariable UUID id) {
         ArticleResponse response = articleService.getById(id);
         return new BaseReponse<>(HttpStatus.OK.value(), "Get article successfully", response);
     }
 
-    @GetMapping("/articles")
+    @GetMapping("api/homepage/articles")
     public BaseReponse<?> getAllArticles() {
         List<ArticleResponse> response = articleService.getAll();
         return new BaseReponse<>(HttpStatus.OK.value(), "Get all articles successfully", response);
     }
+    @GetMapping("api/admin/articles")
+    public BaseReponse<?> getAllArticlesForAdmin() {
+        List<ArticleResponse> response = articleService.getAll();
+        return new BaseReponse<>(HttpStatus.OK.value(), "Get all articles successfully", response);
+    }
 
-    @PostMapping("/article/create")
+    @PostMapping("api/admin/article/create")
     public BaseReponse<ArticleResponse> create(@RequestBody @Valid ArticleRequest req) throws IOException {
         ArticleResponse response = articleService.create(req);
         return new BaseReponse<>(HttpStatus.OK.value(), "Create article successfully", response);

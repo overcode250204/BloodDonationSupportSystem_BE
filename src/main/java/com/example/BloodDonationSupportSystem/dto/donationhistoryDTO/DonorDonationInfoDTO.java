@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 
 @Data
@@ -11,8 +12,8 @@ public class DonorDonationInfoDTO {
     private UUID donationRegistrationId;
     private String status;
     private String addressHospital;
-    private Time startTime;
-    private Time endTime;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private int volumeMl;
     private LocalDate donationDate;
     private LocalDate registrationDate;
@@ -25,8 +26,8 @@ public class DonorDonationInfoDTO {
     public DonorDonationInfoDTO(UUID donationRegistrationId,
                                 String status,
                                 String addressHospital,
-                                Time startTime,
-                                Time endTime,
+                                LocalTime startTime,
+                                LocalTime endTime,
                                 int volumeMl,
                                 LocalDate donationDate,
                                 LocalDate registrationDate,
