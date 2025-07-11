@@ -11,6 +11,7 @@ import com.example.BloodDonationSupportSystem.repository.DonationRegistrationRep
 import com.example.BloodDonationSupportSystem.repository.OauthAccountRepository;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
 import com.example.BloodDonationSupportSystem.service.emailservice.EmailService;
+import com.example.BloodDonationSupportSystem.service.historyservice.DonationInfoService;
 import com.example.BloodDonationSupportSystem.service.smsservice.SmsService;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
@@ -42,6 +43,9 @@ public class DonationProcessService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private DonationInfoService donationInfoService;
 
     public List<DonationProcessDTO> getDonationProcessByStaffId(UUID staffId){
         List<Object[]> donationProcesses = donationProcessRepository.findDonationProcessByStaffId(staffId);
@@ -77,6 +81,7 @@ public class DonationProcessService {
             registration.setStatus("ĐÃ HIẾN");
             registration.setDateCompleteDonation(LocalDate.now());
             donationRegistrationRepository.save(registration);
+            donationInfoService.saveDonationHistory(registration);
             if(registration.getDonor().getPhoneNumber() != null){
                 smsService.sendSmsSuccessRegistrationNotification(registration.getDonor().getPhoneNumber(), registration.getDateCompleteDonation().toString());
             } else {
