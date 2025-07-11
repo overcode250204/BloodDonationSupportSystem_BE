@@ -96,6 +96,7 @@ public class EmergencyBloodRequestService {
             dto.setNote(entity.getNote());
             dto.setRegisteredByStaff(staff.getUserId());
             dto.setStaffName(entity.getRegisteredByStaff().getFullName());
+            dto.setRegistrationDate(entity.getRegistrationDate());
         }
 
         return dto;
