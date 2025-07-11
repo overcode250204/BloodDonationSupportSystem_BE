@@ -3,15 +3,23 @@ package com.example.BloodDonationSupportSystem.service.donationprocess;
 import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.DonationProcessDTO;
 import com.example.BloodDonationSupportSystem.entity.DonationProcessEntity;
 import com.example.BloodDonationSupportSystem.entity.DonationRegistrationEntity;
+import com.example.BloodDonationSupportSystem.entity.OauthAccountEntity;
+import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
 import com.example.BloodDonationSupportSystem.repository.DonationProcessRepository;
 import com.example.BloodDonationSupportSystem.repository.DonationRegistrationRepository;
+import com.example.BloodDonationSupportSystem.repository.OauthAccountRepository;
+import com.example.BloodDonationSupportSystem.repository.UserRepository;
+import com.example.BloodDonationSupportSystem.service.emailservice.EmailService;
+import com.example.BloodDonationSupportSystem.service.smsservice.SmsService;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -22,6 +30,18 @@ public class DonationProcessService {
 
     @Autowired
     private DonationRegistrationRepository donationRegistrationRepository;
+
+    @Autowired
+    private SmsService smsService;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private OauthAccountRepository oauthAccountRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public List<DonationProcessDTO> getDonationProcessByStaffId(UUID staffId){
         List<Object[]> donationProcesses = donationProcessRepository.findDonationProcessByStaffId(staffId);
@@ -41,7 +61,7 @@ public class DonationProcessService {
     }
 
     @Transactional
-    public void updateDonationProcess(DonationProcessDTO request){
+    public void updateDonationProcess(DonationProcessDTO request) throws MessagingException {
         DonationProcessEntity process = donationProcessRepository.findById(request.getDonationProcessId())
                 .orElseThrow(() -> new ResourceNotFoundException("Not found."));
 
@@ -57,6 +77,19 @@ public class DonationProcessService {
             registration.setStatus("ĐÃ HIẾN");
             registration.setDateCompleteDonation(LocalDate.now());
             donationRegistrationRepository.save(registration);
+            if(registration.getDonor().getPhoneNumber() != null){
+                smsService.sendSmsSuccessRegistrationNotification(registration.getDonor().getPhoneNumber(), registration.getDateCompleteDonation().toString());
+            } else {
+                Optional<UserEntity> user = userRepository.findByUserId(registration.getDonor().getUserId());
+                if (user.isPresent()) {
+                    UserEntity u = user.get();
+                    OauthAccountEntity email = oauthAccountRepository.findByUser(u);
+                    emailService.sendSuccessRegistrationNotification(registration.getDonor().getFullName(), email.getAccount(), registration.getDateCompleteDonation().toString(), registration.getBloodDonationSchedule().getAddressHospital());
+                } else {
+                   throw new ResourceNotFoundException("User not found");
+                }
+
+            }
         }
 
         donationProcessRepository.save(process);
