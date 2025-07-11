@@ -38,7 +38,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 path.startsWith("/homepage") ||
                 path.startsWith("/images/uploads") ||
                 path.startsWith("/emergencies-notification") ||
-                path.startsWith("/api/emergencies-notification")){
+                path.startsWith("/api/emergencies-notification") ||
+                path.startsWith("/api/send")){
             filterChain.doFilter(request, response);
             return;
         }
