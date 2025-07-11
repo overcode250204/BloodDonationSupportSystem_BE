@@ -27,8 +27,6 @@ public class EmergencyBloodRequestController {
 
     }
 
-
-
     @GetMapping("/emergencies-notification/emergency-cases")
     public BaseReponse<?> getEmergencyCasesWithSortedLevelOfUrgency() {
         List<EmergencyBloodRequestDTO> response = emergencyBloodRequestService.getEmergencyCasesWithSortedLevelOfUrgency();

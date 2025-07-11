@@ -1,10 +1,8 @@
 package com.example.BloodDonationSupportSystem.service.donationregistrationservice;
 
+import com.example.BloodDonationSupportSystem.dto.blooddonationscheduleDTO.BloodDonationScheduleDTO;
 import com.example.BloodDonationSupportSystem.dto.donationregistrationDTO.DonationRegistrationDTO;
-import com.example.BloodDonationSupportSystem.entity.DonationRegistrationEntity;
-import com.example.BloodDonationSupportSystem.entity.EmergencyBloodRequestEntity;
-import com.example.BloodDonationSupportSystem.entity.EmergencyDonationEntity;
-import com.example.BloodDonationSupportSystem.entity.UserEntity;
+import com.example.BloodDonationSupportSystem.entity.*;
 import com.example.BloodDonationSupportSystem.exception.BadRequestException;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
 import com.example.BloodDonationSupportSystem.repository.*;
@@ -41,6 +39,7 @@ public class DonationRegistrationService {
 
     @Autowired
     private DonationUtils donationUtils;
+
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
@@ -89,16 +88,10 @@ public class DonationRegistrationService {
         return dto;
     }
 
-    public void updateCancelStatus(UUID registrationId, String status) {
-
-        if (!"HỦY".equalsIgnoreCase(status)) {
-            throw new BadRequestException("Invalid status.");
-        }
+    public void updateCancelStatus(UUID registrationId) {
 
         DonationRegistrationEntity registration = donationRegistrationRepository.findById(registrationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Registration not found."));
-
-
         registration.setStatus("HỦY");
         donationRegistrationRepository.save(registration);
     }
@@ -125,13 +118,16 @@ public class DonationRegistrationService {
         entity.setStatus(dto.getStatus());
         entity.setStartDate(dto.getStartDate());
         entity.setEndDate(dto.getEndDate());
-
+        BloodDonationScheduleEntity schedule = bloodDonationScheduleRepository.findById(dto.getBloodDonationScheduleId()).orElseThrow(()-> new ResourceNotFoundException("BloodDonationScheduleId not found"));
+        entity.setBloodDonationSchedule(schedule);
         entity.setDonor(userRepository.findById(dto.getDonorId())
                 .orElseThrow(() -> new RuntimeException("Donor not found")));
 
 
         return mapToDTO(donationRegistrationRepository.save(entity));
     }
+
+
 
     public DonationRegistrationDTO update(UUID id, DonationRegistrationDTO dto) {
         DonationRegistrationEntity entity = donationRegistrationRepository.findById(id)

@@ -63,7 +63,6 @@ public class EmergencyBloodRequestService {
     public void updateFulfilledEmergencyRequests() {
         emergencyBloodRequestRepository.markFulfilledRequests("ĐÃ HIẾN", "ĐÃ HIẾN", "ĐÃ ĐẠT");
     }
-
     public List<EmergencyBloodRequestDTO> getEmergencyCasesWithSortedLevelOfUrgency() {
         List<EmergencyBloodRequestEntity> emergencyRequests = emergencyBloodRequestRepository.getAllIsFulfillEmergencyBloodRequests();
         emergencyRequests.sort(Comparator.comparingInt(e -> {
@@ -97,6 +96,7 @@ public class EmergencyBloodRequestService {
             dto.setNote(entity.getNote());
             dto.setRegisteredByStaff(staff.getUserId());
             dto.setStaffName(entity.getRegisteredByStaff().getFullName());
+            dto.setRegistrationDate(entity.getRegistrationDate());
         }
 
         return dto;
