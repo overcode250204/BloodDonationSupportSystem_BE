@@ -69,15 +69,28 @@ public class SmsService {
     }
 
     public String sendBloodDonationInvite(String bloodtype, String phoneNumber) {
+
         try {
-            String message = String.format(
+            String bloodDisplay = convertBloodTypeSimple(bloodtype);
+               String  message = String.format(
                     "Chao ban, benh vien dang can mau %s. Mong ban san long hien lai. Dang ky tren web Trung tam Hien mau. LH %s",
-                    bloodtype, phoneNumberContact
+                       bloodDisplay, phoneNumberContact
             );
+
             return speedSMSUtils.sendSMS(phoneNumber, message, 2, device);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return "Send SMS fail: " + e.getMessage();
+        }
+    }
+
+    public String convertBloodTypeSimple(String bloodtype) {
+        if (bloodtype.endsWith("+")) {
+            return bloodtype.replace("+", " cong");
+        } else if (bloodtype.endsWith("-")) {
+            return bloodtype.replace("-", " tru");
+        } else {
+            return bloodtype;
         }
     }
 
