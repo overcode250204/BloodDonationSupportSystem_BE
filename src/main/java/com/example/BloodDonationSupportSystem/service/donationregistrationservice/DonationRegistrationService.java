@@ -6,8 +6,12 @@ import com.example.BloodDonationSupportSystem.entity.*;
 import com.example.BloodDonationSupportSystem.exception.BadRequestException;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
 import com.example.BloodDonationSupportSystem.repository.*;
+import com.example.BloodDonationSupportSystem.service.authaccountservice.OauthService;
+import com.example.BloodDonationSupportSystem.service.emailservice.EmailService;
+import com.example.BloodDonationSupportSystem.service.smsservice.SmsService;
 import com.example.BloodDonationSupportSystem.utils.AuthUtils;
 import com.example.BloodDonationSupportSystem.utils.DonationUtils;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -50,6 +54,15 @@ public class DonationRegistrationService {
     @Autowired
     private HealthCheckRepository healthCheckRepository;
 
+    @Autowired
+    private SmsService smsService;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private OauthAccountRepository oauthAccountRepository;
+
     public DonationRegistrationDTO registerEmergencyDonation(String emergencyRequestId) {
         UUID memberId = UUID.fromString(AuthUtils.getCurrentUser().getUsername());
         UUID emergencyRequestIdUUID = UUID.fromString(emergencyRequestId);
@@ -59,7 +72,6 @@ public class DonationRegistrationService {
 
         EmergencyBloodRequestEntity emergencyBloodRequest = emergencyBloodRequestRepository.findById(emergencyRequestIdUUID)
                 .orElseThrow(() -> new ResourceNotFoundException("Cannot found emergency request"));
-
 
 
         if (!Objects.equals(donor.getBloodType(), emergencyBloodRequest.getBloodType())) {
@@ -93,12 +105,27 @@ public class DonationRegistrationService {
         return dto;
     }
 
-    public void updateCancelStatus(UUID registrationId) {
+    public void updateCancelStatus(UUID registrationId) throws MessagingException {
 
         DonationRegistrationEntity registration = donationRegistrationRepository.findById(registrationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Registration not found."));
         registration.setStatus("HỦY");
+
         donationRegistrationRepository.save(registration);
+
+        if (registration.getDonor().getPhoneNumber() != null) {
+            smsService.sendRegistrationFailureNotification(registration.getDonor().getPhoneNumber());
+        } else {
+            Optional<UserEntity> user = userRepository.findByUserId(registration.getDonor().getUserId());
+            if (user.isPresent()) {
+                UserEntity u = user.get();
+                OauthAccountEntity email = oauthAccountRepository.findByUser(u);
+                emailService.sendRegistrationFailureNotification(registration.getDonor().getFullName(), email.getAccount());
+            } else {
+                throw new ResourceNotFoundException("User not found");
+            }
+
+        }
     }
 
     @Transactional
@@ -124,7 +151,7 @@ public class DonationRegistrationService {
     }
 
     public DonationRegistrationDTO create(DonationRegistrationDTO dto) {
-        UserEntity donor = userRepository.findByUserId(dto.getDonorId()).orElseThrow(()-> new ResourceNotFoundException("Donor Not Found"));
+        UserEntity donor = userRepository.findByUserId(dto.getDonorId()).orElseThrow(() -> new ResourceNotFoundException("Donor Not Found"));
 
         List<DonationRegistrationEntity> uncompleted = donationRegistrationRepository.findUncompletedRegistrations(donor.getUserId(), "CHƯA HIẾN");
         if (!uncompleted.isEmpty()) {
@@ -134,7 +161,7 @@ public class DonationRegistrationService {
         DonationRegistrationEntity latestRegistration = donationRegistrationRepository.findLatestRegistrationByDonor(donor.getUserId()).stream().findFirst().orElse(null);
         if (latestRegistration != null) {
             LocalDate today = LocalDate.now();
-            LocalDate lastRegistrationDate  = latestRegistration.getDateCompleteDonation();
+            LocalDate lastRegistrationDate = latestRegistration.getDateCompleteDonation();
             if (lastRegistrationDate != null && ChronoUnit.DAYS.between(lastRegistrationDate, today) < 90) {
                 throw new BadRequestException("You have donated within the last 90 days. Please wait a little longer !!!");
             }
@@ -145,7 +172,7 @@ public class DonationRegistrationService {
         entity.setStatus(dto.getStatus());
         entity.setStartDate(dto.getStartDate());
         entity.setEndDate(dto.getEndDate());
-        BloodDonationScheduleEntity schedule = bloodDonationScheduleRepository.findById(dto.getBloodDonationScheduleId()).orElseThrow(()-> new ResourceNotFoundException("BloodDonationScheduleId not found"));
+        BloodDonationScheduleEntity schedule = bloodDonationScheduleRepository.findById(dto.getBloodDonationScheduleId()).orElseThrow(() -> new ResourceNotFoundException("BloodDonationScheduleId not found"));
         entity.setBloodDonationSchedule(schedule);
         entity.setDonor(userRepository.findById(dto.getDonorId())
                 .orElseThrow(() -> new RuntimeException("Donor not found")));
@@ -153,7 +180,6 @@ public class DonationRegistrationService {
 
         return mapToDTO(donationRegistrationRepository.save(entity));
     }
-
 
 
     public DonationRegistrationDTO update(UUID id, DonationRegistrationDTO dto) {
@@ -202,7 +228,7 @@ public class DonationRegistrationService {
         return dtos;
     }
 
-    public List<DonationRegistrationDTO> getUnassignedRegistrations(){
+    public List<DonationRegistrationDTO> getUnassignedRegistrations() {
         List<Object[]> registrations = donationRegistrationRepository.findByScreenedByStaffIsNull();
 
         return registrations.stream().map(row -> new DonationRegistrationDTO(
@@ -217,8 +243,6 @@ public class DonationRegistrationService {
         )).toList();
 
     }
-
-
 
 
     private DonationRegistrationDTO mapToDTO(DonationRegistrationEntity entity) {

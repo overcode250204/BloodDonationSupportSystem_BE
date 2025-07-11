@@ -77,14 +77,13 @@ public class DonationProcessService {
             registration.setDateCompleteDonation(LocalDate.now());
             donationRegistrationRepository.save(registration);
             if(registration.getDonor().getPhoneNumber() != null){
-                smsService.sendSmsSuccessRegistrationNotification(registration.getDonor().getPhoneNumber(), registration.getDateCompleteDonation().toString());
                 smsService.sendSmsHealthReminder(registration.getDonor().getPhoneNumber());
             } else {
                 Optional<UserEntity> user = userRepository.findByUserId(registration.getDonor().getUserId());
                 if (user.isPresent()) {
                     UserEntity u = user.get();
                     OauthAccountEntity email = oauthAccountRepository.findByUser(u);
-                    emailService.sendSuccessRegistrationNotification(registration.getDonor().getFullName(), email.getAccount(), registration.getDateCompleteDonation().toString(), registration.getBloodDonationSchedule().getAddressHospital());
+                    emailService.sendHealthReminder(registration.getDonor().getFullName(), email.getAccount());
                 } else {
                    throw new ResourceNotFoundException("User not found");
                 }
