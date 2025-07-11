@@ -13,10 +13,6 @@ public class SmsController {
     @Autowired
     private SmsService smsService;
 
-    @PostMapping("/send")
-    public ResponseEntity<?> responseEntity(@RequestParam String userName,@RequestParam String phoneNumber) {
-        String result = smsService.sendSmsHealthReminder(phoneNumber, userName);
-        return ResponseEntity.ok(result);
-    }
+
 
 }
