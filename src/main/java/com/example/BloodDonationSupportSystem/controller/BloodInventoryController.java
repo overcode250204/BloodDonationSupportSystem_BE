@@ -2,10 +2,10 @@ package com.example.BloodDonationSupportSystem.controller;
 
 import com.example.BloodDonationSupportSystem.base.BaseReponse;
 import com.example.BloodDonationSupportSystem.dto.bloodinventoryDTO.request.BloodVolumeRequest;
-import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.UpdateProcessTestRequest;
+import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.request.UpdateProcessTestRequest;
 import com.example.BloodDonationSupportSystem.dto.bloodinventoryDTO.response.BloodInventoryResponse;
 
-import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.DonationProcessResponse;
+import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.response.DonationProcessResponse;
 import com.example.BloodDonationSupportSystem.service.bloodinventoryservice.BloodInventoryService;
 import com.example.BloodDonationSupportSystem.service.donationprocesservice.BloodDonationProcessService;
 import jakarta.validation.Valid;
