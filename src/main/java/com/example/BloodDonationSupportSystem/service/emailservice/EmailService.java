@@ -204,4 +204,56 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    public String sendEmailToDonationAgain(String userName, String contact) throws MessagingException {
+
+        if (contact == null || contact.trim().isEmpty()) {
+            throw new IllegalArgumentException("Email address cannot be null or empty");
+        }
+        if (userName == null || userName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be null or empty");
+        }
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setTo(contact);
+        helper.setSubject("Lời kêu gọi hiến máu – Cùng lan tỏa sự sống");
+
+        String plainText = "Xin chào " + userName + ",\n\n" +
+                "Cảm ơn bạn đã đăng ký tham gia hiến máu trong thời gian qua.\n\n" +
+                "Hiện tại, chúng tôi rất mong tiếp tục nhận được sự đồng hành của bạn trong các đợt hiến máu sắp tới.\n\n" +
+                "Bạn có thể truy cập hệ thống để đăng ký lại vào thời gian phù hợp, hoặc chờ thông báo khi có lịch mới.\n\n" +
+                "Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ với chúng tôi qua địa chỉ email: " + email + "\n\n" +
+                "Trân trọng,\n" +
+                "Trung tâm Hiến máu";
+
+        String htmlContent = """
+    <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; color: #333;">
+        <h2 style="color: #b71c1c;">Lời kêu gọi hiến máu – Cùng lan tỏa sự sống</h2>
+        <p>Xin chào <strong>%s</strong>,</p>
+        <p>
+            Cảm ơn bạn đã quan tâm và đăng ký tham gia hiến máu cùng chúng tôi trong thời gian qua.
+        </p>
+        <p>
+            Hiện tại, chúng tôi rất mong tiếp tục nhận được sự đồng hành quý báu của bạn trong những đợt hiến máu sắp tới.
+        </p>
+        <p>
+            Bạn có thể truy cập hệ thống để <strong>đăng ký lại</strong> với thời gian phù hợp, hoặc chờ thông báo khi có lịch mới được cập nhật.
+        </p>
+        <p>
+            Mọi thắc mắc hoặc cần hỗ trợ, vui lòng liên hệ:<br/>
+            <strong>Email:</strong> %s
+        </p>
+        <p style="margin-top: 32px;">Trân trọng,<br/>
+        <strong>Trung tâm Hiến máu</strong></p>
+    </div>
+    """.formatted(userName, email);
+
+        helper.setText(plainText, htmlContent);
+        helper.setFrom(email);
+        mailSender.send(message);
+
+        return "Email send successfully to " + userName + " at email address" + contact;
+    }
+
+
 }
