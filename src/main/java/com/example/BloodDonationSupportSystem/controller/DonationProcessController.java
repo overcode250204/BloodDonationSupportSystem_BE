@@ -34,9 +34,9 @@ public class DonationProcessController {
             request.setDonationProcessId(donationProcessId);
             donationProcessService.updateDonationProcess(request);
             return new BaseReponse<>(HttpStatus.OK.value(), "Update successfully", null);
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             return new BaseReponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error: " + e.getMessage(), null);
-        }
+        } 
     }
 
 }
