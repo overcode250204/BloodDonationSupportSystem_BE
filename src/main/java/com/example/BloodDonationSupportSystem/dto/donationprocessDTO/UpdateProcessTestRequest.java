@@ -1,4 +1,4 @@
-package com.example.BloodDonationSupportSystem.dto.donationprocessDTO.request;
+package com.example.BloodDonationSupportSystem.dto.donationprocessDTO;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

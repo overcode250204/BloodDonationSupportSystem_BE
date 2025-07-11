@@ -1,6 +1,6 @@
 package com.example.BloodDonationSupportSystem.service.emergencybloodrequestservice;
 
-import com.example.BloodDonationSupportSystem.dto.emergencybloodrequestDTO.EmergencyBloodRequestDTO;
+import com.example.BloodDonationSupportSystem.dto.emergencybloodrequestDTO.request.EmergencyBloodRequestDTO;
 import com.example.BloodDonationSupportSystem.entity.EmergencyBloodRequestEntity;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;

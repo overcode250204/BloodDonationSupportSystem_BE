@@ -1,4 +1,4 @@
-package com.example.BloodDonationSupportSystem.dto.donationprocessDTO.response;
+package com.example.BloodDonationSupportSystem.dto.donationprocessDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

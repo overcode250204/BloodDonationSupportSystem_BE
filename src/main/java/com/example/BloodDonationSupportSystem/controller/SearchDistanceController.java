@@ -1,8 +1,8 @@
 package com.example.BloodDonationSupportSystem.controller;
 
 import com.example.BloodDonationSupportSystem.base.BaseReponse;
-import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.request.SearchDistanceRequest;
-import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.DonorResponse;
+import com.example.BloodDonationSupportSystem.dto.searchdistanceDTO.request.SearchDistanceRequest;
+import com.example.BloodDonationSupportSystem.dto.searchdistanceDTO.response.DonorResponse;
 import com.example.BloodDonationSupportSystem.service.searchdistanceservice.SearchDistanceService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;

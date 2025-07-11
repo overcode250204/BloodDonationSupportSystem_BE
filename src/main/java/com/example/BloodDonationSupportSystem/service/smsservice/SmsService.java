@@ -68,6 +68,17 @@ public class SmsService {
         }
     }
 
-
+    public String sendBloodDonationInvite(String bloodtype, String phoneNumber) {
+        try {
+            String message = String.format(
+                    "Chao ban, benh vien dang can mau %s. Mong ban san long hien lai. Dang ky tren web Trung tam Hien mau. LH %s",
+                    bloodtype, phoneNumberContact
+            );
+            return speedSMSUtils.sendSMS(phoneNumber, message, 2, device);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Send SMS fail: " + e.getMessage();
+        }
+    }
 
 }
