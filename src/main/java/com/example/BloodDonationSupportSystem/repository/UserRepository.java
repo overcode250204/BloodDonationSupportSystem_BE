@@ -1,6 +1,5 @@
 package com.example.BloodDonationSupportSystem.repository;
 
-import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.DonorResponse;
 import com.example.BloodDonationSupportSystem.entity.OauthAccountEntity;
 import com.example.BloodDonationSupportSystem.entity.RoleEntity;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;

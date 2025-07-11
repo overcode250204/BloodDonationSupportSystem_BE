@@ -14,9 +14,10 @@ import java.util.List;
 import java.util.UUID;
 
 
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Entity(name ="user_table")
 public class UserEntity {
     @Id

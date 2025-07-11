@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -65,10 +66,12 @@ public interface DonationRegistrationRepository extends JpaRepository<DonationRe
     @Query("""
     SELECT dr
     FROM donation_registration dr
-    WHERE dr.status = 'CHƯA HIẾN' AND dr.bloodDonationSchedule IS NULL AND :donationDate BETWEEN dr.startDate AND dr.endDate
+    WHERE dr.status = :donationRegistrationStatus AND dr.bloodDonationSchedule IS NULL AND :donationDate BETWEEN dr.startDate AND dr.endDate
     ORDER BY dr.registrationDate ASC
 """)
-    List<DonationRegistrationEntity> findEligibleRegistrations(@Param("donationDate")LocalDate donationDate);
+    List<DonationRegistrationEntity> findEligibleRegistrations(@Param("donationDate")LocalDate donationDate, @Param("donationRegistrationStatus") String donationRegistrationStatus);
+
+//    List<DonationRegistrationReportDTO> getDonationReport(@Param("from") Date from, @Param("to") Date to);
 
 
     @Query("""

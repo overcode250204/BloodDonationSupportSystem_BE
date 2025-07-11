@@ -4,6 +4,7 @@ import com.example.BloodDonationSupportSystem.dto.blooddonationscheduleDTO.Blood
 import com.example.BloodDonationSupportSystem.dto.donationregistrationDTO.StatByDateDTO;
 import com.example.BloodDonationSupportSystem.entity.BloodDonationScheduleEntity;
 import com.example.BloodDonationSupportSystem.entity.DonationRegistrationEntity;
+import com.example.BloodDonationSupportSystem.exception.BadRequestException;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
 import com.example.BloodDonationSupportSystem.repository.BloodDonationScheduleRepository;
 import com.example.BloodDonationSupportSystem.repository.DonationRegistrationRepository;
@@ -35,7 +36,7 @@ public class BloodDonationScheduleService {
         LocalDate today = LocalDate.now();
         List<StatByDateDTO> result = new ArrayList<>();
 
-        for (int i = 0; i <= 90; i++) {
+        for (int i = 0; i <= 30; i++) {
             LocalDate date = today.plusDays(i);
             Long count = donationRegistrationRepository.countByDateBetweenStartAndEndDate(date, "CHƯA HIẾN");
             result.add(new StatByDateDTO(date, count));
@@ -46,9 +47,13 @@ public class BloodDonationScheduleService {
 
     public BloodDonationScheduleDTO createSchedule(BloodDonationScheduleDTO dto, UUID staffId) {
 
+        BloodDonationScheduleEntity exist = bloodDonationScheduleRepository.findByAddressHospitalAndDonationDate(dto.getAddressHospital(), dto.getDonationDate());
+        if (exist != null) {
+            throw new ResourceNotFoundException("Schedule already exists");
+        }
+
         BloodDonationScheduleEntity schedule = new BloodDonationScheduleEntity();
-        schedule.setEditedByStaffId(userRepository.findById(staffId).orElseThrow(()-> new ResourceNotFoundException("Staff not found")));
-        schedule.setDonationDate(dto.getDonationDate());
+        schedule.setEditedByStaffId(userRepository.findById(staffId).orElseThrow(()-> new ResourceNotFoundException("Staff not found")));schedule.setDonationDate(dto.getDonationDate());
         schedule.setStartTime(dto.getStartTime());
         schedule.setEndTime(dto.getEndTime());
         schedule.setAddressHospital(dto.getAddressHospital());
@@ -66,7 +71,7 @@ public class BloodDonationScheduleService {
 
 
     public int assignRegistrationsToSchedule(BloodDonationScheduleEntity schedule) {
-        List<DonationRegistrationEntity> eligibleRegistrations = donationRegistrationRepository.findEligibleRegistrations(schedule.getDonationDate());
+        List<DonationRegistrationEntity> eligibleRegistrations = donationRegistrationRepository.findEligibleRegistrations(schedule.getDonationDate(), "CHƯA HIẾN");
 
         int max = schedule.getAmountRegistration();
 
@@ -83,7 +88,8 @@ public class BloodDonationScheduleService {
 
 
     public List<BloodDonationScheduleDTO> getAll() {
-        List<BloodDonationScheduleEntity> schedules = bloodDonationScheduleRepository.findAll();
+        LocalDate today = LocalDate.now();
+        List<BloodDonationScheduleEntity> schedules = bloodDonationScheduleRepository.findAllByDonationDateBetween(today, today.plusDays(90));
         if (schedules.isEmpty()) {
             throw new ResourceNotFoundException("Schedules not found");
         }
@@ -107,8 +113,9 @@ public class BloodDonationScheduleService {
     }
 
 
-    public BloodDonationScheduleDTO mapToDTO(BloodDonationScheduleEntity entity) {
+    private BloodDonationScheduleDTO mapToDTO(BloodDonationScheduleEntity entity) {
         BloodDonationScheduleDTO dto = new BloodDonationScheduleDTO();
+        dto.setBloodDonationScheduleId(entity.getBloodDonationScheduleId());
         dto.setDonationDate(entity.getDonationDate());
         dto.setStartTime(entity.getStartTime());
         dto.setEndTime(entity.getEndTime());
@@ -122,4 +129,55 @@ public class BloodDonationScheduleService {
     }
 
 
+    public List<BloodDonationScheduleDTO> getAllByAdmin() {
+        List<BloodDonationScheduleDTO> list = bloodDonationScheduleRepository.findAll().stream().map(s -> mapToDTO(s)).toList();
+        if (list.isEmpty()) {
+            throw new ResourceNotFoundException("Schedules not found");
+        }
+        return list;
+    }
+
+    public BloodDonationScheduleDTO updateSchedule(String id, BloodDonationScheduleDTO dto) {
+        UUID scheduleIdUUID;
+        try {
+            scheduleIdUUID = UUID.fromString(id);
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("Fail to parse schedule id to UUID");
+        }
+        BloodDonationScheduleEntity entity = bloodDonationScheduleRepository.findById(scheduleIdUUID)
+                .orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));
+
+
+        entity.setAddressHospital(dto.getAddressHospital());
+        entity.setStartTime(dto.getStartTime());
+        entity.setEndTime(dto.getEndTime());
+
+        if (dto.getRegistrationMatching() < dto.getAmountRegistration()) {
+            entity.setAmountRegistration(dto.getAmountRegistration());
+        } else {
+            throw new BadRequestException("Amount of edited registrations must be greater than or equal to amount of registrations");
+        }
+
+
+        BloodDonationScheduleEntity saved = bloodDonationScheduleRepository.save(entity);
+        return mapToDTO(saved);
+
+
+
+    }
+
+    public void deleteSchedule(UUID id) {
+        BloodDonationScheduleEntity entity = bloodDonationScheduleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));
+
+
+        if (entity.getDonationRegistrations() != null && !entity.getDonationRegistrations().isEmpty()) {
+            for (DonationRegistrationEntity registration : entity.getDonationRegistrations()) {
+                registration.setBloodDonationSchedule(null);
+            }
+            donationRegistrationRepository.saveAll(entity.getDonationRegistrations());
+        }
+
+        bloodDonationScheduleRepository.delete(entity);
+    }
 }
