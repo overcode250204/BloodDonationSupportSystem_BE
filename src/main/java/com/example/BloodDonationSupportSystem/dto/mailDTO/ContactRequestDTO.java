@@ -9,6 +9,9 @@ import lombok.Data;
 public class ContactRequestDTO {
     @NotBlank(message = "Donor Name cannot be blank")
     private String donorName;
+    @NotBlank
+    @Pattern(regexp = "^(A|B|AB|O)[+-]$", message = "Loai mau khong hop le")
+    private String bloodType;
     @NotBlank(message = "Contact cannot be blank")
     @Pattern(
             regexp = "^.+@.+\\..+$",
