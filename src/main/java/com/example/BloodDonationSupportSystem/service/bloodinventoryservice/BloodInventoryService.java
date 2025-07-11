@@ -1,10 +1,9 @@
 package com.example.BloodDonationSupportSystem.service.bloodinventoryservice;
 
 import com.example.BloodDonationSupportSystem.base.BaseReponse;
-import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.BloodInventoryResponse;
+import com.example.BloodDonationSupportSystem.dto.bloodinventoryDTO.response.BloodInventoryResponse;
 
-import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.DonationProcessResponse;
-import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.EmergencyBloodEntityResponse;
+import com.example.BloodDonationSupportSystem.dto.emergencybloodrequestDTO.response.EmergencyBloodEntityResponse;
 import com.example.BloodDonationSupportSystem.entity.BloodInventory;
 import com.example.BloodDonationSupportSystem.entity.DonationProcessEntity;
 import com.example.BloodDonationSupportSystem.entity.EmergencyBloodRequestEntity;
@@ -16,7 +15,6 @@ import com.example.BloodDonationSupportSystem.service.emergencybloodrequestservi
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,8 +31,7 @@ public class BloodInventoryService {
 
     @Autowired
     private  DonationEmergencyRequestRepository donationEmergencyRequestRepository;
-    @Autowired
-    private BloodDonationRegistrionRepository bloodDonationRegistrionRepository;
+
     @Autowired
     private UserRepository userRepository;
     @Autowired

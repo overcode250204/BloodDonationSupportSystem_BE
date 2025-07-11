@@ -10,12 +10,12 @@ public class ContactRequestDTO {
     @NotBlank(message = "Donor Name cannot be blank")
     private String donorName;
     @NotBlank
-    @Pattern(regexp = "^(A|B|AB|O)[+-]$", message = "Loai mau khong hop le")
+    @Pattern(regexp = "^(A|B|AB|O)[+-]$", message = "Blood type not suitable")
     private String bloodType;
     @NotBlank(message = "Contact cannot be blank")
     @Pattern(
             regexp = "^.+@.+\\..+$",
-            message = "Email không hợp lệ"
+            message = "Email is not in correct format"
     )
     private String contact;
 }

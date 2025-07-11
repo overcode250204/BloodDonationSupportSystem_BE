@@ -1,6 +1,5 @@
-package com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response;
+package com.example.BloodDonationSupportSystem.dto.emergencybloodrequestDTO.response;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

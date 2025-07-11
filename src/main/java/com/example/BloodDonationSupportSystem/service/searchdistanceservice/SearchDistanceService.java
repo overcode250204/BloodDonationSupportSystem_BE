@@ -1,5 +1,5 @@
 package com.example.BloodDonationSupportSystem.service.searchdistanceservice;
-import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.DonorResponse;
+import com.example.BloodDonationSupportSystem.dto.searchdistanceDTO.response.DonorResponse;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.GeoLocation;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
@@ -9,7 +9,6 @@ import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
