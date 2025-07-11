@@ -45,6 +45,7 @@ public class SecurityConfig{
                         .requestMatchers("/emergencies-notification/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/images/uploads/**").permitAll()
+                        .requestMatchers("/api/send").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/staff/**").hasRole("STAFF")
                         .requestMatchers("/api/member/**").hasRole("MEMBER")
