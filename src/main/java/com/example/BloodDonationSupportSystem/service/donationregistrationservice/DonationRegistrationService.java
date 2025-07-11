@@ -8,6 +8,7 @@ import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundExceptio
 import com.example.BloodDonationSupportSystem.repository.*;
 import com.example.BloodDonationSupportSystem.utils.AuthUtils;
 import com.example.BloodDonationSupportSystem.utils.DonationUtils;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,9 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class DonationRegistrationService {
@@ -43,6 +46,9 @@ public class DonationRegistrationService {
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    private HealthCheckRepository healthCheckRepository;
 
     public DonationRegistrationDTO registerEmergencyDonation(String emergencyRequestId) {
         UUID memberId = UUID.fromString(AuthUtils.getCurrentUser().getUsername());
@@ -79,7 +85,6 @@ public class DonationRegistrationService {
         EmergencyDonationEntity emergencyLink = new EmergencyDonationEntity();
         emergencyLink.setDonationRegistration(saved);
         emergencyLink.setEmergencyBloodRequest(emergencyBloodRequest);
-        emergencyLink.setStatus("CHỜ XÁC NHẬN");
         emergencyLink.setAssignedDate(LocalDate.now());
         emergencyDonationRepository.save(emergencyLink);
         DonationRegistrationDTO dto = mapToDTO(saved);
@@ -94,6 +99,28 @@ public class DonationRegistrationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Registration not found."));
         registration.setStatus("HỦY");
         donationRegistrationRepository.save(registration);
+    }
+
+    @Transactional
+    public void updateScreenByStaff(UUID registrationId, UUID staffId) {
+
+        DonationRegistrationEntity registration = donationRegistrationRepository.findById(registrationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found: " + registrationId));
+
+        UserEntity staff = userRepository.findByUserId(staffId)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found: " + staffId));
+
+        registration.setScreenedByStaff(staff);
+        donationRegistrationRepository.save(registration);
+
+
+        HealthCheckEntity healthCheck = new HealthCheckEntity();
+        healthCheck.setHeight(0);
+        healthCheck.setWeight(0);
+        healthCheck.setHealthStatus("CHỜ ĐỢI");
+        healthCheck.setDonationRegistrationHealthCheck(registration);
+        healthCheckRepository.save(healthCheck);
+
     }
 
     public DonationRegistrationDTO create(DonationRegistrationDTO dto) {
@@ -173,6 +200,22 @@ public class DonationRegistrationService {
             throw new ResourceNotFoundException("DonationRegistrations not found");
         }
         return dtos;
+    }
+
+    public List<DonationRegistrationDTO> getUnassignedRegistrations(){
+        List<Object[]> registrations = donationRegistrationRepository.findByScreenedByStaffIsNull();
+
+        return registrations.stream().map(row -> new DonationRegistrationDTO(
+                UUID.fromString(row[0].toString()),                 // donation_registration_id
+                row[1].toString(),                                  // full_name
+                row[2] != null ? row[2].toString() : null,          // phone_number
+                row[3] != null ? row[3].toString() : null,          // account
+                row[4] != null ? row[4].toString() : null,          // level_of_urgency
+                LocalDate.parse(row[5].toString()),                 // registration_date
+                row[6] != null ? row[6].toString() : null,          // address_hospital
+                row[7] != null ? UUID.fromString(row[7].toString()) : null  // screened_by_staff_id
+        )).toList();
+
     }
 
 
