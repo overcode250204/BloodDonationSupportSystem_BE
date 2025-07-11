@@ -1,0 +1,73 @@
+package com.example.BloodDonationSupportSystem.service.smsservice;
+
+
+
+import com.example.BloodDonationSupportSystem.utils.SpeedSMSUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+
+
+@Service
+public class SmsService {
+    @Autowired
+    private SpeedSMSUtils speedSMSUtils;
+
+    @Value("${device}")
+    private String device;
+
+    @Value("${phonenumber.contact}")
+    private String phoneNumberContact;
+
+    public String sendSmsHealthReminder(String phoneNumber) {
+        try {
+            String message = String.format(
+                    "Chao %s, cam on ban da hien mau. Theo doi suc khoe 48h toi. Neu co dau hieu bat thuong, hay den co so y te gan nhat. So L.H %s - Trung tam Hien mau",
+                        phoneNumber, phoneNumberContact
+            );
+
+
+
+            return speedSMSUtils.sendSMS(phoneNumber, message, 2, device);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Send SMS fail" + e.getMessage();
+        }
+
+    }
+
+    public String sendSmsSuccessRegistrationNotification(String phoneNumber, String completeDate) {
+
+        try {
+            String message = String.format(
+                    "Chao %s, ban da hien mau thanh cong luc %s.Cam ban da danh thoi gian va giup do. Nho an nhe, nghi ngoi day du. So lien he %s Cam on – Trung Tam Hien mau.",
+                    phoneNumber, completeDate, phoneNumberContact
+            );
+            return speedSMSUtils.sendSMS(phoneNumber, message, 2, device);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Send SMS fail" + e.getMessage();
+        }
+
+
+
+    }
+
+    public String sendRegistrationFailureNotification(String phoneNumber) {
+        try {
+            String message = String.format(
+                    "Rat tiec %s, dang ky hien mau chua thanh cong do chua co lich phu hop. Mong ban tiep tuc dong hanh. LH %s – Trung tam Hien mau",
+                    phoneNumber, phoneNumberContact
+            );
+            return speedSMSUtils.sendSMS(message, message, 2, device);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Send SMS fail" + e.getMessage();
+        }
+    }
+
+
+
+}
