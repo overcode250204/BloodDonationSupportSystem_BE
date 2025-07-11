@@ -38,7 +38,9 @@ public class SecurityConfig{
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/homepage/**").permitAll()
+                        .requestMatchers("/api/homepage/**").permitAll()
+//                        .requestMatchers("/homepage/uploads/**").permitAll()
+
                         .requestMatchers("/api/emergencies-notification/**").permitAll()
                         .requestMatchers("/emergencies-notification/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()

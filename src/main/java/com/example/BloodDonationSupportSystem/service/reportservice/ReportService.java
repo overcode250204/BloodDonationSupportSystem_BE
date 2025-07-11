@@ -1,12 +1,18 @@
 package com.example.BloodDonationSupportSystem.service.reportservice;
 
-import com.example.BloodDonationSupportSystem.dto.reportDTO.DonationRegistrationReportDTO;
+
 import com.example.BloodDonationSupportSystem.dto.reportDTO.OverviewReportDTO;
 import com.example.BloodDonationSupportSystem.dto.reportDTO.ReportFilterRequest;
+import com.example.BloodDonationSupportSystem.dto.reportDTO.ReportFilterRequestByDate;
 import com.example.BloodDonationSupportSystem.entity.BloodInventory;
+import com.example.BloodDonationSupportSystem.repository.BloodDonationScheduleRepository;
 import com.example.BloodDonationSupportSystem.repository.BloodInventoryRepository;
 import com.example.BloodDonationSupportSystem.repository.DonationRegistrationRepository;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
+import org.apache.poi.ss.usermodel.Cell;
+
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -16,7 +22,13 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.OutputStream;
+
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ReportService {
@@ -31,41 +43,17 @@ public class ReportService {
     @Autowired
     BloodInventoryRepository bloodInventoryRepository;
 
-//    public void exportDonationReportToExcel(ReportFilterRequest filter, OutputStream out) throws IOException {
-//        List<DonationRegistrationReportDTO> data =
-//                donationRegistrationRepository.getDonationReport(filter.getFromDate(), filter.getToDate());
-//
-//        Workbook workbook = new XSSFWorkbook();
-//        Sheet sheet = workbook.createSheet("Báo cáo ĐK hiến máu");
-//
-//        String[] headers = {"STT", "Họ tên", "SĐT", "Nhóm máu", "Ngày ĐK", "Ngày hoàn thành", "Trạng thái", "Địa chỉ", "Nhân viên xử lý", "Bệnh viện"};
-//
-//        Row headerRow = sheet.createRow(0);
-//        for (int i = 0; i < headers.length; i++) {
-//            headerRow.createCell(i).setCellValue(headers[i]);
-//        }
-//
-//        int rowNum = 1;
-//        int index = 1;
-//        for (DonationRegistrationReportDTO dto : data) {
-//            Row row = sheet.createRow(rowNum++);
-//            row.createCell(0).setCellValue(index++);
-//            row.createCell(1).setCellValue(dto.getFullName());
-//            row.createCell(2).setCellValue(dto.getPhoneNumber());
-//            row.createCell(3).setCellValue(dto.getBloodType());
-//            row.createCell(4).setCellValue(dto.getRegistrationDate().toString());
-//            row.createCell(5).setCellValue(dto.getDateCompleteDonation() != null ? dto.getDateCompleteDonation().toString() : "");
-//            row.createCell(6).setCellValue(dto.getStatus());
-//            row.createCell(7).setCellValue(dto.getAddress());
-//            row.createCell(8).setCellValue(dto.getStaffName() != null ? dto.getStaffName() : "");
-//            row.createCell(9).setCellValue(dto.getHospitalAddress() != null ? dto.getHospitalAddress() : "");
-//        }
-//
-//        workbook.write(out);
-//        workbook.close();
-//    }
 
-    public void exportBloodInventoryReportToExcel( OutputStream out) throws IOException {
+    @Autowired
+    DonationRegistrationRepository bloodDonationRegistrationRepository;
+
+    @Autowired
+    BloodDonationScheduleRepository bloodDonationScheduleRepository;
+
+
+
+    public void exportBloodInventoryReportToExcel( HttpServletResponse response) throws IOException {
+
         List<BloodInventory> data = bloodInventoryRepository.findAll();
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Báo cáo kho máu");
@@ -87,15 +75,143 @@ public class ReportService {
             System.out.println(bi.getBloodTypeId());
         }
 
-        workbook.write(out);
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=donation_report.xlsx");
+
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
         workbook.close();
+        outputStream.close();
+    }
+
+    public void exportBloodDonationReportToExcel(ReportFilterRequestByDate request ,HttpServletResponse response) throws IOException {
+        List<Object[]> reportData = bloodDonationScheduleRepository.getDonationReport(Date.valueOf(request.getStartDate()),
+                Date.valueOf(request.getEndDate()));
+
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Báo Cáo Hiến Máu");
+
+
+        Row headerRow = sheet.createRow(0);
+        String[] headers = {"Ngày hiến", "Bệnh viện", "Tổng đăng ký", "Đã hiến", "Hủy", "Tổng lượng máu (ml)"};
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+        }
+
+
+        int rowNum = 1;
+        for (Object[] row : reportData) {
+            Row dataRow = sheet.createRow(rowNum++);
+            dataRow.createCell(0).setCellValue(row[0].toString());
+            dataRow.createCell(1).setCellValue(row[1].toString());
+            dataRow.createCell(2).setCellValue(((Number) row[2]).intValue());
+            dataRow.createCell(3).setCellValue(((Number) row[3]).intValue());
+            dataRow.createCell(4).setCellValue(((Number) row[4]).intValue());
+            dataRow.createCell(5).setCellValue(((Number) row[5]).doubleValue());
+        }
+
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=donation_report.xlsx");
+
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        outputStream.close();
+
     }
 
     public OverviewReportDTO getOverview(ReportFilterRequest request){
         OverviewReportDTO overviewReportDTO = new OverviewReportDTO();
         overviewReportDTO.setNumberAccount(userRepository.countFilter(request.getYear(), request.getMonth()));
+
+        overviewReportDTO.setNumberBloodDonationsRegistration(bloodDonationRegistrationRepository.countFilter(request.getYear(), request.getMonth()));
+        overviewReportDTO.setNumberSuccessDonation(bloodDonationRegistrationRepository.countNumberSuccessDonationFilter(request.getYear(), request.getMonth()));
+        overviewReportDTO.setNumberFailureDonation(bloodDonationRegistrationRepository.countNumberFailureDonationFilter(request.getYear(), request.getMonth()));
+        overviewReportDTO.setNumberNotCompleteDonation(bloodDonationRegistrationRepository.countNumberNotCompleteDonationFilter(request.getYear(), request.getMonth()));
+        overviewReportDTO.setNumberNotAcceptedDonation(bloodDonationRegistrationRepository.countNumberNotAcceptedDonationFilter(request.getYear(), request.getMonth()));
         return overviewReportDTO;
     }
+
+    public Map<Integer, Map<String, Integer>> getMonthlyStats(ReportFilterRequest request) {
+        List<Object[]> results = bloodDonationRegistrationRepository.getMonthlyDonationStats(request.getYear());
+
+        Map<Integer, Map<String, Integer>> monthlyData = new HashMap<>();
+
+        for (int i = 1; i <= 12; i++) {
+            Map<String, Integer> counts = new HashMap<>();
+            counts.put("successCount", 0);
+            counts.put("failedCount", 0);
+            monthlyData.put(i, counts);
+        }
+
+
+        for (Object[] row : results) {
+            Integer month = ((Number) row[0]).intValue();
+            Integer successCount = ((Number) row[1]).intValue();
+            Integer failedCount = ((Number) row[2]).intValue();
+
+            Map<String, Integer> counts = new HashMap<>();
+            counts.put("successCount", successCount);
+            counts.put("failedCount", failedCount);
+            monthlyData.put(month, counts);
+        }
+
+        return monthlyData;
+    }
+
+    public Map<String, Object> getCumulativeVolume(ReportFilterRequest request) {
+
+        LocalDate endDate = LocalDate.of(request.getYear(), request.getMonth(), 1).withDayOfMonth(
+                LocalDate.of(request.getYear(), request.getMonth(), 1).lengthOfMonth()
+        );
+
+        List<Object[]> results = bloodInventoryRepository.getCumulativeVolume(Date.valueOf(endDate));
+
+
+        Map<String, Integer> bloodVolumeData = new LinkedHashMap<>();
+        for (Object[] row : results) {
+            String bloodTypeId = row[0].toString();
+            Integer totalVolume = ((Number) row[1]).intValue();
+            bloodVolumeData.put(bloodTypeId, totalVolume);
+        }
+
+        return  Map.of("bloodVolumeData", bloodVolumeData);
+    }
+
+    public Map<String, Object> getDonationReport(ReportFilterRequestByDate request) {
+        List<Object[]> result = bloodDonationScheduleRepository.getDonationReport(
+                Date.valueOf(request.getStartDate()),
+                Date.valueOf(request.getEndDate())
+        );
+
+        Map<String, Map<String, Object>> reportData = new LinkedHashMap<>();
+
+        for (Object[] row : result) {
+            String date =  row[0].toString();
+            String hospital = (String) row[1];
+            Integer totalRegistration = ((Number) row[2]).intValue();
+            Integer totalSuccess = ((Number) row[3]).intValue();
+            Integer totalFailed = ((Number) row[4]).intValue();
+            Integer totalVolume = ((Number) row[5]).intValue();
+
+
+
+            Map<String, Object> monthlyData = new LinkedHashMap<>();
+            monthlyData.put("date", date);
+            monthlyData.put("hospital", hospital);
+            monthlyData.put("total_registration", totalRegistration);
+            monthlyData.put("total_success", totalSuccess);
+            monthlyData.put("total_failed", totalFailed);
+            monthlyData.put("total_volume", totalVolume);
+
+            reportData.put(date, monthlyData);
+        }
+
+        return  Map.of("donationReport", reportData);
+    }
+
 
 
 }
