@@ -1,14 +1,17 @@
 package com.example.BloodDonationSupportSystem.service.historyservice;
 
 import com.example.BloodDonationSupportSystem.dto.donationhistoryDTO.DonorDonationInfoDTO;
+import com.example.BloodDonationSupportSystem.entity.DonationHistoryEntity;
 import com.example.BloodDonationSupportSystem.entity.DonationRegistrationEntity;
 import com.example.BloodDonationSupportSystem.exception.BadRequestException;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
+import com.example.BloodDonationSupportSystem.repository.DonationHistoryRepository;
 import com.example.BloodDonationSupportSystem.repository.DonationRegistrationRepository;
 import com.example.BloodDonationSupportSystem.utils.AuthUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +21,9 @@ public class DonationInfoService {
 
     @Autowired
     private DonationRegistrationRepository donationRegistrationRepository;
+
+    @Autowired
+    private DonationHistoryRepository donationHistoryRepository;
 
     public List<DonorDonationInfoDTO> getDonationInfo() {
         try {
@@ -65,4 +71,16 @@ public class DonationInfoService {
             throw new RuntimeException("Error while getting donation info by ID", e);
         }
     }
+
+    public void saveDonationHistory(DonationRegistrationEntity registration) {
+
+        DonationHistoryEntity history = new DonationHistoryEntity();
+        history.setRegistrationDate(registration.getRegistrationDate());
+        history.setAddressHospital(registration.getBloodDonationSchedule().getAddressHospital());
+        history.setDonationRegistration(registration);
+        history.setDonorHistory(registration.getDonor());
+
+        donationHistoryRepository.save(history);
+    }
+
 }
