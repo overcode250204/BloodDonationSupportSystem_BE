@@ -18,6 +18,5 @@ public class SmsController {
     @PostMapping("/staff/send-invite-sms")
     public BaseReponse<String> sendSms(@RequestBody @Valid SmsDonationRequest smsRequest) {
         return new BaseReponse<>(200, "SMS sent successfully", smsService.sendBloodDonationInvite(smsRequest.getBloodType(), smsRequest.getContact()));
-   //     return new BaseReponse<>(200, "SMS sent successfully","Sucss"+ smsRequest.getContact() + " " + smsRequest.getBloodType());
     }
 }
