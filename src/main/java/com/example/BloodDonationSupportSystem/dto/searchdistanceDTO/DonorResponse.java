@@ -1,4 +1,4 @@
-package com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response;
+package com.example.BloodDonationSupportSystem.dto.searchdistanceDTO.response;
 
 
 

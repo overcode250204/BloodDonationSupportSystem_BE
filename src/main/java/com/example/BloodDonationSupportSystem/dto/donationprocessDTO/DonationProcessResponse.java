@@ -1,6 +1,5 @@
-package com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response;
+package com.example.BloodDonationSupportSystem.dto.donationprocessDTO.response;
 
-import com.example.BloodDonationSupportSystem.entity.DonationProcessEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
