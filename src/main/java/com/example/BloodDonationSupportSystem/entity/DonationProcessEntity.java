@@ -28,6 +28,8 @@ public class DonationProcessEntity {
     @Column(name = "status")
     private String status;
 
+
+
     @OneToOne
     @JoinColumn(name = "donation_registration_id")
     private DonationRegistrationEntity donationRegistrationProcess;
