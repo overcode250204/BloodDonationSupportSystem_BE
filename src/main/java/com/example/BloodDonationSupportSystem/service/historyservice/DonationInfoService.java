@@ -1,10 +1,14 @@
 package com.example.BloodDonationSupportSystem.service.historyservice;
 
 import com.example.BloodDonationSupportSystem.dto.donationhistoryDTO.DonorDonationInfoDTO;
+import com.example.BloodDonationSupportSystem.entity.DonationCertificateEntity;
 import com.example.BloodDonationSupportSystem.entity.DonationHistoryEntity;
 import com.example.BloodDonationSupportSystem.entity.DonationRegistrationEntity;
+import com.example.BloodDonationSupportSystem.entity.EmergencyDonationEntity;
 import com.example.BloodDonationSupportSystem.exception.BadRequestException;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
+import com.example.BloodDonationSupportSystem.repository.DonationCertificateRepository;
+import com.example.BloodDonationSupportSystem.repository.DonationEmergencyRepository;
 import com.example.BloodDonationSupportSystem.repository.DonationHistoryRepository;
 import com.example.BloodDonationSupportSystem.repository.DonationRegistrationRepository;
 import com.example.BloodDonationSupportSystem.utils.AuthUtils;
@@ -13,7 +17,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -24,6 +30,12 @@ public class DonationInfoService {
 
     @Autowired
     private DonationHistoryRepository donationHistoryRepository;
+
+    @Autowired
+    private DonationEmergencyRepository donationEmergencyRepository;
+
+    @Autowired
+    private DonationCertificateRepository donationCertificateRepository;
 
     public List<DonorDonationInfoDTO> getDonationInfo() {
         try {
@@ -81,6 +93,25 @@ public class DonationInfoService {
         history.setDonorHistory(registration.getDonor());
 
         donationHistoryRepository.save(history);
+    }
+
+    public void saveCertificateInfo(DonationRegistrationEntity registration){
+
+        DonationCertificateEntity certificateEntity = new DonationCertificateEntity();
+        certificateEntity.setTitle("GIẤY CHỨNG NHẬN HIẾN MÁU");
+        certificateEntity.setIssuedAt(LocalDate.now());
+        certificateEntity.setDonorCertificate(registration.getDonor());
+        certificateEntity.setDonationRegistrationCertificate(registration);
+        Optional<EmergencyDonationEntity> emergencyDonation =
+                donationEmergencyRepository.findByDonationRegistrationId(registration.getDonationRegistrationId());
+
+        if (emergencyDonation.isPresent() && emergencyDonation.get().getEmergencyBloodRequest() != null) {
+            certificateEntity.setTypeCertificate("HIẾN MÁU KHẨN CẤP");
+        } else {
+            certificateEntity.setTypeCertificate("HIẾN MÁU");
+        }
+
+        donationCertificateRepository.save(certificateEntity);
     }
 
 }

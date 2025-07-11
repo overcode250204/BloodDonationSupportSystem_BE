@@ -82,6 +82,7 @@ public class DonationProcessService {
             registration.setDateCompleteDonation(LocalDate.now());
             donationRegistrationRepository.save(registration);
             donationInfoService.saveDonationHistory(registration);
+
             if(registration.getDonor().getPhoneNumber() != null){
                 smsService.sendSmsSuccessRegistrationNotification(registration.getDonor().getPhoneNumber(), registration.getDateCompleteDonation().toString());
             } else {
