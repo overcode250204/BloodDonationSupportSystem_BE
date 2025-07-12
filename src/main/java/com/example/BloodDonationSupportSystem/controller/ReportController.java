@@ -1,6 +1,7 @@
 package com.example.BloodDonationSupportSystem.controller;
 
 import com.example.BloodDonationSupportSystem.base.BaseReponse;
+import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.BloodInventoryResponse;
 import com.example.BloodDonationSupportSystem.dto.reportDTO.OverviewReportDTO;
 import com.example.BloodDonationSupportSystem.dto.reportDTO.ReportFilterRequest;
 import com.example.BloodDonationSupportSystem.dto.reportDTO.ReportFilterRequestByDate;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 
@@ -35,18 +37,16 @@ public class ReportController {
         return new BaseReponse<>(HttpStatus.OK.value(), "Get Overview Report", overview);
     }
 
+    @PostMapping("/monthly-blood-statistic")
 
-
-
-    @PostMapping("/monthly-statistic")
     public BaseReponse<?> getMonthlyStats(@RequestBody @Valid ReportFilterRequest request) {
         var monthlyData = reportService.getMonthlyStats(request);
         return new BaseReponse<>(HttpStatus.OK.value(), "Get Monthly Stats", Map.of("monthlyData", monthlyData));
     }
 
-    @PostMapping("/cumulative-volume")
-    public BaseReponse<?> getCumulativeVolume(@RequestBody @Valid ReportFilterRequest request) {
-        var cumulativeData = reportService.getCumulativeVolume(request);
+    @PostMapping("/blood-inventory-for-chart")
+    public BaseReponse<?> getBloodVolume(@RequestBody @Valid ReportFilterRequest request) {
+        var cumulativeData = reportService.getBloodVolume(request);
         return new BaseReponse<>(HttpStatus.OK.value(), "Get Cumulative Volume Report", cumulativeData);
     }
 
@@ -61,5 +61,13 @@ public class ReportController {
 
         reportService.exportBloodDonationReportToExcel( request, response);
     }
+
+    @GetMapping("/blood-inventory")
+    public BaseReponse<?> getBloodInventory() {
+        List<BloodInventoryResponse> bloodInventory = reportService.getBloodInventory();
+
+        return new BaseReponse<>(HttpStatus.OK.value(), "Get blood inventory", bloodInventory);
+    }
+
 
 }
