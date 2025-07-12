@@ -1,7 +1,8 @@
 package com.example.BloodDonationSupportSystem.controller;
 
 import com.example.BloodDonationSupportSystem.base.BaseReponse;
-import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.BloodInventoryResponse;
+
+import com.example.BloodDonationSupportSystem.dto.bloodinventoryDTO.response.BloodInventoryResponse;
 import com.example.BloodDonationSupportSystem.dto.reportDTO.OverviewReportDTO;
 import com.example.BloodDonationSupportSystem.dto.reportDTO.ReportFilterRequest;
 import com.example.BloodDonationSupportSystem.dto.reportDTO.ReportFilterRequestByDate;
