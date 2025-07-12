@@ -3,21 +3,29 @@ package com.example.BloodDonationSupportSystem.repository;
 
 import com.example.BloodDonationSupportSystem.dto.donationhistoryDTO.DonorDonationInfoDTO;
 import com.example.BloodDonationSupportSystem.entity.DonationRegistrationEntity;
-import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface DonationRegistrationRepository extends JpaRepository<DonationRegistrationEntity, UUID> {
+    @Modifying
+    @Query("""
+    UPDATE donation_registration dr
+    SET dr.status = :statusSet
+    WHERE dr.status = :statusWhere AND dr.registrationDate < :cutoffDate
+""")
+    int updateStatusToCancelledIfExpired(@Param("cutoffDate") LocalDate cutoffDate, @Param("statusSet") String statusSet, @Param("statusWhere") String statusWhere);
+
+
     @Query(value = "SELECT COUNT(*) FROM donation_registration dr " +
             "WHERE " +
             " YEAR(dr.registration_date) = :year " +

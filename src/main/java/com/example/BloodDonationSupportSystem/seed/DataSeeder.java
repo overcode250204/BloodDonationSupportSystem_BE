@@ -1,7 +1,9 @@
 package com.example.BloodDonationSupportSystem.seed;
 
+import com.example.BloodDonationSupportSystem.entity.BloodInventory;
 import com.example.BloodDonationSupportSystem.entity.RoleEntity;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
+import com.example.BloodDonationSupportSystem.repository.BloodInventoryRepository;
 import com.example.BloodDonationSupportSystem.repository.RoleRepository;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,8 @@ public class DataSeeder implements CommandLineRunner {
     private UserRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private BloodInventoryRepository bloodInventoryRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -44,6 +48,15 @@ public class DataSeeder implements CommandLineRunner {
             admin.setRole(adminRole);
 
             userRepository.save(admin);
+        }
+        String[] bloodTypes = {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
+        for (String type : bloodTypes) {
+            if (!bloodInventoryRepository.existsById(type)) {
+                BloodInventory inventory = new BloodInventory();
+                inventory.setBloodTypeId(type);
+                inventory.setTotalVolumeMl(0);
+                bloodInventoryRepository.save(inventory);
+            }
         }
 
     }
