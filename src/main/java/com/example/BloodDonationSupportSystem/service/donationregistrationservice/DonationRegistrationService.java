@@ -1,12 +1,10 @@
 package com.example.BloodDonationSupportSystem.service.donationregistrationservice;
 
-import com.example.BloodDonationSupportSystem.dto.blooddonationscheduleDTO.BloodDonationScheduleDTO;
 import com.example.BloodDonationSupportSystem.dto.donationregistrationDTO.DonationRegistrationDTO;
 import com.example.BloodDonationSupportSystem.entity.*;
 import com.example.BloodDonationSupportSystem.exception.BadRequestException;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
 import com.example.BloodDonationSupportSystem.repository.*;
-import com.example.BloodDonationSupportSystem.service.authaccountservice.OauthService;
 import com.example.BloodDonationSupportSystem.service.emailservice.EmailService;
 import com.example.BloodDonationSupportSystem.service.smsservice.SmsService;
 import com.example.BloodDonationSupportSystem.utils.AuthUtils;
@@ -172,8 +170,12 @@ public class DonationRegistrationService {
         entity.setStatus(dto.getStatus());
         entity.setStartDate(dto.getStartDate());
         entity.setEndDate(dto.getEndDate());
-        BloodDonationScheduleEntity schedule = bloodDonationScheduleRepository.findById(dto.getBloodDonationScheduleId()).orElseThrow(() -> new ResourceNotFoundException("BloodDonationScheduleId not found"));
-        entity.setBloodDonationSchedule(schedule);
+        if (dto.getBloodDonationScheduleId() != null) {
+            BloodDonationScheduleEntity schedule = bloodDonationScheduleRepository.findById(dto.getBloodDonationScheduleId()).orElseThrow(() -> new ResourceNotFoundException("BloodDonationScheduleId not found"));
+            entity.setBloodDonationSchedule(schedule);
+        }
+
+
         entity.setDonor(userRepository.findById(dto.getDonorId())
                 .orElseThrow(() -> new RuntimeException("Donor not found")));
 
