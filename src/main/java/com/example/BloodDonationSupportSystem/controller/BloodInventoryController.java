@@ -2,12 +2,11 @@ package com.example.BloodDonationSupportSystem.controller;
 
 import com.example.BloodDonationSupportSystem.base.BaseReponse;
 import com.example.BloodDonationSupportSystem.dto.bloodinventoryDTO.request.BloodVolumeRequest;
-import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.request.UpdateProcessTestRequest;
 import com.example.BloodDonationSupportSystem.dto.bloodinventoryDTO.response.BloodInventoryResponse;
-
+import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.request.UpdateProcessTestRequest;
 import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.response.DonationProcessResponse;
 import com.example.BloodDonationSupportSystem.service.bloodinventoryservice.BloodInventoryService;
-import com.example.BloodDonationSupportSystem.service.donationprocesservice.BloodDonationProcessService;
+import com.example.BloodDonationSupportSystem.service.donationprocessservice.DonationProcessService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,7 @@ public class BloodInventoryController {
     private BloodInventoryService bloodBagService;
 
     @Autowired
-    private BloodDonationProcessService donationProcessService;
+    private DonationProcessService donationProcessService;
 
     @GetMapping("/get-total-blood-volume-of-all-blood-types")
     public BaseReponse<List<BloodInventoryResponse>> getBloodBagList() {

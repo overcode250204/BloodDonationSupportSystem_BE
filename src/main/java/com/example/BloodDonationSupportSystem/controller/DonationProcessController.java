@@ -2,7 +2,7 @@ package com.example.BloodDonationSupportSystem.controller;
 
 import com.example.BloodDonationSupportSystem.base.BaseReponse;
 import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.DonationProcessDTO;
-import com.example.BloodDonationSupportSystem.service.donationprocess.DonationProcessService;
+import com.example.BloodDonationSupportSystem.service.donationprocessservice.DonationProcessService;
 import com.example.BloodDonationSupportSystem.utils.AuthUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
