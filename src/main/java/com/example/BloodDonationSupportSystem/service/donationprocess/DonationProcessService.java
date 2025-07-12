@@ -1,10 +1,15 @@
 package com.example.BloodDonationSupportSystem.service.donationprocess;
 
 import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.DonationProcessDTO;
-import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.response.DonationProcessResponse;
-import com.example.BloodDonationSupportSystem.entity.*;
+import com.example.BloodDonationSupportSystem.entity.DonationProcessEntity;
+import com.example.BloodDonationSupportSystem.entity.DonationRegistrationEntity;
+import com.example.BloodDonationSupportSystem.entity.OauthAccountEntity;
+import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
-import com.example.BloodDonationSupportSystem.repository.*;
+import com.example.BloodDonationSupportSystem.repository.DonationProcessRepository;
+import com.example.BloodDonationSupportSystem.repository.DonationRegistrationRepository;
+import com.example.BloodDonationSupportSystem.repository.OauthAccountRepository;
+import com.example.BloodDonationSupportSystem.repository.UserRepository;
 import com.example.BloodDonationSupportSystem.service.emailservice.EmailService;
 import com.example.BloodDonationSupportSystem.service.historyservice.DonationInfoService;
 import com.example.BloodDonationSupportSystem.service.smsservice.SmsService;
@@ -46,6 +51,7 @@ public class DonationProcessService {
     @Autowired
     private DonationInfoService donationInfoService;
 
+
     public List<DonationProcessDTO> getDonationProcessByStaffId(UUID staffId){
         List<Object[]> donationProcesses = donationProcessRepository.findDonationProcessByStaffId(staffId);
 
@@ -74,7 +80,7 @@ public class DonationProcessService {
             process.setVolumeMl(request.getVolumeMl());
             process.setBloodTest("CHƯA KIỂM TRA");
 
-            // Cập nhật trạng thái đơn đăng ký
+
             DonationRegistrationEntity registration = donationRegistrationRepository.findById(request.getDonationRegistrationId())
                     .orElseThrow(() -> new ResourceNotFoundException("Not found."));
             registration.setStatus("ĐÃ HIẾN");
@@ -84,13 +90,13 @@ public class DonationProcessService {
 
             donationInfoService.saveCertificateInfo(registration);
             if(registration.getDonor().getPhoneNumber() != null){
-                smsService.sendSmsSuccessRegistrationNotification(registration.getDonor().getPhoneNumber(), registration.getDateCompleteDonation().toString());
+                smsService.sendSmsHealthReminder(registration.getDonor().getPhoneNumber());
             } else {
                 Optional<UserEntity> user = userRepository.findByUserId(registration.getDonor().getUserId());
                 if (user.isPresent()) {
                     UserEntity u = user.get();
                     OauthAccountEntity email = oauthAccountRepository.findByUser(u);
-                    emailService.sendSuccessRegistrationNotification(registration.getDonor().getFullName(), email.getAccount(), registration.getDateCompleteDonation().toString(), registration.getBloodDonationSchedule().getAddressHospital());
+                    emailService.sendHealthReminder(registration.getDonor().getFullName(), email.getAccount());
                 } else {
                    throw new ResourceNotFoundException("User not found");
                 }
@@ -140,4 +146,3 @@ public class DonationProcessService {
         );
     }
 }
-
