@@ -6,8 +6,13 @@ import com.example.BloodDonationSupportSystem.entity.*;
 import com.example.BloodDonationSupportSystem.exception.BadRequestException;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
 import com.example.BloodDonationSupportSystem.repository.*;
+import com.example.BloodDonationSupportSystem.service.authaccountservice.OauthService;
+import com.example.BloodDonationSupportSystem.service.emailservice.EmailService;
+import com.example.BloodDonationSupportSystem.service.smsservice.SmsService;
 import com.example.BloodDonationSupportSystem.utils.AuthUtils;
 import com.example.BloodDonationSupportSystem.utils.DonationUtils;
+import jakarta.mail.MessagingException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -16,7 +21,9 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class DonationRegistrationService {
@@ -44,6 +51,18 @@ public class DonationRegistrationService {
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
+    @Autowired
+    private HealthCheckRepository healthCheckRepository;
+
+    @Autowired
+    private SmsService smsService;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private OauthAccountRepository oauthAccountRepository;
+
     public DonationRegistrationDTO registerEmergencyDonation(String emergencyRequestId) {
         UUID memberId = UUID.fromString(AuthUtils.getCurrentUser().getUsername());
         UUID emergencyRequestIdUUID = UUID.fromString(emergencyRequestId);
@@ -53,7 +72,6 @@ public class DonationRegistrationService {
 
         EmergencyBloodRequestEntity emergencyBloodRequest = emergencyBloodRequestRepository.findById(emergencyRequestIdUUID)
                 .orElseThrow(() -> new ResourceNotFoundException("Cannot found emergency request"));
-
 
 
         if (!Objects.equals(donor.getBloodType(), emergencyBloodRequest.getBloodType())) {
@@ -79,7 +97,6 @@ public class DonationRegistrationService {
         EmergencyDonationEntity emergencyLink = new EmergencyDonationEntity();
         emergencyLink.setDonationRegistration(saved);
         emergencyLink.setEmergencyBloodRequest(emergencyBloodRequest);
-        emergencyLink.setStatus("CHỜ XÁC NHẬN");
         emergencyLink.setAssignedDate(LocalDate.now());
         emergencyDonationRepository.save(emergencyLink);
         DonationRegistrationDTO dto = mapToDTO(saved);
@@ -88,22 +105,53 @@ public class DonationRegistrationService {
         return dto;
     }
 
-    public void updateCancelStatus(UUID registrationId, String status) {
-
-        if (!"HỦY".equalsIgnoreCase(status)) {
-            throw new BadRequestException("Invalid status.");
-        }
+    public void updateCancelStatus(UUID registrationId) throws MessagingException {
 
         DonationRegistrationEntity registration = donationRegistrationRepository.findById(registrationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Registration not found."));
-
-
         registration.setStatus("HỦY");
+
         donationRegistrationRepository.save(registration);
+
+        if (registration.getDonor().getPhoneNumber() != null) {
+            smsService.sendRegistrationFailureNotification(registration.getDonor().getPhoneNumber());
+        } else {
+            Optional<UserEntity> user = userRepository.findByUserId(registration.getDonor().getUserId());
+            if (user.isPresent()) {
+                UserEntity u = user.get();
+                OauthAccountEntity email = oauthAccountRepository.findByUser(u);
+                emailService.sendRegistrationFailureNotification(registration.getDonor().getFullName(), email.getAccount());
+            } else {
+                throw new ResourceNotFoundException("User not found");
+            }
+
+        }
+    }
+
+    @Transactional
+    public void updateScreenByStaff(UUID registrationId, UUID staffId) {
+
+        DonationRegistrationEntity registration = donationRegistrationRepository.findById(registrationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found: " + registrationId));
+
+        UserEntity staff = userRepository.findByUserId(staffId)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found: " + staffId));
+
+        registration.setScreenedByStaff(staff);
+        donationRegistrationRepository.save(registration);
+
+
+        HealthCheckEntity healthCheck = new HealthCheckEntity();
+        healthCheck.setHeight(0);
+        healthCheck.setWeight(0);
+        healthCheck.setHealthStatus("CHỜ ĐỢI");
+        healthCheck.setDonationRegistrationHealthCheck(registration);
+        healthCheckRepository.save(healthCheck);
+
     }
 
     public DonationRegistrationDTO create(DonationRegistrationDTO dto) {
-        UserEntity donor = userRepository.findByUserId(dto.getDonorId()).orElseThrow(()-> new ResourceNotFoundException("Donor Not Found"));
+        UserEntity donor = userRepository.findByUserId(dto.getDonorId()).orElseThrow(() -> new ResourceNotFoundException("Donor Not Found"));
 
         List<DonationRegistrationEntity> uncompleted = donationRegistrationRepository.findUncompletedRegistrations(donor.getUserId(), "CHƯA HIẾN");
         if (!uncompleted.isEmpty()) {
@@ -113,7 +161,7 @@ public class DonationRegistrationService {
         DonationRegistrationEntity latestRegistration = donationRegistrationRepository.findLatestRegistrationByDonor(donor.getUserId()).stream().findFirst().orElse(null);
         if (latestRegistration != null) {
             LocalDate today = LocalDate.now();
-            LocalDate lastRegistrationDate  = latestRegistration.getDateCompleteDonation();
+            LocalDate lastRegistrationDate = latestRegistration.getDateCompleteDonation();
             if (lastRegistrationDate != null && ChronoUnit.DAYS.between(lastRegistrationDate, today) < 90) {
                 throw new BadRequestException("You have donated within the last 90 days. Please wait a little longer !!!");
             }
@@ -124,7 +172,7 @@ public class DonationRegistrationService {
         entity.setStatus(dto.getStatus());
         entity.setStartDate(dto.getStartDate());
         entity.setEndDate(dto.getEndDate());
-        BloodDonationScheduleEntity schedule = bloodDonationScheduleRepository.findById(dto.getBloodDonationScheduleId()).orElseThrow(()-> new ResourceNotFoundException("BloodDonationScheduleId not found"));
+        BloodDonationScheduleEntity schedule = bloodDonationScheduleRepository.findById(dto.getBloodDonationScheduleId()).orElseThrow(() -> new ResourceNotFoundException("BloodDonationScheduleId not found"));
         entity.setBloodDonationSchedule(schedule);
         entity.setDonor(userRepository.findById(dto.getDonorId())
                 .orElseThrow(() -> new RuntimeException("Donor not found")));
@@ -132,7 +180,6 @@ public class DonationRegistrationService {
 
         return mapToDTO(donationRegistrationRepository.save(entity));
     }
-
 
 
     public DonationRegistrationDTO update(UUID id, DonationRegistrationDTO dto) {
@@ -181,7 +228,21 @@ public class DonationRegistrationService {
         return dtos;
     }
 
+    public List<DonationRegistrationDTO> getUnassignedRegistrations() {
+        List<Object[]> registrations = donationRegistrationRepository.findByScreenedByStaffIsNull();
 
+        return registrations.stream().map(row -> new DonationRegistrationDTO(
+                UUID.fromString(row[0].toString()),                 // donation_registration_id
+                row[1].toString(),                                  // full_name
+                row[2] != null ? row[2].toString() : null,          // phone_number
+                row[3] != null ? row[3].toString() : null,          // account
+                row[4] != null ? row[4].toString() : null,          // level_of_urgency
+                LocalDate.parse(row[5].toString()),                 // registration_date
+                row[6] != null ? row[6].toString() : null,          // address_hospital
+                row[7] != null ? UUID.fromString(row[7].toString()) : null  // screened_by_staff_id
+        )).toList();
+
+    }
 
 
     private DonationRegistrationDTO mapToDTO(DonationRegistrationEntity entity) {

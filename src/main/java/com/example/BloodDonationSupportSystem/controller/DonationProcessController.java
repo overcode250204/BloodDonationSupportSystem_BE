@@ -2,7 +2,7 @@ package com.example.BloodDonationSupportSystem.controller;
 
 import com.example.BloodDonationSupportSystem.base.BaseReponse;
 import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.DonationProcessDTO;
-import com.example.BloodDonationSupportSystem.service.donationprocess.DonationProcessService;
+import com.example.BloodDonationSupportSystem.service.donationprocessservice.DonationProcessService;
 import com.example.BloodDonationSupportSystem.utils.AuthUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -34,9 +34,9 @@ public class DonationProcessController {
             request.setDonationProcessId(donationProcessId);
             donationProcessService.updateDonationProcess(request);
             return new BaseReponse<>(HttpStatus.OK.value(), "Update successfully", null);
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             return new BaseReponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error: " + e.getMessage(), null);
-        }
+        } 
     }
 
 }

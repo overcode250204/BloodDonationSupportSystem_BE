@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+
 @RestController
 @RequestMapping("/api/admin/report")
 @Tag(name = "Report Controller")
@@ -27,7 +28,6 @@ public class ReportController {
 
     @GetMapping("/blood-inventory/export")
     public void exportDonationReport( HttpServletResponse response) throws IOException {
-
         reportService.exportBloodInventoryReportToExcel( response);
     }
 
@@ -38,6 +38,7 @@ public class ReportController {
     }
 
     @PostMapping("/monthly-blood-statistic")
+
     public BaseReponse<?> getMonthlyStats(@RequestBody @Valid ReportFilterRequest request) {
         var monthlyData = reportService.getMonthlyStats(request);
         return new BaseReponse<>(HttpStatus.OK.value(), "Get Monthly Stats", Map.of("monthlyData", monthlyData));
@@ -67,5 +68,6 @@ public class ReportController {
 
         return new BaseReponse<>(HttpStatus.OK.value(), "Get blood inventory", bloodInventory);
     }
+
 
 }

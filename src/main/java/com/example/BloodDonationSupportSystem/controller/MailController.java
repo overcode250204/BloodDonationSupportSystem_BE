@@ -15,8 +15,6 @@ public class MailController {
    @Autowired
     private EmailService emailService;
 
-//    @PostMapping("/send-email-donation-again")
-//    public BaseReponse<String> sendEmailDonationAgain(@RequestBody @Valid ContactRequestDTO request) throws MessagingException {
-//        return new BaseReponse<>(200, "Send email blood donation again successfully", emailService.sendEmailToDonationAgain(request.getDonorName(),request.getBloodType(), request.getContact()));
-//    }
+
+
 }

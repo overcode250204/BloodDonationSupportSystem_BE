@@ -1,13 +1,16 @@
-      package com.example.BloodDonationSupportSystem.entity;
+package com.example.BloodDonationSupportSystem.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity(name = "donation_process")
 public class DonationProcessEntity {
     @Id
@@ -24,6 +27,8 @@ public class DonationProcessEntity {
 
     @Column(name = "status")
     private String status;
+
+
 
     @OneToOne
     @JoinColumn(name = "donation_registration_id")

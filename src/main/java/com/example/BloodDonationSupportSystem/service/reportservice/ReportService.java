@@ -2,6 +2,7 @@ package com.example.BloodDonationSupportSystem.service.reportservice;
 
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.BloodInventoryResponse;
 import com.example.BloodDonationSupportSystem.dto.reportDTO.BloodDonationReportDTO;
+
 import com.example.BloodDonationSupportSystem.dto.reportDTO.OverviewReportDTO;
 import com.example.BloodDonationSupportSystem.dto.reportDTO.ReportFilterRequest;
 import com.example.BloodDonationSupportSystem.dto.reportDTO.ReportFilterRequestByDate;
@@ -13,6 +14,7 @@ import com.example.BloodDonationSupportSystem.repository.UserRepository;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.Cell;
+
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.OutputStream;
+
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
@@ -39,6 +42,7 @@ public class ReportService {
     @Autowired
     BloodInventoryRepository bloodInventoryRepository;
 
+
     @Autowired
     DonationRegistrationRepository bloodDonationRegistrationRepository;
 
@@ -48,6 +52,7 @@ public class ReportService {
 
 
     public void exportBloodInventoryReportToExcel( HttpServletResponse response) throws IOException {
+
         List<BloodInventory> data = bloodInventoryRepository.findAll();
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Báo cáo kho máu");
@@ -113,11 +118,13 @@ public class ReportService {
         workbook.write(outputStream);
         workbook.close();
         outputStream.close();
+
     }
 
     public OverviewReportDTO getOverview(ReportFilterRequest request){
         OverviewReportDTO overviewReportDTO = new OverviewReportDTO();
         overviewReportDTO.setNumberAccount(userRepository.countFilter(request.getYear(), request.getMonth()));
+
         overviewReportDTO.setNumberBloodDonationsRegistration(bloodDonationRegistrationRepository.countFilter(request.getYear(), request.getMonth()));
         overviewReportDTO.setNumberSuccessDonation(bloodDonationRegistrationRepository.countNumberSuccessDonationFilter(request.getYear(), request.getMonth()));
         overviewReportDTO.setNumberFailureDonation(bloodDonationRegistrationRepository.countNumberFailureDonationFilter(request.getYear(), request.getMonth()));
@@ -203,5 +210,6 @@ public class ReportService {
                         allBloodBagInventory.getBloodTypeId(),
                         allBloodBagInventory.getTotalVolumeMl())).toList();
     }
+
 
 }
