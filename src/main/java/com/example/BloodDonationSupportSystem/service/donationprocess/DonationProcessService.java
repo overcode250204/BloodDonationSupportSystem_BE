@@ -1,15 +1,10 @@
 package com.example.BloodDonationSupportSystem.service.donationprocess;
 
 import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.DonationProcessDTO;
-import com.example.BloodDonationSupportSystem.entity.DonationProcessEntity;
-import com.example.BloodDonationSupportSystem.entity.DonationRegistrationEntity;
-import com.example.BloodDonationSupportSystem.entity.OauthAccountEntity;
-import com.example.BloodDonationSupportSystem.entity.UserEntity;
+import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.response.DonationProcessResponse;
+import com.example.BloodDonationSupportSystem.entity.*;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
-import com.example.BloodDonationSupportSystem.repository.DonationProcessRepository;
-import com.example.BloodDonationSupportSystem.repository.DonationRegistrationRepository;
-import com.example.BloodDonationSupportSystem.repository.OauthAccountRepository;
-import com.example.BloodDonationSupportSystem.repository.UserRepository;
+import com.example.BloodDonationSupportSystem.repository.*;
 import com.example.BloodDonationSupportSystem.service.emailservice.EmailService;
 import com.example.BloodDonationSupportSystem.service.historyservice.DonationInfoService;
 import com.example.BloodDonationSupportSystem.service.smsservice.SmsService;
