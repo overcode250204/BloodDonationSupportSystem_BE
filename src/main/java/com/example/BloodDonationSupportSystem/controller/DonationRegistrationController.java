@@ -3,6 +3,7 @@ package com.example.BloodDonationSupportSystem.controller;
 import com.example.BloodDonationSupportSystem.base.BaseReponse;
 import com.example.BloodDonationSupportSystem.dto.donationregistrationDTO.DonationRegistrationDTO;
 import com.example.BloodDonationSupportSystem.service.donationregistrationservice.DonationRegistrationService;
+import com.example.BloodDonationSupportSystem.utils.AuthUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,5 +70,21 @@ public class DonationRegistrationController {
         return new BaseReponse<>(HttpStatus.OK.value(), "Fetched all successfully", response);
     }
 
+    @GetMapping("/staff/unassigned-list")
+    public BaseReponse<?> getUnassignedRegistrations() {
+        List<DonationRegistrationDTO> response = donationRegistrationService.getUnassignedRegistrations();
+        return new BaseReponse<>(HttpStatus.OK.value(), "Fetched unassigned registrations successfully", response);
+    }
+
+    @PutMapping("/staff/assign-registration/{id}")
+    public BaseReponse<?> updateScreenByStaff(@PathVariable UUID id) {
+        try {
+            UUID staffId = UUID.fromString(AuthUtils.getCurrentUser().getUsername());
+            donationRegistrationService.updateScreenByStaff(id,staffId);
+            return new BaseReponse<>(HttpStatus.OK.value(), "Update successfully", null);
+        } catch (Exception e) {
+            return new BaseReponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An error occurred while updating the status.", null);
+        }
+    }
 
 }

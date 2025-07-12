@@ -23,9 +23,6 @@ public class EmergencyDonationEntity {
     @Column(name = "assigned_date")
     private LocalDate assignedDate;
 
-    @Column(name = "status")
-    private String status;
-
     @ManyToOne
     @JoinColumn(name = "emergency_blood_request_id")
     private EmergencyBloodRequestEntity emergencyBloodRequest;

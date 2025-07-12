@@ -1,15 +1,10 @@
 package com.example.BloodDonationSupportSystem.service.donationprocess;
 
 import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.DonationProcessDTO;
-import com.example.BloodDonationSupportSystem.entity.DonationProcessEntity;
-import com.example.BloodDonationSupportSystem.entity.DonationRegistrationEntity;
-import com.example.BloodDonationSupportSystem.entity.OauthAccountEntity;
-import com.example.BloodDonationSupportSystem.entity.UserEntity;
+import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.response.DonationProcessResponse;
+import com.example.BloodDonationSupportSystem.entity.*;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
-import com.example.BloodDonationSupportSystem.repository.DonationProcessRepository;
-import com.example.BloodDonationSupportSystem.repository.DonationRegistrationRepository;
-import com.example.BloodDonationSupportSystem.repository.OauthAccountRepository;
-import com.example.BloodDonationSupportSystem.repository.UserRepository;
+import com.example.BloodDonationSupportSystem.repository.*;
 import com.example.BloodDonationSupportSystem.service.emailservice.EmailService;
 import com.example.BloodDonationSupportSystem.service.historyservice.DonationInfoService;
 import com.example.BloodDonationSupportSystem.service.smsservice.SmsService;
@@ -22,6 +17,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class DonationProcessService {
@@ -45,7 +41,11 @@ public class DonationProcessService {
     private UserRepository userRepository;
 
     @Autowired
+    private BloodInventoryRepository bloodInventoryRepository;
+
+    @Autowired
     private DonationInfoService donationInfoService;
+
 
     public List<DonationProcessDTO> getDonationProcessByStaffId(UUID staffId){
         List<Object[]> donationProcesses = donationProcessRepository.findDonationProcessByStaffId(staffId);
@@ -85,13 +85,13 @@ public class DonationProcessService {
 
             donationInfoService.saveCertificateInfo(registration);
             if(registration.getDonor().getPhoneNumber() != null){
-                smsService.sendSmsSuccessRegistrationNotification(registration.getDonor().getPhoneNumber(), registration.getDateCompleteDonation().toString());
+                smsService.sendSmsHealthReminder(registration.getDonor().getPhoneNumber());
             } else {
                 Optional<UserEntity> user = userRepository.findByUserId(registration.getDonor().getUserId());
                 if (user.isPresent()) {
                     UserEntity u = user.get();
                     OauthAccountEntity email = oauthAccountRepository.findByUser(u);
-                    emailService.sendSuccessRegistrationNotification(registration.getDonor().getFullName(), email.getAccount(), registration.getDateCompleteDonation().toString(), registration.getBloodDonationSchedule().getAddressHospital());
+                    emailService.sendHealthReminder(registration.getDonor().getFullName(), email.getAccount());
                 } else {
                    throw new ResourceNotFoundException("User not found");
                 }
@@ -101,4 +101,44 @@ public class DonationProcessService {
 
         donationProcessRepository.save(process);
     }
+
+    public List<DonationProcessResponse> getCompletedDonationProcess() {
+        List<DonationProcessEntity> donationProcessList = donationProcessRepository.getUncheckedDonatedProcessesList();
+
+
+        return donationProcessList.stream()
+                .map(entity -> new DonationProcessResponse(
+                        entity.getDonationProcessId(),
+                        entity.getBloodTest(),
+                        entity.getVolumeMl(),
+                        entity.getStatus(),
+                        entity.getBloodInventory() != null ? entity.getBloodInventory().getBloodTypeId() : null,
+                        entity.getDonationRegistrationProcess().getDonationRegistrationId()))
+                .collect(Collectors.toList());
+    }
+
+    public DonationProcessResponse updateProcessIsPassed(UUID processId, String bloodTest, String bloodTypeId) {
+        DonationProcessEntity donationProcess = donationProcessRepository.findById(processId)
+                .orElseThrow(() -> new ResourceNotFoundException("Donation process not found with id: " + processId));
+
+        donationProcess.setBloodTest(bloodTest);
+
+        BloodInventory bloodInventory = bloodInventoryRepository.findById(bloodTypeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Blood inventory not found with id: " + bloodTypeId));
+
+        donationProcess.setBloodInventory(bloodInventory);
+
+        DonationProcessEntity updatedProcess = donationProcessRepository.save(donationProcess);
+
+
+        return new DonationProcessResponse(
+                updatedProcess.getDonationProcessId(),
+                updatedProcess.getBloodTest(),
+                updatedProcess.getVolumeMl(),
+                updatedProcess.getStatus(),
+                updatedProcess.getBloodInventory().getBloodTypeId(),
+                updatedProcess.getDonationRegistrationProcess().getDonationRegistrationId()
+        );
+    }
 }
+
