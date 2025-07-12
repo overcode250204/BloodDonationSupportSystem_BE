@@ -6,6 +6,7 @@ import com.example.BloodDonationSupportSystem.entity.*;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
 import com.example.BloodDonationSupportSystem.repository.*;
 import com.example.BloodDonationSupportSystem.service.emailservice.EmailService;
+import com.example.BloodDonationSupportSystem.service.historyservice.DonationInfoService;
 import com.example.BloodDonationSupportSystem.service.smsservice.SmsService;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
@@ -42,6 +43,10 @@ public class DonationProcessService {
     @Autowired
     private BloodInventoryRepository bloodInventoryRepository;
 
+    @Autowired
+    private DonationInfoService donationInfoService;
+
+
     public List<DonationProcessDTO> getDonationProcessByStaffId(UUID staffId){
         List<Object[]> donationProcesses = donationProcessRepository.findDonationProcessByStaffId(staffId);
 
@@ -70,12 +75,15 @@ public class DonationProcessService {
             process.setVolumeMl(request.getVolumeMl());
             process.setBloodTest("CHƯA KIỂM TRA");
 
-            // Cập nhật trạng thái đơn đăng ký
+
             DonationRegistrationEntity registration = donationRegistrationRepository.findById(request.getDonationRegistrationId())
                     .orElseThrow(() -> new ResourceNotFoundException("Not found."));
             registration.setStatus("ĐÃ HIẾN");
             registration.setDateCompleteDonation(LocalDate.now());
             donationRegistrationRepository.save(registration);
+            donationInfoService.saveDonationHistory(registration);
+
+            donationInfoService.saveCertificateInfo(registration);
             if(registration.getDonor().getPhoneNumber() != null){
                 smsService.sendSmsHealthReminder(registration.getDonor().getPhoneNumber());
             } else {
