@@ -31,11 +31,8 @@ public class ArticleService {
     @Autowired
     private UserRepository userRepository;
 
-    @Value("${upload.image.path}")
-    private String imagePath;
 
-    @Value("${upload.image.base-url}")
-    private String baseUrl;
+
 
 
 
