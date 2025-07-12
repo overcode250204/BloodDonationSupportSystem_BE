@@ -10,5 +10,5 @@ import java.util.UUID;
 public interface DonationEmergencyRepository extends JpaRepository<EmergencyDonationEntity, UUID> {
     boolean existsByDonationRegistrationDonationRegistrationId(UUID donationRegistrationId);
 
-    Optional<EmergencyDonationEntity> findByDonationRegistrationId(UUID donationRegistrationId);
+    Optional<EmergencyDonationEntity> findByDonationRegistrationDonationRegistrationId(UUID donationRegistrationId);
 }

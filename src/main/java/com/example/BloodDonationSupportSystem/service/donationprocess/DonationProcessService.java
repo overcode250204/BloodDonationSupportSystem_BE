@@ -75,7 +75,7 @@ public class DonationProcessService {
             process.setVolumeMl(request.getVolumeMl());
             process.setBloodTest("CHƯA KIỂM TRA");
 
-            // Cập nhật trạng thái đơn đăng ký
+
             DonationRegistrationEntity registration = donationRegistrationRepository.findById(request.getDonationRegistrationId())
                     .orElseThrow(() -> new ResourceNotFoundException("Not found."));
             registration.setStatus("ĐÃ HIẾN");
@@ -83,6 +83,7 @@ public class DonationProcessService {
             donationRegistrationRepository.save(registration);
             donationInfoService.saveDonationHistory(registration);
 
+            donationInfoService.saveCertificateInfo(registration);
             if(registration.getDonor().getPhoneNumber() != null){
                 smsService.sendSmsSuccessRegistrationNotification(registration.getDonor().getPhoneNumber(), registration.getDateCompleteDonation().toString());
             } else {
