@@ -15,8 +15,7 @@ public class BloodVolumeRequest {
     private UUID donationRegisId;
     @NotNull(message = "Donation process ID cannot be blank")
     private UUID processId;
-    @Min(value = 250, message = "Total volume must be at least 250ml")
-    @Max(value = 450, message = "Total volume must not exceed 450ml")
+
     private int volumeMl;
 
 }
