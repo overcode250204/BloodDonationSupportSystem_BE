@@ -15,7 +15,7 @@ public class BloodVolumeRequest {
     private UUID donationRegisId;
     @NotNull(message = "Donation process ID cannot be blank")
     private UUID processId;
-
+    @NotNull
     private int volumeMl;
 
 }
