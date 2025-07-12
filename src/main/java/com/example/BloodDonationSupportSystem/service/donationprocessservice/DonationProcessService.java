@@ -1,4 +1,4 @@
-package com.example.BloodDonationSupportSystem.service.donationprocess;
+package com.example.BloodDonationSupportSystem.service.donationprocessservice;
 
 import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.DonationProcessDTO;
 import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.response.DonationProcessResponse;
@@ -141,4 +141,3 @@ public class DonationProcessService {
         );
     }
 }
-
