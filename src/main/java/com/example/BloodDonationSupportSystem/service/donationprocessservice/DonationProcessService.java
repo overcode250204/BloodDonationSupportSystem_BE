@@ -81,9 +81,9 @@ public class DonationProcessService {
             registration.setStatus("ĐÃ HIẾN");
             registration.setDateCompleteDonation(LocalDate.now());
             donationRegistrationRepository.save(registration);
-            donationInfoService.saveDonationHistory(registration);
+//            donationInfoService.saveDonationHistory(registration); dang bug
 
-            donationInfoService.saveCertificateInfo(registration);
+//            donationInfoService.saveCertificateInfo(registration); dang bug
             if(registration.getDonor().getPhoneNumber() != null){
                 smsService.sendSmsHealthReminder(registration.getDonor().getPhoneNumber());
             } else {
