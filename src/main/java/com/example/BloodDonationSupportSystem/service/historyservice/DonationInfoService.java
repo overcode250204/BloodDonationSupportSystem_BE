@@ -103,7 +103,7 @@ public class DonationInfoService {
         certificateEntity.setDonorCertificate(registration.getDonor());
         certificateEntity.setDonationRegistrationCertificate(registration);
         Optional<EmergencyDonationEntity> emergencyDonation =
-                donationEmergencyRepository.findByDonationRegistrationId(registration.getDonationRegistrationId());
+                donationEmergencyRepository.findByDonationRegistrationDonationRegistrationId(registration.getDonationRegistrationId());
 
         if (emergencyDonation.isPresent() && emergencyDonation.get().getEmergencyBloodRequest() != null) {
             certificateEntity.setTypeCertificate("HIẾN MÁU KHẨN CẤP");
