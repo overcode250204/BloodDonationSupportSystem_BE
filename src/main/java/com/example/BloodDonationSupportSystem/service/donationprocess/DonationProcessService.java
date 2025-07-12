@@ -1,11 +1,17 @@
 package com.example.BloodDonationSupportSystem.service.donationprocess;
 
 import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.DonationProcessDTO;
-import com.example.BloodDonationSupportSystem.dto.donationprocessDTO.response.DonationProcessResponse;
-import com.example.BloodDonationSupportSystem.entity.*;
+import com.example.BloodDonationSupportSystem.entity.DonationProcessEntity;
+import com.example.BloodDonationSupportSystem.entity.DonationRegistrationEntity;
+import com.example.BloodDonationSupportSystem.entity.OauthAccountEntity;
+import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
-import com.example.BloodDonationSupportSystem.repository.*;
+import com.example.BloodDonationSupportSystem.repository.DonationProcessRepository;
+import com.example.BloodDonationSupportSystem.repository.DonationRegistrationRepository;
+import com.example.BloodDonationSupportSystem.repository.OauthAccountRepository;
+import com.example.BloodDonationSupportSystem.repository.UserRepository;
 import com.example.BloodDonationSupportSystem.service.emailservice.EmailService;
+import com.example.BloodDonationSupportSystem.service.historyservice.DonationInfoService;
 import com.example.BloodDonationSupportSystem.service.smsservice.SmsService;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
@@ -42,6 +48,9 @@ public class DonationProcessService {
     @Autowired
     private BloodInventoryRepository bloodInventoryRepository;
 
+    @Autowired
+    private DonationInfoService donationInfoService;
+
     public List<DonationProcessDTO> getDonationProcessByStaffId(UUID staffId){
         List<Object[]> donationProcesses = donationProcessRepository.findDonationProcessByStaffId(staffId);
 
@@ -76,14 +85,17 @@ public class DonationProcessService {
             registration.setStatus("ĐÃ HIẾN");
             registration.setDateCompleteDonation(LocalDate.now());
             donationRegistrationRepository.save(registration);
+            donationInfoService.saveDonationHistory(registration);
+
+            donationInfoService.saveCertificateInfo(registration);
             if(registration.getDonor().getPhoneNumber() != null){
-                smsService.sendSmsHealthReminder(registration.getDonor().getPhoneNumber());
+                smsService.sendSmsSuccessRegistrationNotification(registration.getDonor().getPhoneNumber(), registration.getDateCompleteDonation().toString());
             } else {
                 Optional<UserEntity> user = userRepository.findByUserId(registration.getDonor().getUserId());
                 if (user.isPresent()) {
                     UserEntity u = user.get();
                     OauthAccountEntity email = oauthAccountRepository.findByUser(u);
-                    emailService.sendHealthReminder(registration.getDonor().getFullName(), email.getAccount());
+                    emailService.sendSuccessRegistrationNotification(registration.getDonor().getFullName(), email.getAccount(), registration.getDateCompleteDonation().toString(), registration.getBloodDonationSchedule().getAddressHospital());
                 } else {
                    throw new ResourceNotFoundException("User not found");
                 }
