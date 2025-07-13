@@ -144,8 +144,7 @@ public class GoogleOAuthService {
         return user;
     }
 
-    // Rest of the methods for token and user info retrieval remain the same
-    // but moved to this service class
+
     private String getGoogleAccessToken(String code) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);

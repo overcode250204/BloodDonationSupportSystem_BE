@@ -42,7 +42,7 @@ public class SmsService {
 
         try {
             String message = String.format(
-                    "Chao %s, ban da hien mau thanh cong luc %s.Cam ban da danh thoi gian va giup do. Nho an nhe, nghi ngoi day du. So lien he %s Cam on – Trung Tam Hien mau.",
+                    "Chao %s, ban da hien mau thanh cong luc %s.Cam on ban da danh thoi gian va giup do. Nho an nhe, nghi ngoi day du. So lien he %s Cam on – Trung Tam Hien mau.",
                     phoneNumber, completeDate, phoneNumberContact
             );
             return speedSMSUtils.sendSMS(phoneNumber, message, 2, device);

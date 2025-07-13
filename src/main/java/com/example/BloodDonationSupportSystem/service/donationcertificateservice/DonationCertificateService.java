@@ -20,7 +20,6 @@ import com.lowagie.text.pdf.*;
 
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
-import java.security.cert.Certificate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -193,13 +192,6 @@ public class DonationCertificateService {
         table.addCell(cell);
     }
 
-    private void addColoredCell(PdfPTable table, String text, Font font, Color bgColor) {
-        PdfPCell cell = new PdfPCell(new Phrase(text, font));
-        cell.setBorder(Rectangle.NO_BORDER);
-        cell.setPadding(5);
-        cell.setBackgroundColor(bgColor);
-        table.addCell(cell);
-    }
 
 
 }
