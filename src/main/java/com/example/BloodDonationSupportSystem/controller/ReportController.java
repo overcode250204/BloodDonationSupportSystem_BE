@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin/report")
@@ -25,12 +24,8 @@ public class ReportController {
     @Autowired
     ReportService reportService;
 
-    @GetMapping("/blood-inventory/export")
-    public void exportDonationReport( HttpServletResponse response) throws IOException {
 
-        reportService.exportBloodInventoryReportToExcel( response);
-    }
-
+    /// overview
     @PostMapping("/overview")
     public BaseReponse<OverviewReportDTO> getOverviewReport(@RequestBody @Valid ReportFilterRequest request) {
         var overview = reportService.getOverview(request);
@@ -40,7 +35,7 @@ public class ReportController {
     @PostMapping("/monthly-blood-statistic")
     public BaseReponse<?> getMonthlyStats(@RequestBody @Valid ReportFilterRequest request) {
         var monthlyData = reportService.getMonthlyStats(request);
-        return new BaseReponse<>(HttpStatus.OK.value(), "Get Monthly Stats", Map.of("monthlyData", monthlyData));
+        return new BaseReponse<>(HttpStatus.OK.value(), "Get Monthly Stats", monthlyData);
     }
 
     @PostMapping("/blood-inventory-for-chart")
@@ -49,6 +44,7 @@ public class ReportController {
         return new BaseReponse<>(HttpStatus.OK.value(), "Get Cumulative Volume Report", cumulativeData);
     }
 
+    // blood donation - schedule
     @PostMapping("/blood-donation")
     public BaseReponse<?> getBloodDonationReport(@RequestBody @Valid ReportFilterRequestByDate request) {
         var getBloodDonationReport = reportService.getDonationReport(request);
@@ -61,11 +57,54 @@ public class ReportController {
         reportService.exportBloodDonationReportToExcel( request, response);
     }
 
+    // inventory
     @GetMapping("/blood-inventory")
     public BaseReponse<?> getBloodInventory() {
         List<BloodInventoryResponse> bloodInventory = reportService.getBloodInventory();
 
         return new BaseReponse<>(HttpStatus.OK.value(), "Get blood inventory", bloodInventory);
+    }
+
+    @GetMapping("/blood-inventory/export")
+    public void exportDonationReport( HttpServletResponse response) throws IOException {
+
+        reportService.exportBloodInventoryReportToExcel( response);
+    }
+
+
+    // emergency
+    @PostMapping("/monthly-emergency")
+    public BaseReponse<?> getMonthlyEmergencyRequests(@RequestBody @Valid ReportFilterRequest request) {
+        var monthlyEmergency = reportService.getMonthlyEmergencyRequests(request);
+        return new BaseReponse<>(HttpStatus.OK.value(), "Get monthly emergency", monthlyEmergency);
+    }
+    @PostMapping("/emergency-blood-request")
+    public BaseReponse<?> getEmergencyBloodRequestReport(@RequestBody @Valid ReportFilterRequestByDate request ) {
+        var emergencyBloodRequestReport = reportService.getEmergencyBloodRequestReport(request);
+        return new BaseReponse<>(HttpStatus.OK.value(), "Get emergency blood report", emergencyBloodRequestReport);
+    }
+    @PostMapping("/emergency-blood-request/export")
+    public void exportEmergencyBloodRequestReportToExcel(@RequestBody @Valid ReportFilterRequestByDate request, HttpServletResponse response) throws IOException {
+
+        reportService.exportEmergencyBloodRequestReportToExcel( request, response);
+    }
+
+    // staff - donation
+    @PostMapping("/staff-donation")
+    public BaseReponse<?> getStaffDonationReport(@RequestBody @Valid ReportFilterRequestByDate request) {
+        var staffDonationReport = reportService.getStaffDonationReport(request);
+        return new BaseReponse<>(HttpStatus.OK.value(), "Get Staff Donation Report", staffDonationReport);
+    }
+    @PostMapping("/staff/export")
+    public void exportStaffDonationReportToExcel(@RequestBody @Valid ReportFilterRequestByDate request, HttpServletResponse response) throws IOException {
+
+        reportService.exportStaffReportToExcel( request, response);
+    }
+    // staff - emergency
+    @PostMapping("/staff-emergency")
+    public BaseReponse<?> getStaffEmergencyReport(@RequestBody @Valid ReportFilterRequestByDate request) {
+        var staffEmergencyReport = reportService.getStaffEmergencyReport(request);
+        return new BaseReponse<>(HttpStatus.OK.value(), "Get Staff emergency", staffEmergencyReport);
     }
 
 }

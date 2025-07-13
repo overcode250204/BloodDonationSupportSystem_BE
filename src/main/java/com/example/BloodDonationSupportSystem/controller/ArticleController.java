@@ -44,7 +44,7 @@ public class ArticleController {
 
     @GetMapping("api/homepage/articles")
     public BaseReponse<?> getAllArticles() {
-        List<ArticleResponse> response = articleService.getAll();
+        List<ArticleResponse> response = articleService.getAllToView();
         return new BaseReponse<>(HttpStatus.OK.value(), "Get all articles successfully", response);
     }
     @GetMapping("api/admin/articles")
