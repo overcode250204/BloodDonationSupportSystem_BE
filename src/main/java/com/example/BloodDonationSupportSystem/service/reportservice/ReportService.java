@@ -1,5 +1,7 @@
 package com.example.BloodDonationSupportSystem.service.reportservice;
 
+import com.example.BloodDonationSupportSystem.dto.bloodinventoryDTO.response.BloodInventoryResponse;
+import com.example.BloodDonationSupportSystem.dto.reportDTO.BloodDonationReportDTO;
 
 import com.example.BloodDonationSupportSystem.dto.reportDTO.OverviewReportDTO;
 import com.example.BloodDonationSupportSystem.dto.reportDTO.ReportFilterRequest;
@@ -25,10 +27,7 @@ import java.io.OutputStream;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ReportService {
@@ -161,13 +160,13 @@ public class ReportService {
         return monthlyData;
     }
 
-    public Map<String, Object> getCumulativeVolume(ReportFilterRequest request) {
+    public Map<String, Object> getBloodVolume(ReportFilterRequest request) {
 
         LocalDate endDate = LocalDate.of(request.getYear(), request.getMonth(), 1).withDayOfMonth(
                 LocalDate.of(request.getYear(), request.getMonth(), 1).lengthOfMonth()
         );
 
-        List<Object[]> results = bloodInventoryRepository.getCumulativeVolume(Date.valueOf(endDate));
+        List<Object[]> results = bloodInventoryRepository.getBloodVolume(Date.valueOf(endDate));
 
 
         Map<String, Integer> bloodVolumeData = new LinkedHashMap<>();
@@ -180,38 +179,37 @@ public class ReportService {
         return  Map.of("bloodVolumeData", bloodVolumeData);
     }
 
-    public Map<String, Object> getDonationReport(ReportFilterRequestByDate request) {
+    public  List<BloodDonationReportDTO> getDonationReport(ReportFilterRequestByDate request) {
         List<Object[]> result = bloodDonationScheduleRepository.getDonationReport(
                 Date.valueOf(request.getStartDate()),
                 Date.valueOf(request.getEndDate())
         );
 
-        Map<String, Map<String, Object>> reportData = new LinkedHashMap<>();
+        List<BloodDonationReportDTO>  bloodDonationReportDTOList = new ArrayList<>();
 
         for (Object[] row : result) {
             String date =  row[0].toString();
             String hospital = (String) row[1];
-            Integer totalRegistration = ((Number) row[2]).intValue();
-            Integer totalSuccess = ((Number) row[3]).intValue();
-            Integer totalFailed = ((Number) row[4]).intValue();
-            Integer totalVolume = ((Number) row[5]).intValue();
+            int totalRegistration = ((Number) row[2]).intValue();
+            int totalSuccess = ((Number) row[3]).intValue();
+            int totalFailed = ((Number) row[4]).intValue();
+            int totalVolume = ((Number) row[5]).intValue();
+            BloodDonationReportDTO bloodDonationReportDTO = new BloodDonationReportDTO(date, hospital, totalRegistration, totalSuccess, totalFailed, totalVolume);
 
-
-
-            Map<String, Object> monthlyData = new LinkedHashMap<>();
-            monthlyData.put("date", date);
-            monthlyData.put("hospital", hospital);
-            monthlyData.put("total_registration", totalRegistration);
-            monthlyData.put("total_success", totalSuccess);
-            monthlyData.put("total_failed", totalFailed);
-            monthlyData.put("total_volume", totalVolume);
-
-            reportData.put(date, monthlyData);
+            bloodDonationReportDTOList.add(bloodDonationReportDTO);
         }
 
-        return  Map.of("donationReport", reportData);
+        return  bloodDonationReportDTOList;
     }
 
+    public List<BloodInventoryResponse> getBloodInventory() {
+        List<BloodInventory> bloodTotalList = bloodInventoryRepository.findAll();
+
+        return  bloodTotalList.stream()
+                .map(allBloodBagInventory -> new BloodInventoryResponse(
+                        allBloodBagInventory.getBloodTypeId(),
+                        allBloodBagInventory.getTotalVolumeMl())).toList();
+    }
 
 
 }
