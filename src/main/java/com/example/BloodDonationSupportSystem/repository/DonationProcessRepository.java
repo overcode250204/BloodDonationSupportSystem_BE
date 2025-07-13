@@ -1,6 +1,5 @@
 package com.example.BloodDonationSupportSystem.repository;
 
-import com.example.BloodDonationSupportSystem.dto.donationhistoryDTO.DonorDonationInfoDTO;
 import com.example.BloodDonationSupportSystem.entity.DonationProcessEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

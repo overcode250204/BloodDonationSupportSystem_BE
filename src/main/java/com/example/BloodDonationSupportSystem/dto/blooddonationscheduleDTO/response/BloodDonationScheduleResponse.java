@@ -1,6 +1,5 @@
 package com.example.BloodDonationSupportSystem.dto.blooddonationscheduleDTO.response;
 
-import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import lombok.Data;
 
 import java.sql.Time;

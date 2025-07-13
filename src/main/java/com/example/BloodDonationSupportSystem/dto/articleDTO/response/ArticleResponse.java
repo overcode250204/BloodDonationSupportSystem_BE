@@ -1,9 +1,13 @@
 package com.example.BloodDonationSupportSystem.dto.articleDTO.response;
 
-import lombok.Data;
+import lombok.*;
 
 import java.util.UUID;
-@Data
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ArticleResponse {
     private UUID id;
 

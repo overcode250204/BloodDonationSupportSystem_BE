@@ -26,11 +26,8 @@ public class ReportController {
     ReportService reportService;
 
 
-    /// overview
-    @GetMapping("/blood-inventory/export")
-    public void exportDonationReport( HttpServletResponse response) throws IOException {
-        reportService.exportBloodInventoryReportToExcel( response);
-    }
+
+
 
     @PostMapping("/overview")
     public BaseReponse<OverviewReportDTO> getOverviewReport(@RequestBody @Valid ReportFilterRequest request) {
@@ -51,7 +48,7 @@ public class ReportController {
         return new BaseReponse<>(HttpStatus.OK.value(), "Get Cumulative Volume Report", cumulativeData);
     }
 
-    // blood donation - schedule
+
     @PostMapping("/blood-donation")
     public BaseReponse<?> getBloodDonationReport(@RequestBody @Valid ReportFilterRequestByDate request) {
         var getBloodDonationReport = reportService.getDonationReport(request);
@@ -64,7 +61,7 @@ public class ReportController {
         reportService.exportBloodDonationReportToExcel( request, response);
     }
 
-    // inventory
+
     @GetMapping("/blood-inventory")
     public BaseReponse<?> getBloodInventory() {
         List<BloodInventoryResponse> bloodInventory = reportService.getBloodInventory();
@@ -79,7 +76,7 @@ public class ReportController {
     }
 
 
-    // emergency
+
     @PostMapping("/monthly-emergency")
     public BaseReponse<?> getMonthlyEmergencyRequests(@RequestBody @Valid ReportFilterRequest request) {
         var monthlyEmergency = reportService.getMonthlyEmergencyRequests(request);
@@ -96,7 +93,7 @@ public class ReportController {
         reportService.exportEmergencyBloodRequestReportToExcel( request, response);
     }
 
-    // staff - donation
+
     @PostMapping("/staff-donation")
     public BaseReponse<?> getStaffDonationReport(@RequestBody @Valid ReportFilterRequestByDate request) {
         var staffDonationReport = reportService.getStaffDonationReport(request);
@@ -107,7 +104,7 @@ public class ReportController {
 
         reportService.exportStaffReportToExcel( request, response);
     }
-    // staff - emergency
+
     @PostMapping("/staff-emergency")
     public BaseReponse<?> getStaffEmergencyReport(@RequestBody @Valid ReportFilterRequestByDate request) {
         var staffEmergencyReport = reportService.getStaffEmergencyReport(request);

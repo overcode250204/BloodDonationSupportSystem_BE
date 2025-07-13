@@ -2,6 +2,7 @@ package com.example.BloodDonationSupportSystem.service.authaccountservice;
 
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.request.LoginRequest;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.request.RegisterRequest;
+import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.GeoLocation;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.LoginAccountResponse;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.RegisterAccountReponse;
 import com.example.BloodDonationSupportSystem.entity.RoleEntity;
@@ -11,20 +12,18 @@ import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundExceptio
 import com.example.BloodDonationSupportSystem.repository.RoleRepository;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
 import com.example.BloodDonationSupportSystem.service.jwtservice.JwtService;
+import com.example.BloodDonationSupportSystem.service.searchdistanceservice.SearchDistanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Optional;
-import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.GeoLocation;
-import com.example.BloodDonationSupportSystem.service.searchdistanceservice.SearchDistanceService;
 @Service
 public class AuthAccountService {
     @Autowired

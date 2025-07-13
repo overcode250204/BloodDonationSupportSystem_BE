@@ -1,14 +1,11 @@
 package com.example.BloodDonationSupportSystem.repository;
 
-import com.example.BloodDonationSupportSystem.dto.reportDTO.EmergencyBloodRequestReportDTO;
 import com.example.BloodDonationSupportSystem.entity.EmergencyBloodRequestEntity;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
 
 import java.util.Date;
 import java.util.List;

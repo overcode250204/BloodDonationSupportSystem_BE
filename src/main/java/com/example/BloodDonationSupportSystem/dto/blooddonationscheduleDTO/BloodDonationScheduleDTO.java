@@ -2,10 +2,7 @@ package com.example.BloodDonationSupportSystem.dto.blooddonationscheduleDTO;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;

@@ -1,11 +1,6 @@
 package com.example.BloodDonationSupportSystem.service.reportservice;
 
 import com.example.BloodDonationSupportSystem.dto.bloodinventoryDTO.response.BloodInventoryResponse;
-import com.example.BloodDonationSupportSystem.dto.reportDTO.BloodDonationReportDTO;
-import com.example.BloodDonationSupportSystem.dto.reportDTO.OverviewReportDTO;
-import com.example.BloodDonationSupportSystem.dto.reportDTO.ReportFilterRequest;
-import com.example.BloodDonationSupportSystem.dto.reportDTO.ReportFilterRequestByDate;
-import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.BloodInventoryResponse;
 import com.example.BloodDonationSupportSystem.dto.reportDTO.*;
 import com.example.BloodDonationSupportSystem.entity.BloodInventory;
 import com.example.BloodDonationSupportSystem.repository.*;
@@ -20,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
@@ -108,7 +102,7 @@ public class ReportService {
 
 
 
-    // for emergency blood request
+    
 
     public  Map<Integer, Integer> getMonthlyEmergencyRequests(ReportFilterRequest request) {
 
@@ -131,7 +125,7 @@ public class ReportService {
 
         return monthlyEmergency;
     }
-    // for emergency export
+
     public List<EmergencyBloodRequestReportDTO> getEmergencyBloodRequestReport(ReportFilterRequestByDate request) {
         List<Object[]> results = emergencyBloodRequestRepository.getEmergencyBloodRequestReport( Date.valueOf(request.getStartDate()),
                 Date.valueOf(request.getEndDate()));
@@ -203,7 +197,7 @@ public class ReportService {
         outputStream.close();
     }
 
-    // for staff donation export
+
     public List<StaffDonationReportDTO> getStaffDonationReport(ReportFilterRequestByDate request) {
         List<Object[]> result = userRepository.getStaffDonationReport(Date.valueOf(request.getStartDate()),
                 Date.valueOf(request.getEndDate()));
@@ -294,7 +288,7 @@ public class ReportService {
         outputStream.close();
     }
 
-    // for staff emergency export
+
 
     public List<StaffEmergencyReportDTO> getStaffEmergencyReport(ReportFilterRequestByDate request) {
         List<Object[]> result = userRepository.getStaffEmergencyDonationReport(Date.valueOf(request.getStartDate()),
@@ -320,7 +314,7 @@ public class ReportService {
 
 
 
-    // for inventory report
+
 
     public List<BloodInventoryResponse> getBloodInventory() {
         List<BloodInventory> bloodTotalList = bloodInventoryRepository.findAll();
@@ -364,7 +358,7 @@ public class ReportService {
     }
 
 
-    // for donation report
+
     public  List<BloodDonationReportDTO> getDonationReport(ReportFilterRequestByDate request) {
         List<Object[]> result = bloodDonationScheduleRepository.getDonationReport(
                 Date.valueOf(request.getStartDate()),
@@ -410,7 +404,7 @@ public class ReportService {
             cell.setCellValue(headers[i]);
         }
 
-        // Ghi dữ liệu
+
         int rowNum = 1;
         for (Object[] row : reportData) {
             Row dataRow = sheet.createRow(rowNum++);
@@ -435,41 +429,9 @@ public class ReportService {
 
     }
 
-    public OverviewReportDTO getOverview(ReportFilterRequest request){
-        OverviewReportDTO overviewReportDTO = new OverviewReportDTO();
-        overviewReportDTO.setNumberAccount(userRepository.countFilter(request.getYear(), request.getMonth()));
-
-        overviewReportDTO.setNumberBloodDonationsRegistration(bloodDonationRegistrationRepository.countFilter(request.getYear(), request.getMonth()));
-        overviewReportDTO.setNumberSuccessDonation(bloodDonationRegistrationRepository.countNumberSuccessDonationFilter(request.getYear(), request.getMonth()));
-        overviewReportDTO.setNumberFailureDonation(bloodDonationRegistrationRepository.countNumberFailureDonationFilter(request.getYear(), request.getMonth()));
-        overviewReportDTO.setNumberNotCompleteDonation(bloodDonationRegistrationRepository.countNumberNotCompleteDonationFilter(request.getYear(), request.getMonth()));
-        overviewReportDTO.setNumberNotAcceptedDonation(bloodDonationRegistrationRepository.countNumberNotAcceptedDonationFilter(request.getYear(), request.getMonth()));
-        return overviewReportDTO;
-    }
-
-    public Map<Integer, Map<String, Integer>> getMonthlyStats(ReportFilterRequest request) {
-        List<Object[]> results = bloodDonationRegistrationRepository.getMonthlyDonationStats(request.getYear());
-
-        Map<Integer, Map<String, Integer>> monthlyData = new HashMap<>();
-
-        for (int i = 1; i <= 12; i++) {
-            Map<String, Integer> counts = new HashMap<>();
-            counts.put("successCount", 0);
-            counts.put("failedCount", 0);
-            monthlyData.put(i, counts);
-        }
 
 
-        for (Object[] row : results) {
-            Integer month = ((Number) row[0]).intValue();
-            Integer successCount = ((Number) row[1]).intValue();
-            Integer failedCount = ((Number) row[2]).intValue();
 
-            Map<String, Integer> counts = new HashMap<>();
-            counts.put("successCount", successCount);
-            counts.put("failedCount", failedCount);
-            monthlyData.put(month, counts);
-        }
 
 
 }

@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.checkerframework.checker.units.qual.A;
+
 
 import java.util.Date;
 
@@ -15,15 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class StaffEmergencyReportDTO {
 
-//    {
-//        "staffName": "Trần Thị B",
-//            "staffPhone": "0987654321",
-//            "patientName": "Nguyễn Văn X",
-//            "patientPhone": "0123456789",
-//            "donorName": "Phạm Thị Y",
-//            "donorPhone": "0987654321",
-//            "status": "Đã xử lý"
-//    },
+
     private String staffName;
     private String staffPhoneNumber;
     private String patientName;

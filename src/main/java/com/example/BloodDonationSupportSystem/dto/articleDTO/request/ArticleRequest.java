@@ -2,11 +2,14 @@ package com.example.BloodDonationSupportSystem.dto.articleDTO.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.*;
 
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ArticleRequest {
 
     @NotBlank(message = "Title cannot blank")

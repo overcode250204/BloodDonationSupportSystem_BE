@@ -1,7 +1,6 @@
 package com.example.BloodDonationSupportSystem.repository;
 
 import com.example.BloodDonationSupportSystem.entity.OauthAccountEntity;
-import com.example.BloodDonationSupportSystem.entity.RoleEntity;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
