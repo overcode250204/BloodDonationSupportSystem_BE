@@ -62,6 +62,14 @@ public class EmergencyBloodRequestService {
     @Transactional
     public void updateFulfilledEmergencyRequests() {
         emergencyBloodRequestRepository.markFulfilledRequests("ĐÃ HIẾN", "ĐÃ HIẾN", "ĐÃ ĐẠT");
+
+        List<EmergencyBloodRequestEntity> requests = emergencyBloodRequestRepository.getAllIsFulfillEmergencyBloodRequests();
+        if (!requests.isEmpty()) {
+            for (EmergencyBloodRequestEntity request : requests) {
+                EmergencyBloodRequestDTO dto = mapToDTO(request);
+                messagingTemplate.convertAndSend("/emergency/emergency-requests", dto);
+            }
+        }
     }
     public List<EmergencyBloodRequestDTO> getEmergencyCasesWithSortedLevelOfUrgency() {
         List<EmergencyBloodRequestEntity> emergencyRequests = emergencyBloodRequestRepository.getAllIsFulfillEmergencyBloodRequests();
@@ -75,12 +83,32 @@ public class EmergencyBloodRequestService {
         }));
 
 
-        return emergencyRequests.stream().map(e -> mapptoDTO(e, e.getRegisteredByStaff())).toList();
+        return emergencyRequests.stream().map(e -> mapToDTO(e, e.getRegisteredByStaff())).toList();
 
 
     }
+    private EmergencyBloodRequestDTO mapToDTO(EmergencyBloodRequestEntity entity) {
+        EmergencyBloodRequestDTO dto = null;
+        if (entity != null) {
+            dto = new EmergencyBloodRequestDTO();
+            dto.setEmergencyBloodRequestId(entity.getEmergencyBloodRequestId());
+            dto.setPatientName(entity.getPatientName());
+            dto.setPatientRelatives(entity.getPatientRelatives());
+            dto.setPhoneNumber(entity.getPhoneNumber());
+            dto.setLocationOfPatient(entity.getLocationOfPatient());
+            dto.setBloodType(entity.getBloodType());
+            dto.setVolumeMl(entity.getVolumeMl());
+            dto.setLevelOfUrgency(entity.getLevelOfUrgency());
+            dto.setRegistrationDate(entity.getRegistrationDate());
+            dto.setNote(entity.getNote());
+            dto.setStaffName(entity.getRegisteredByStaff().getFullName());
+            dto.setRegistrationDate(entity.getRegistrationDate());
+        }
 
-    private EmergencyBloodRequestDTO mapptoDTO(EmergencyBloodRequestEntity entity, UserEntity staff) {
+        return dto;
+    }
+
+    private EmergencyBloodRequestDTO mapToDTO(EmergencyBloodRequestEntity entity, UserEntity staff) {
         EmergencyBloodRequestDTO dto = null;
         if (entity != null) {
             dto = new EmergencyBloodRequestDTO();

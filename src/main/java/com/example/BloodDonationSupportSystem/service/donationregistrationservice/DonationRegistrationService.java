@@ -1,12 +1,10 @@
 package com.example.BloodDonationSupportSystem.service.donationregistrationservice;
 
-import com.example.BloodDonationSupportSystem.dto.blooddonationscheduleDTO.BloodDonationScheduleDTO;
 import com.example.BloodDonationSupportSystem.dto.donationregistrationDTO.DonationRegistrationDTO;
 import com.example.BloodDonationSupportSystem.entity.*;
 import com.example.BloodDonationSupportSystem.exception.BadRequestException;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
 import com.example.BloodDonationSupportSystem.repository.*;
-import com.example.BloodDonationSupportSystem.service.authaccountservice.OauthService;
 import com.example.BloodDonationSupportSystem.service.emailservice.EmailService;
 import com.example.BloodDonationSupportSystem.service.smsservice.SmsService;
 import com.example.BloodDonationSupportSystem.utils.AuthUtils;
@@ -74,8 +72,9 @@ public class DonationRegistrationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Cannot found emergency request"));
 
 
-        if (!Objects.equals(donor.getBloodType(), emergencyBloodRequest.getBloodType())) {
-            throw new BadRequestException("Your blood type mismatch in request");
+
+        if (!isBloodTypeCompatible(donor.getBloodType(), emergencyBloodRequest.getBloodType())) {
+            throw new BadRequestException("Your blood type is not compatible with the emergency request");
         }
 
 
@@ -99,10 +98,36 @@ public class DonationRegistrationService {
         emergencyLink.setEmergencyBloodRequest(emergencyBloodRequest);
         emergencyLink.setAssignedDate(LocalDate.now());
         emergencyDonationRepository.save(emergencyLink);
-        DonationRegistrationDTO dto = mapToDTO(saved);
-        messagingTemplate.convertAndSend("/emergency/response", dto);
+        List<DonationRegistrationDTO> updatedList = getUnassignedRegistrations();
+        DonationRegistrationDTO dto = updatedList.stream()
+                .filter(item -> item.getDonationRegistrationId().equals(saved.getDonationRegistrationId()))
+                .findFirst()
+                .orElse(mapToDTO(saved));
+
+        messagingTemplate.convertAndSend("/emergency/unassigned-list", dto);
 
         return dto;
+    }
+
+    private boolean isBloodTypeCompatible(String donorType, String recipientType) {
+        if (donorType != null && recipientType != null) {
+            return switch (recipientType) {
+                case "O-" -> donorType.equals("O-");
+                case "O+" -> donorType.equals("O-") || donorType.equals("O+");
+                case "A-" -> donorType.equals("O-") || donorType.equals("A-");
+                case "A+" -> List.of("O-", "O+", "A-", "A+").contains(donorType);
+                case "B-" -> donorType.equals("O-") || donorType.equals("B-");
+                case "B+" -> List.of("O-", "O+", "B-", "B+").contains(donorType);
+                case "AB-" -> List.of("O-", "A-", "B-", "AB-").contains(donorType);
+                case "AB+" -> true;
+                default -> false;
+            };
+        } else {
+            return false;
+        }
+
+
+
     }
 
     public void updateCancelStatus(UUID registrationId) throws MessagingException {
@@ -172,8 +197,12 @@ public class DonationRegistrationService {
         entity.setStatus(dto.getStatus());
         entity.setStartDate(dto.getStartDate());
         entity.setEndDate(dto.getEndDate());
-        BloodDonationScheduleEntity schedule = bloodDonationScheduleRepository.findById(dto.getBloodDonationScheduleId()).orElseThrow(() -> new ResourceNotFoundException("BloodDonationScheduleId not found"));
-        entity.setBloodDonationSchedule(schedule);
+        if (dto.getBloodDonationScheduleId() != null) {
+            BloodDonationScheduleEntity schedule = bloodDonationScheduleRepository.findById(dto.getBloodDonationScheduleId()).orElseThrow(() -> new ResourceNotFoundException("BloodDonationScheduleId not found"));
+            entity.setBloodDonationSchedule(schedule);
+        }
+
+
         entity.setDonor(userRepository.findById(dto.getDonorId())
                 .orElseThrow(() -> new RuntimeException("Donor not found")));
 
@@ -247,6 +276,7 @@ public class DonationRegistrationService {
 
     private DonationRegistrationDTO mapToDTO(DonationRegistrationEntity entity) {
         DonationRegistrationDTO dto = new DonationRegistrationDTO();
+        dto.setDonationRegistrationId(entity.getDonationRegistrationId());
         dto.setRegistrationDate(entity.getRegistrationDate());
         dto.setCompleteDonationDate(entity.getDateCompleteDonation());
         dto.setStatus(entity.getStatus());
@@ -260,6 +290,8 @@ public class DonationRegistrationService {
             dto.setBloodDonationScheduleId(entity.getBloodDonationSchedule().getBloodDonationScheduleId());
         return dto;
     }
+
+
 
 
 }
