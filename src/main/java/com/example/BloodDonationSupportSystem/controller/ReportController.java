@@ -1,7 +1,7 @@
 package com.example.BloodDonationSupportSystem.controller;
 
 import com.example.BloodDonationSupportSystem.base.BaseReponse;
-import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.BloodInventoryResponse;
+import com.example.BloodDonationSupportSystem.dto.bloodinventoryDTO.response.BloodInventoryResponse;
 import com.example.BloodDonationSupportSystem.dto.reportDTO.OverviewReportDTO;
 import com.example.BloodDonationSupportSystem.dto.reportDTO.ReportFilterRequest;
 import com.example.BloodDonationSupportSystem.dto.reportDTO.ReportFilterRequestByDate;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/api/admin/report")
 @Tag(name = "Report Controller")
@@ -26,6 +27,11 @@ public class ReportController {
 
 
     /// overview
+    @GetMapping("/blood-inventory/export")
+    public void exportDonationReport( HttpServletResponse response) throws IOException {
+        reportService.exportBloodInventoryReportToExcel( response);
+    }
+
     @PostMapping("/overview")
     public BaseReponse<OverviewReportDTO> getOverviewReport(@RequestBody @Valid ReportFilterRequest request) {
         var overview = reportService.getOverview(request);
@@ -33,6 +39,7 @@ public class ReportController {
     }
 
     @PostMapping("/monthly-blood-statistic")
+
     public BaseReponse<?> getMonthlyStats(@RequestBody @Valid ReportFilterRequest request) {
         var monthlyData = reportService.getMonthlyStats(request);
         return new BaseReponse<>(HttpStatus.OK.value(), "Get Monthly Stats", monthlyData);
@@ -106,5 +113,6 @@ public class ReportController {
         var staffEmergencyReport = reportService.getStaffEmergencyReport(request);
         return new BaseReponse<>(HttpStatus.OK.value(), "Get Staff emergency", staffEmergencyReport);
     }
+
 
 }

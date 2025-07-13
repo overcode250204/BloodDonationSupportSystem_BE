@@ -24,6 +24,10 @@ public interface EmergencyBloodRequestRepository extends JpaRepository<Emergency
 """)
     List<EmergencyBloodRequestEntity> getAllIsFulfillEmergencyBloodRequests();
 
+    @Query("SELECT e FROM emergency_blood_request e WHERE e.isFulfill = true")
+    List<EmergencyBloodRequestEntity> findAllByIsFulfillTrue();
+
+
     @Modifying
     @Query("""
     UPDATE emergency_blood_request
@@ -80,5 +84,6 @@ public interface EmergencyBloodRequestRepository extends JpaRepository<Emergency
             nativeQuery = true)
     List<Object[]> getEmergencyBloodRequestReport(@Param("startDate") Date startDate,
                                               @Param("endDate") Date endDate);
+
 
 }

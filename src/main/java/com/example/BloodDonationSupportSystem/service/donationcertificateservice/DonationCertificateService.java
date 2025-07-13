@@ -1,10 +1,11 @@
 package com.example.BloodDonationSupportSystem.service.donationcertificateservice;
 
 import com.example.BloodDonationSupportSystem.dto.certificateDTO.CertificateDTO;
-import com.example.BloodDonationSupportSystem.entity.DonationCertificateEntity;
-import com.example.BloodDonationSupportSystem.entity.UserEntity;
+import com.example.BloodDonationSupportSystem.entity.*;
 import com.example.BloodDonationSupportSystem.exception.BadRequestException;
 import com.example.BloodDonationSupportSystem.repository.DonationCertificateRepository;
+import com.example.BloodDonationSupportSystem.repository.EmergencyDonationRepository;
+import com.example.BloodDonationSupportSystem.repository.OauthAccountRepository;
 import com.example.BloodDonationSupportSystem.utils.AuthUtils;
 import com.lowagie.text.Font;
 import com.lowagie.text.PageSize;
@@ -19,17 +20,21 @@ import com.lowagie.text.pdf.*;
 
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
-import java.security.cert.Certificate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class DonationCertificateService {
-
+    @Autowired
+    private EmergencyDonationRepository emergencyDonationRepository;
 
     @Autowired
     private DonationCertificateRepository donationCertificateRepository;
+
+    @Autowired
+    private OauthAccountRepository oauthAccountRepository;
 
     public List<CertificateDTO> getAllCertificates() {
         UUID memberId;
@@ -40,16 +45,27 @@ public class DonationCertificateService {
         }
 
         List<DonationCertificateEntity> certificates = donationCertificateRepository.findByDonorCertificate_UserId(memberId);
+
         return certificates.stream().map(c -> mapToDTO(c)).toList();
     }
 
     private CertificateDTO mapToDTO(DonationCertificateEntity certificate) {
         CertificateDTO dto = new CertificateDTO();
-        dto.setRegistrationDate(certificate.getDonationRegistrationCertificate().getBloodDonationSchedule().getDonationDate());
+        DonationRegistrationEntity registration = certificate.getDonationRegistrationCertificate();
+
+        if (registration.getBloodDonationSchedule() != null) {
+            dto.setRegistrationDate(registration.getBloodDonationSchedule().getDonationDate());
+            dto.setHospital(registration.getBloodDonationSchedule().getAddressHospital());
+        } else {
+            emergencyDonationRepository.findByDonationRegistration_DonationRegistrationId(registration.getDonationRegistrationId())
+                    .ifPresent(emergency -> {
+                        dto.setRegistrationDate(emergency.getAssignedDate());
+                        dto.setHospital(emergency.getEmergencyBloodRequest().getLocationOfPatient());
+                    });
+        }
         dto.setTypeCertificate(certificate.getTypeCertificate());
         dto.setCertificateId(certificate.getCertificateId());
         dto.setIssuedAt(certificate.getIssuedAt());
-        dto.setHospital(certificate.getDonationRegistrationCertificate().getBloodDonationSchedule().getAddressHospital());
         return dto;
     }
 
@@ -80,7 +96,6 @@ public class DonationCertificateService {
         canvas.rectangle(rect);
 
 
-
         Paragraph title = new Paragraph("GIẤY CHỨNG NHẬN HIẾN MÁU", titleFont);
         title.setAlignment(Element.ALIGN_CENTER);
         title.setSpacingAfter(20f);
@@ -102,8 +117,16 @@ public class DonationCertificateService {
         addCell(table, "Họ tên:", labelFont);
         addCell(table, user.getFullName(), valueFont);
 
-        addCell(table, "Số điện thoại:", labelFont);
-        addCell(table, user.getPhoneNumber(), valueFont);
+
+        if (user.getPhoneNumber() != null) {
+            addCell(table, "Số điện thoại:", labelFont);
+            addCell(table, user.getPhoneNumber(), valueFont);
+        } else {
+            OauthAccountEntity email = oauthAccountRepository.findByUser(user);
+            addCell(table, "Email:", labelFont);
+            addCell(table, email.getAccount(), valueFont);
+        }
+
 
         addCell(table, "Nhóm máu:", labelFont);
         addCell(table, user.getBloodType(), valueFont);
@@ -113,7 +136,21 @@ public class DonationCertificateService {
                 .format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), valueFont);
 
         addCell(table, "Địa điểm:", labelFont);
-        addCell(table, cert.getDonationRegistrationCertificate().getBloodDonationSchedule().getAddressHospital(), valueFont);
+        String hospital = null;
+
+        DonationRegistrationEntity registration = cert.getDonationRegistrationCertificate();
+
+        if (registration.getBloodDonationSchedule() != null) {
+            hospital = registration.getBloodDonationSchedule().getAddressHospital();
+        } else {
+            Optional<EmergencyDonationEntity> emergencyOpt =
+                    emergencyDonationRepository.findByDonationRegistration_DonationRegistrationId(registration.getDonationRegistrationId());
+
+            if (emergencyOpt.isPresent() && emergencyOpt.get().getEmergencyBloodRequest() != null) {
+                hospital = emergencyOpt.get().getEmergencyBloodRequest().getLocationOfPatient();
+            }
+        }
+        addCell(table, hospital, valueFont);
 
         addCell(table, "Loại chứng nhận:", labelFont);
         addCell(table, cert.getTypeCertificate(), valueFont);
@@ -148,22 +185,12 @@ public class DonationCertificateService {
     }
 
 
-
     private void addCell(PdfPTable table, String text, Font font) {
         PdfPCell cell = new PdfPCell(new Phrase(text, font));
         cell.setBorder(Rectangle.NO_BORDER);
         cell.setPadding(5);
         table.addCell(cell);
     }
-
-    private void addColoredCell(PdfPTable table, String text, Font font, Color bgColor) {
-        PdfPCell cell = new PdfPCell(new Phrase(text, font));
-        cell.setBorder(Rectangle.NO_BORDER);
-        cell.setPadding(5);
-        cell.setBackgroundColor(bgColor);
-        table.addCell(cell);
-    }
-
 
 
 

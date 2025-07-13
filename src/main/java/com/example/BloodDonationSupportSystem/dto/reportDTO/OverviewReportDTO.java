@@ -10,4 +10,5 @@ public class OverviewReportDTO {
     private long numberFailureDonation;
     private long numberNotCompleteDonation;
     private long numberNotAcceptedDonation;
+
 }

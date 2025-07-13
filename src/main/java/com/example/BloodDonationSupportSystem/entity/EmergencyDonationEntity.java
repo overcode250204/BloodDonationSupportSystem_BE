@@ -1,14 +1,17 @@
 package com.example.BloodDonationSupportSystem.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity(name = "donation_emergency")
 public class EmergencyDonationEntity {
     @Id
@@ -19,9 +22,6 @@ public class EmergencyDonationEntity {
 
     @Column(name = "assigned_date")
     private LocalDate assignedDate;
-
-    @Column(name = "status")
-    private String status;
 
     @ManyToOne
     @JoinColumn(name = "emergency_blood_request_id")

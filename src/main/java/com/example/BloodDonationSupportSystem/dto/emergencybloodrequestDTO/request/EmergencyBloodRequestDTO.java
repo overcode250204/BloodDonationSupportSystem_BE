@@ -1,4 +1,4 @@
-package com.example.BloodDonationSupportSystem.dto.emergencybloodrequestDTO;
+package com.example.BloodDonationSupportSystem.dto.emergencybloodrequestDTO.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -36,6 +36,8 @@ public class EmergencyBloodRequestDTO {
     private String note;
 
     private LocalDate registrationDate;
+
+    private boolean isFulfill;
 
     @NotNull(message = "Registered By Staff can not null")
     private UUID registeredByStaff;

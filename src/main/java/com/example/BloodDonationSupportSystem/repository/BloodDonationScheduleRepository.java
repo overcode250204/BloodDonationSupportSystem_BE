@@ -55,6 +55,7 @@ public interface BloodDonationScheduleRepository extends JpaRepository<BloodDona
 
 
     List<BloodDonationScheduleEntity> findAllByDonationDateBetween(LocalDate startDate, LocalDate endDate);
+    BloodDonationScheduleEntity findByAddressHospitalAndDonationDate(String addressHospital, LocalDate donationDate);
 
 
 

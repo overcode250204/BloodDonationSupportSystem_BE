@@ -2,13 +2,12 @@ package com.example.BloodDonationSupportSystem.controller;
 
 import com.example.BloodDonationSupportSystem.base.BaseReponse;
 import com.example.BloodDonationSupportSystem.dto.donationregistrationDTO.DonationRegistrationDTO;
-import com.example.BloodDonationSupportSystem.dto.donationregistrationDTO.request.DonationRegistrationUpdateStatusRequest;
 import com.example.BloodDonationSupportSystem.service.donationregistrationservice.DonationRegistrationService;
+import com.example.BloodDonationSupportSystem.utils.AuthUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,9 +43,9 @@ public class DonationRegistrationController {
 
 
     @PutMapping("/staff/cancel-registration/{id}")
-    public BaseReponse<?> updateRegistrationStatus(@PathVariable UUID id, @RequestBody @Valid DonationRegistrationUpdateStatusRequest request) {
+    public BaseReponse<?> updateRegistrationStatus(@PathVariable UUID id) {
         try {
-            donationRegistrationService.updateCancelStatus(id, request.getStatus());
+            donationRegistrationService.updateCancelStatus(id);
             return new BaseReponse<>(HttpStatus.OK.value(), "Update successfully", null);
         } catch (Exception e) {
             return new BaseReponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An error occurred while updating the status.", null);
@@ -71,5 +70,21 @@ public class DonationRegistrationController {
         return new BaseReponse<>(HttpStatus.OK.value(), "Fetched all successfully", response);
     }
 
+    @GetMapping("/staff/unassigned-list")
+    public BaseReponse<?> getUnassignedRegistrations() {
+        List<DonationRegistrationDTO> response = donationRegistrationService.getUnassignedRegistrations();
+        return new BaseReponse<>(HttpStatus.OK.value(), "Fetched unassigned registrations successfully", response);
+    }
+
+    @PutMapping("/staff/assign-registration/{id}")
+    public BaseReponse<?> updateScreenByStaff(@PathVariable UUID id) {
+        try {
+            UUID staffId = UUID.fromString(AuthUtils.getCurrentUser().getUsername());
+            donationRegistrationService.updateScreenByStaff(id,staffId);
+            return new BaseReponse<>(HttpStatus.OK.value(), "Update successfully", null);
+        } catch (Exception e) {
+            return new BaseReponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An error occurred while updating the status.", null);
+        }
+    }
 
 }

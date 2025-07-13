@@ -1,12 +1,10 @@
 package com.example.BloodDonationSupportSystem.service.emergencybloodrequestservice;
 
-import com.example.BloodDonationSupportSystem.dto.emergencybloodrequestDTO.EmergencyBloodRequestDTO;
+import com.example.BloodDonationSupportSystem.dto.emergencybloodrequestDTO.request.EmergencyBloodRequestDTO;
 import com.example.BloodDonationSupportSystem.entity.EmergencyBloodRequestEntity;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
-import com.example.BloodDonationSupportSystem.repository.DonationRegistrationRepository;
 import com.example.BloodDonationSupportSystem.repository.EmergencyBloodRequestRepository;
-import com.example.BloodDonationSupportSystem.repository.EmergencyDonationRepository;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -28,11 +26,6 @@ public class EmergencyBloodRequestService {
     @Autowired
     private EmergencyBloodRequestRepository emergencyBloodRequestRepository;
 
-    @Autowired
-    private DonationRegistrationRepository registrationRepository;
-
-    @Autowired
-    private EmergencyDonationRepository emergencyDonationRepository;
 
 
     public EmergencyBloodRequestDTO createEmergencyRequest(EmergencyBloodRequestDTO dto) {
@@ -62,8 +55,16 @@ public class EmergencyBloodRequestService {
     @Transactional
     public void updateFulfilledEmergencyRequests() {
         emergencyBloodRequestRepository.markFulfilledRequests("ĐÃ HIẾN", "ĐÃ HIẾN", "ĐÃ ĐẠT");
-    }
 
+        List<EmergencyBloodRequestEntity> requests = emergencyBloodRequestRepository.findAllByIsFulfillTrue();
+        if (!requests.isEmpty()) {
+            for (EmergencyBloodRequestEntity request : requests) {
+                EmergencyBloodRequestDTO dto = mapToDTO(request);
+                dto.setFulfill(true);
+                messagingTemplate.convertAndSend("/emergency/emergency-requests", dto);
+            }
+        }
+    }
     public List<EmergencyBloodRequestDTO> getEmergencyCasesWithSortedLevelOfUrgency() {
         List<EmergencyBloodRequestEntity> emergencyRequests = emergencyBloodRequestRepository.getAllIsFulfillEmergencyBloodRequests();
         emergencyRequests.sort(Comparator.comparingInt(e -> {
@@ -76,12 +77,32 @@ public class EmergencyBloodRequestService {
         }));
 
 
-        return emergencyRequests.stream().map(e -> mapptoDTO(e, e.getRegisteredByStaff())).toList();
+        return emergencyRequests.stream().map(e -> mapToDTO(e, e.getRegisteredByStaff())).toList();
 
 
     }
+    private EmergencyBloodRequestDTO mapToDTO(EmergencyBloodRequestEntity entity) {
+        EmergencyBloodRequestDTO dto = null;
+        if (entity != null) {
+            dto = new EmergencyBloodRequestDTO();
+            dto.setEmergencyBloodRequestId(entity.getEmergencyBloodRequestId());
+            dto.setPatientName(entity.getPatientName());
+            dto.setPatientRelatives(entity.getPatientRelatives());
+            dto.setPhoneNumber(entity.getPhoneNumber());
+            dto.setLocationOfPatient(entity.getLocationOfPatient());
+            dto.setBloodType(entity.getBloodType());
+            dto.setVolumeMl(entity.getVolumeMl());
+            dto.setLevelOfUrgency(entity.getLevelOfUrgency());
+            dto.setRegistrationDate(entity.getRegistrationDate());
+            dto.setNote(entity.getNote());
+            dto.setStaffName(entity.getRegisteredByStaff().getFullName());
+            dto.setRegistrationDate(entity.getRegistrationDate());
+        }
 
-    private EmergencyBloodRequestDTO mapptoDTO(EmergencyBloodRequestEntity entity, UserEntity staff) {
+        return dto;
+    }
+
+    private EmergencyBloodRequestDTO mapToDTO(EmergencyBloodRequestEntity entity, UserEntity staff) {
         EmergencyBloodRequestDTO dto = null;
         if (entity != null) {
             dto = new EmergencyBloodRequestDTO();
@@ -97,6 +118,7 @@ public class EmergencyBloodRequestService {
             dto.setNote(entity.getNote());
             dto.setRegisteredByStaff(staff.getUserId());
             dto.setStaffName(entity.getRegisteredByStaff().getFullName());
+            dto.setRegistrationDate(entity.getRegistrationDate());
         }
 
         return dto;

@@ -4,7 +4,6 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -18,22 +17,16 @@ public class EmailService {
 
     public void sendHealthReminder(String username, String userEmail ) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
-
-
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
         helper.setTo(userEmail);
         helper.setSubject("Đăng Ký Hiến Máu Thành Công");
-
-
         String plainText = "Xin chào " + username + ",\n\n" +
                 "Cảm ơn bạn đã tham gia hiến máu tình nguyện.\n\n" +
                 "Vui lòng theo dõi tình trạng sức khỏe trong 48 giờ tới. " +
                 "Nếu có dấu hiệu bất thường như chóng mặt, mệt mỏi kéo dài, hãy đến trung tâm y tế gần nhất.\n\n" +
                 "Trân trọng,\n" +
                 "Trung tâm Hiến máu";
-
-
         String htmlContent = """
         <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; color: #333;">
             <h2 style="color: #d32f2f;">Cảm ơn bạn đã đăng ký hiến máu!</h2>
@@ -50,10 +43,9 @@ public class EmailService {
         </div>
         """.formatted(username);
 
-
         helper.setText(plainText, htmlContent);
-
         helper.setFrom(email);
+
         mailSender.send(message);
     }
 
@@ -65,7 +57,6 @@ public class EmailService {
 
         helper.setTo(userEmail);
         helper.setSubject("Đăng ký hiến máu thành công – Cảm ơn bạn đã chung tay vì cộng đồng!");
-
 
         String plainText = "Xin chào " + username + ",\n\n" +
                 "Chúc mừng bạn đã đăng ký hiến máu thành công!\n\n" +
@@ -81,8 +72,6 @@ public class EmailService {
                 "Một lần nữa xin cảm ơn tấm lòng nhân ái của bạn.\n\n" +
                 "Trân trọng,\n" +
                 "Trung tâm Hiến máu";
-
-
         String htmlContent = """
         <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; color: #333;">
             <h2 style="color: #d32f2f;">Đăng ký hiến máu thành công – Cảm ơn bạn đã chung tay vì cộng đồng!</h2>
@@ -114,7 +103,9 @@ public class EmailService {
         """.formatted(username, dateTime, location, email);
 
         helper.setText(plainText, htmlContent);
+
         helper.setFrom(email);
+
 
         mailSender.send(message);
     }
@@ -126,7 +117,6 @@ public class EmailService {
         helper.setTo(userEmail);
         helper.setSubject("🎉 Cảm ơn bạn đã đăng ký hiến máu – Chúng tôi sẽ phản hồi sớm nhất!");
 
-
         String plainText = "Xin chào " + username + ",\n\n" +
                 "Chúng tôi đã nhận được đăng ký hiến máu của bạn. \n\n" +
                 "Trung tâm xin chân thành cảm ơn tấm lòng nhân ái của bạn. " +
@@ -136,7 +126,6 @@ public class EmailService {
                 "Email: " + email + "\n\n" +
                 "Trân trọng,\n" +
                 "Trung tâm Hiến máu";
-
 
         String htmlContent = """
         <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; color: #333;">
@@ -158,7 +147,7 @@ public class EmailService {
         """.formatted(username,  email);
 
         helper.setText(plainText, htmlContent);
-        helper.setFrom(email); // Địa chỉ email gửi đi
+        helper.setFrom(email);
         mailSender.send(message);
     }
 
@@ -169,7 +158,6 @@ public class EmailService {
 
         helper.setTo(userEmail);
         helper.setSubject("Đơn đăng ký hiến máu không thành công – Hiện chưa có lịch phù hợp");
-
 
         String plainText = "Xin chào " + username + ",\n\n" +
                 "Chúng tôi rất tiếc phải thông báo rằng đơn đăng ký hiến máu của bạn không thành công " +
@@ -182,7 +170,6 @@ public class EmailService {
                 "Email: " + email + "\n\n" +
                 "Trân trọng,\n" +
                 "Trung tâm Hiến máu";
-
 
         String htmlContent = """
         <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; color: #333;">
@@ -210,8 +197,59 @@ public class EmailService {
         """.formatted(username, email);
 
         helper.setText(plainText, htmlContent);
+
         helper.setFrom(email);
+
         mailSender.send(message);
     }
+
+    public String sendEmailToDonationAgain(String userName,String bloodType, String contact) throws MessagingException {
+
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setTo(contact);
+        helper.setSubject("Lời kêu gọi hiến máu – Cùng lan tỏa sự sống ");
+
+        String plainText = "Xin chào " + userName + ",\n\n" +
+                "Cảm ơn bạn đã đăng ký tham gia hiến máu trong thời gian qua.\n\n" +
+                "Hiện tại, bệnh viện đang rất cần nhóm máu " + bloodType +
+                ", và chúng tôi rất mong tiếp tục nhận được sự đồng hành của bạn trong các đợt hiến máu sắp tới.\n\n" +
+                "Bạn có thể truy cập hệ thống để đăng ký lại vào thời gian phù hợp, hoặc chờ thông báo khi có lịch mới.\n\n" +
+                "Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ với chúng tôi qua địa chỉ email: " + email + "\n\n" +
+                "Trân trọng,\n" +
+                "Trung tâm Hiến máu";
+
+        String htmlContent = """
+<div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; color: #333;">
+    <h2 style="color: #b71c1c;">Lời kêu gọi hiến máu – Cùng lan tỏa sự sống</h2>
+    <p>Xin chào <strong>%s</strong>,</p>
+    <p>
+        Cảm ơn bạn đã quan tâm và đăng ký tham gia hiến máu cùng chúng tôi trong thời gian qua.
+    </p>
+    <p>
+        Hiện tại, <strong>bệnh viện đang cần nhóm máu %s</strong>. Chúng tôi rất mong tiếp tục nhận được sự đồng hành quý báu của bạn trong những đợt hiến máu sắp tới.
+    </p>
+    <p>
+        Bạn có thể truy cập hệ thống để <strong>đăng ký lại</strong> với thời gian phù hợp, hoặc chờ thông báo khi có lịch mới được cập nhật.
+    </p>
+    <p>
+        Mọi thắc mắc hoặc cần hỗ trợ, vui lòng liên hệ:<br/>
+        <strong>Email:</strong> %s
+    </p>
+    <p style="margin-top: 32px;">Trân trọng,<br/>
+    <strong>Trung tâm Hiến máu</strong></p>
+</div>
+""".formatted(userName, bloodType, email);
+
+
+        helper.setText(plainText, htmlContent);
+        helper.setFrom(email);
+        mailSender.send(message);
+
+        return "Email send successfully to " + userName + " at email address" + contact;
+    }
+
 
 }

@@ -28,4 +28,11 @@ public interface DonationProcessRepository extends JpaRepository<DonationProcess
                     AND dr.status = N'CHƯA HIẾN'
     """, nativeQuery = true)
     List<Object[]> findDonationProcessByStaffId(@Param("staffId") UUID staffId);
+
+    @Query(value = """
+    SELECT * FROM donation_process
+    WHERE blood_test = N'CHƯA KIỂM TRA'
+      AND status = N'ĐÃ HIẾN'
+    """, nativeQuery = true)
+    List<DonationProcessEntity> getUncheckedDonatedProcessesList();
 }
