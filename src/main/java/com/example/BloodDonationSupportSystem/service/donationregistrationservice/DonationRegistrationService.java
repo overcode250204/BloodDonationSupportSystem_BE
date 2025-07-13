@@ -267,8 +267,8 @@ public class DonationRegistrationService {
                 row[3] != null ? row[3].toString() : null,          // account
                 row[4] != null ? row[4].toString() : null,          // level_of_urgency
                 LocalDate.parse(row[5].toString()),                 // registration_date
-                row[6] != null ? row[6].toString() : null,          // address_hospital
-                row[7] != null ? UUID.fromString(row[7].toString()) : null  // screened_by_staff_id
+                row[6] != null ? row[6].toString() : (row[7] != null ? row[7].toString() : null),          // address_hospital
+                row[8] != null ? UUID.fromString(row[8].toString()) : null  // screened_by_staff_id
         )).toList();
 
     }

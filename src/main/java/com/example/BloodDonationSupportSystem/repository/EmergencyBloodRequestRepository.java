@@ -22,6 +22,10 @@ public interface EmergencyBloodRequestRepository extends JpaRepository<Emergency
 """)
     List<EmergencyBloodRequestEntity> getAllIsFulfillEmergencyBloodRequests();
 
+    @Query("SELECT e FROM emergency_blood_request e WHERE e.isFulfill = true")
+    List<EmergencyBloodRequestEntity> findAllByIsFulfillTrue();
+
+
     @Modifying
     @Query("""
     UPDATE emergency_blood_request
@@ -39,26 +43,6 @@ public interface EmergencyBloodRequestRepository extends JpaRepository<Emergency
 
 """)
     void markFulfilledRequests(@Param("donationRegistrationStatus") String donationRegistrationStatus, @Param("donationProcessStatus") String donationProcessStatus, @Param("bloodTest") String bloodTest);
-    @Query("""
-    SELECT ebr
-    FROM emergency_blood_request ebr
-    WHERE ebr.emergencyBloodRequestId IN (
-        SELECT ebr.emergencyBloodRequestId
-        FROM emergency_blood_request ebr
-        JOIN donation_emergency de ON ebr.emergencyBloodRequestId = de.emergencyBloodRequest.emergencyBloodRequestId
-        JOIN donation_registration dr ON dr.donationRegistrationId = de.donationRegistration.donationRegistrationId
-        JOIN donation_process dp ON dp.donationRegistrationProcess.donationRegistrationId = dr.donationRegistrationId
-        WHERE dr.status = :donationRegistrationStatus
-          AND dp.status = :donationProcessStatus 
-          AND dp.bloodTest = :bloodTest
-        GROUP BY ebr.emergencyBloodRequestId, ebr.volumeMl
-        HAVING SUM(dp.volumeMl) >= ebr.volumeMl
-    )
-""")
-    List<EmergencyBloodRequestEntity> getFulfilledRequestsToUpdate(
-            @Param("donationRegistrationStatus") String donationRegistrationStatus,
-            @Param("donationProcessStatus") String donationProcessStatus,
-            @Param("bloodTest") String bloodTest
-    );
+
 
 }

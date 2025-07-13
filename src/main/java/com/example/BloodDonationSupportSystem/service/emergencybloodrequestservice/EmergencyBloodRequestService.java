@@ -4,9 +4,7 @@ import com.example.BloodDonationSupportSystem.dto.emergencybloodrequestDTO.reque
 import com.example.BloodDonationSupportSystem.entity.EmergencyBloodRequestEntity;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
-import com.example.BloodDonationSupportSystem.repository.DonationRegistrationRepository;
 import com.example.BloodDonationSupportSystem.repository.EmergencyBloodRequestRepository;
-import com.example.BloodDonationSupportSystem.repository.EmergencyDonationRepository;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -28,11 +26,6 @@ public class EmergencyBloodRequestService {
     @Autowired
     private EmergencyBloodRequestRepository emergencyBloodRequestRepository;
 
-    @Autowired
-    private DonationRegistrationRepository registrationRepository;
-
-    @Autowired
-    private EmergencyDonationRepository emergencyDonationRepository;
 
 
     public EmergencyBloodRequestDTO createEmergencyRequest(EmergencyBloodRequestDTO dto) {
@@ -63,10 +56,11 @@ public class EmergencyBloodRequestService {
     public void updateFulfilledEmergencyRequests() {
         emergencyBloodRequestRepository.markFulfilledRequests("ĐÃ HIẾN", "ĐÃ HIẾN", "ĐÃ ĐẠT");
 
-        List<EmergencyBloodRequestEntity> requests = emergencyBloodRequestRepository.getAllIsFulfillEmergencyBloodRequests();
+        List<EmergencyBloodRequestEntity> requests = emergencyBloodRequestRepository.findAllByIsFulfillTrue();
         if (!requests.isEmpty()) {
             for (EmergencyBloodRequestEntity request : requests) {
                 EmergencyBloodRequestDTO dto = mapToDTO(request);
+                dto.setFulfill(true);
                 messagingTemplate.convertAndSend("/emergency/emergency-requests", dto);
             }
         }
