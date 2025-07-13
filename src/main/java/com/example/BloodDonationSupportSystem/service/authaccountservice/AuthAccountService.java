@@ -19,6 +19,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Optional;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.GeoLocation;
@@ -50,14 +52,15 @@ public class AuthAccountService {
         user.setRole(roleMember.orElseThrow(() -> new ResourceNotFoundException("Cannot find role")));
         user.setFullName(registerRequest.getFullName());
         user.setAddress(registerRequest.getAddress());
-//            if (user.getAddress() != null) {
-//                GeoLocation location = searchDistanceService.getCoordinates(registerRequest.getAddress());
-//                user.setLongitude(location.getLongitude());
-//                user.setLatitude(location.getLatitude());
-//            }
+            if (user.getAddress() != null) {
+                GeoLocation location = searchDistanceService.getCoordinates(registerRequest.getAddress());
+                user.setLongitude(location.getLongitude());
+                user.setLatitude(location.getLatitude());
+            }
         user.setDateOfBirth(registerRequest.getDateOfBirth());
         user.setGender(registerRequest.getGender());
         user.setStatus(registerRequest.getStatus());
+        user.setCreatedAt(LocalDate.now());
         user.setPasswordHash(passwordEncoder.encode(registerRequest.getConfirmPassword()));
         userRepository.save(user);
         response = new RegisterAccountReponse();

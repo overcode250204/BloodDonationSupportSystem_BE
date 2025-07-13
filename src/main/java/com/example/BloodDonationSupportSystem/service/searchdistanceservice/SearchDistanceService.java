@@ -1,11 +1,12 @@
 package com.example.BloodDonationSupportSystem.service.searchdistanceservice;
-import com.example.BloodDonationSupportSystem.dto.searchdistanceDTO.response.DonorResponse;
+
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.GeoLocation;
+import com.example.BloodDonationSupportSystem.dto.searchdistanceDTO.response.DonorResponse;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
 import com.example.BloodDonationSupportSystem.utils.AuthUtils;
-import org.json.JSONObject;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public class SearchDistanceService {
     @Value("${GOONG_API_KEY}")
     private String goongApiKey;
 
-    //Vị trí tìm kiếm bắt đầu từ Đại học FPT HCM
+
     private static final double FPT_HCM_LATITUDE = 10.841416800000001;
     private static final double FPT_HCM_LONGTITUDE = 106.81007447258705;
 
@@ -67,7 +68,7 @@ public class SearchDistanceService {
 
 
 
-    // Hàm này sẽ lấy tọa độ của địa chỉ xử lí cho trước khi lưu vào DB
+
     public GeoLocation getCoordinates(String address) {
         double lat = 0.0;
         double lon = 0.0;
