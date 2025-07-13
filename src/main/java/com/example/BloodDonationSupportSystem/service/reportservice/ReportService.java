@@ -1,6 +1,6 @@
 package com.example.BloodDonationSupportSystem.service.reportservice;
 
-import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.response.BloodInventoryResponse;
+import com.example.BloodDonationSupportSystem.dto.bloodinventoryDTO.response.BloodInventoryResponse;
 import com.example.BloodDonationSupportSystem.dto.reportDTO.BloodDonationReportDTO;
 
 import com.example.BloodDonationSupportSystem.dto.reportDTO.OverviewReportDTO;
