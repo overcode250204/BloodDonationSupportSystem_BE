@@ -6,7 +6,6 @@ import com.example.BloodDonationSupportSystem.entity.*;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
 import com.example.BloodDonationSupportSystem.repository.*;
 import com.example.BloodDonationSupportSystem.service.emailservice.EmailService;
-import com.example.BloodDonationSupportSystem.service.emergencybloodrequestservice.EmergencyBloodRequestService;
 import com.example.BloodDonationSupportSystem.service.historyservice.DonationInfoService;
 import com.example.BloodDonationSupportSystem.service.smsservice.SmsService;
 import jakarta.mail.MessagingException;
@@ -47,8 +46,6 @@ public class DonationProcessService {
     @Autowired
     private DonationInfoService donationInfoService;
 
-    @Autowired
-    private EmergencyBloodRequestService emergencyBloodRequestService;
 
 
     public List<DonationProcessDTO> getDonationProcessByStaffId(UUID staffId){

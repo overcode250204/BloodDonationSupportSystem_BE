@@ -17,13 +17,24 @@ import java.util.UUID;
 
 @Repository
 public interface DonationRegistrationRepository extends JpaRepository<DonationRegistrationEntity, UUID> {
-    @Modifying
+
     @Query("""
-    UPDATE donation_registration dr
-    SET dr.status = :statusSet
-    WHERE dr.status = :statusWhere AND dr.registrationDate < :cutoffDate
+    SELECT dr
+    FROM donation_registration dr
+    WHERE dr.endDate < :cutoffDate AND dr.status = :status
 """)
-    int updateStatusToCancelledIfExpired(@Param("cutoffDate") LocalDate cutoffDate, @Param("statusSet") String statusSet, @Param("statusWhere") String statusWhere);
+    List<DonationRegistrationEntity> findExpiredUnfulfilledRegistrations(
+            @Param("cutoffDate") LocalDate cutoffDate,
+            @Param("status") String currentStatus
+    );
+
+//    @Modifying
+//    @Query("""
+//    UPDATE donation_registration dr
+//    SET dr.status = :statusSet
+//    WHERE dr.status = :statusWhere AND dr.registrationDate < :cutoffDate
+//""")
+//    int updateStatusToCancelledIfExpired(@Param("cutoffDate") LocalDate cutoffDate, @Param("statusSet") String statusSet, @Param("statusWhere") String statusWhere);
 
 
     @Query(value = "SELECT COUNT(*) FROM donation_registration dr " +
@@ -163,7 +174,7 @@ public interface DonationRegistrationRepository extends JpaRepository<DonationRe
     DonorDonationInfoDTO findDonationHistoryById(@Param("registrationId") UUID registrationId);
 
     @Query(value = """
-            SELECT\s
+            SELECT
                     dr.donation_registration_id,
                     u.full_name,
                     u.phone_number,
@@ -171,6 +182,7 @@ public interface DonationRegistrationRepository extends JpaRepository<DonationRe
                     ebr.level_of_urgency,
                     dr.registration_date,
                     bds.address_hospital,
+                    ebr.location_of_patient,
                     dr.screened_by_staff_id
                 FROM donation_registration AS dr
                 LEFT JOIN user_table AS u ON dr.donor_id = u.user_id
