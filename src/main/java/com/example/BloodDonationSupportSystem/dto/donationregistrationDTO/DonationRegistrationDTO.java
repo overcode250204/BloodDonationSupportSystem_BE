@@ -52,4 +52,5 @@ public class DonationRegistrationDTO {
         this.addressHospital = addressHospital;
         this.screenedByStaffId = screenedByStaffId;
     }
+
 }

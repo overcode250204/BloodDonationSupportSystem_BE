@@ -163,16 +163,27 @@ public interface DonationRegistrationRepository extends JpaRepository<DonationRe
     DonorDonationInfoDTO findDonationHistoryById(@Param("registrationId") UUID registrationId);
 
     @Query(value = """
-            SELECT dr.donation_registration_id, u.full_name, u.phone_number, oau.account,
-            	   ebr.level_of_urgency, dr.registration_date, bds.address_hospital, dr.screened_by_staff_id
-            FROM donation_registration AS dr
-            LEFT JOIN user_table AS u ON dr.donor_id  = u.user_id
-            LEFT JOIN donation_emergency AS de ON dr.donation_registration_id = de.donation_registration_id
-            LEFT JOIN emergency_blood_request AS ebr ON de.emergency_blood_request_id = ebr.emergency_blood_request_id
-            LEFT JOIN oauthaccount AS oau ON u.user_id = oau.user_id
-            LEFT JOIN blood_donation_schedule AS bds ON dr.blood_donation_schedule_id = bds.blood_donation_schedule_id
-            WHERE dr.screened_by_staff_id IS NULL
-                    AND dr.status = N'CHƯA HIẾN'
+            SELECT\s
+                    dr.donation_registration_id,
+                    u.full_name,
+                    u.phone_number,
+                    oau.account,
+                    ebr.level_of_urgency,
+                    dr.registration_date,
+                    bds.address_hospital,
+                    dr.screened_by_staff_id
+                FROM donation_registration AS dr
+                LEFT JOIN user_table AS u ON dr.donor_id = u.user_id
+                LEFT JOIN donation_emergency AS de ON dr.donation_registration_id = de.donation_registration_id
+                LEFT JOIN emergency_blood_request AS ebr ON de.emergency_blood_request_id = ebr.emergency_blood_request_id
+                LEFT JOIN oauthaccount AS oau ON u.user_id = oau.user_id
+                LEFT JOIN blood_donation_schedule AS bds ON dr.blood_donation_schedule_id = bds.blood_donation_schedule_id
+                WHERE dr.screened_by_staff_id IS NULL
+                  AND dr.status = N'CHƯA HIẾN'
+                  AND (
+                        dr.blood_donation_schedule_id IS NOT NULL
+                        OR de.donation_emergency_id IS NOT NULL
+                      )
             """, nativeQuery = true)
     List<Object[]> findByScreenedByStaffIsNull();
 }

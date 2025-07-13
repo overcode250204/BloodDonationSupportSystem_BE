@@ -21,4 +21,6 @@ public class MailController {
         return new BaseReponse<>(200, "Send email blood donation again successfully", emailService.sendEmailToDonationAgain(request.getDonorName(),request.getBloodType(), request.getContact()));
     }
 
+
+
 }

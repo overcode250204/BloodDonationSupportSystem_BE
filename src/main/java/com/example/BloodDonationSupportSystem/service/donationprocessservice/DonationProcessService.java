@@ -6,6 +6,7 @@ import com.example.BloodDonationSupportSystem.entity.*;
 import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
 import com.example.BloodDonationSupportSystem.repository.*;
 import com.example.BloodDonationSupportSystem.service.emailservice.EmailService;
+import com.example.BloodDonationSupportSystem.service.emergencybloodrequestservice.EmergencyBloodRequestService;
 import com.example.BloodDonationSupportSystem.service.historyservice.DonationInfoService;
 import com.example.BloodDonationSupportSystem.service.smsservice.SmsService;
 import jakarta.mail.MessagingException;
@@ -46,6 +47,9 @@ public class DonationProcessService {
     @Autowired
     private DonationInfoService donationInfoService;
 
+    @Autowired
+    private EmergencyBloodRequestService emergencyBloodRequestService;
+
 
     public List<DonationProcessDTO> getDonationProcessByStaffId(UUID staffId){
         List<Object[]> donationProcesses = donationProcessRepository.findDonationProcessByStaffId(staffId);
@@ -81,9 +85,9 @@ public class DonationProcessService {
             registration.setStatus("ĐÃ HIẾN");
             registration.setDateCompleteDonation(LocalDate.now());
             donationRegistrationRepository.save(registration);
-//            donationInfoService.saveDonationHistory(registration); dang bug
+            donationInfoService.saveDonationHistory(registration);
 
-//            donationInfoService.saveCertificateInfo(registration); dang bug
+            donationInfoService.saveCertificateInfo(registration);
             if(registration.getDonor().getPhoneNumber() != null){
                 smsService.sendSmsHealthReminder(registration.getDonor().getPhoneNumber());
             } else {
@@ -93,7 +97,7 @@ public class DonationProcessService {
                     OauthAccountEntity email = oauthAccountRepository.findByUser(u);
                     emailService.sendHealthReminder(registration.getDonor().getFullName(), email.getAccount());
                 } else {
-                   throw new ResourceNotFoundException("User not found");
+                    throw new ResourceNotFoundException("User not found");
                 }
 
             }
@@ -112,7 +116,7 @@ public class DonationProcessService {
                         entity.getBloodTest(),
                         entity.getVolumeMl(),
                         entity.getStatus(),
-                        entity.getBloodInventory() != null ? entity.getBloodInventory().getBloodTypeId() : null,
+                        null,
                         entity.getDonationRegistrationProcess().getDonationRegistrationId()))
                 .collect(Collectors.toList());
     }

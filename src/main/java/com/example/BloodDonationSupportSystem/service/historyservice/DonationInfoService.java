@@ -88,7 +88,9 @@ public class DonationInfoService {
 
         DonationHistoryEntity history = new DonationHistoryEntity();
         history.setRegistrationDate(registration.getRegistrationDate());
-        history.setAddressHospital(registration.getBloodDonationSchedule().getAddressHospital());
+        if (registration.getBloodDonationSchedule() != null) {
+            history.setAddressHospital(registration.getBloodDonationSchedule().getAddressHospital());
+        }
         history.setDonationRegistration(registration);
         history.setDonorHistory(registration.getDonor());
 

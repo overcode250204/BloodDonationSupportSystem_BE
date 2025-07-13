@@ -37,6 +37,8 @@ public class EmergencyBloodRequestDTO {
 
     private LocalDate registrationDate;
 
+    private boolean isFulfill;
+
     @NotNull(message = "Registered By Staff can not null")
     private UUID registeredByStaff;
 

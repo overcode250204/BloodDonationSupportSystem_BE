@@ -14,6 +14,7 @@ import com.example.BloodDonationSupportSystem.repository.*;
 import com.example.BloodDonationSupportSystem.service.emergencybloodrequestservice.EmergencyBloodRequestService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,8 +37,13 @@ public class BloodInventoryService {
     private UserRepository userRepository;
     @Autowired
     private DonationProcessRepository donationProcessRepository;
+
     @Autowired
     private EmergencyBloodRequestService emergencyBloodRequestService;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
     public List<BloodInventoryResponse> getBloodBagList(){
         List<BloodInventory> bloodTotalList = bloodInventoryRepository.findAll();
 
@@ -72,21 +78,21 @@ public class BloodInventoryService {
 
 
         if (emergencyBloodRequest.isPresent()){
-      emergencyBloodRequestService.updateFulfilledEmergencyRequests();
-      return new BaseReponse<>(200, "Update blood volume successfully for emergency request", new EmergencyBloodEntityResponse(
-              emergencyBloodRequest.get().getEmergencyBloodRequestId(),
-                emergencyBloodRequest.get().getPatientName(),
-                emergencyBloodRequest.get().getPhoneNumber(),
-                emergencyBloodRequest.get().getLocationOfPatient(),
-                emergencyBloodRequest.get().getBloodType(),
-                emergencyBloodRequest.get().getVolumeMl(),
-                emergencyBloodRequest.get().getLevelOfUrgency(),
-                emergencyBloodRequest.get().getNote(),
-                emergencyBloodRequest.get().isFulfill(),
-                emergencyBloodRequest.get().getRegistrationDate(),
-                emergencyBloodRequest.get().getRegisteredByStaff().getUserId()
-      ));
-  }
+            emergencyBloodRequestService.updateFulfilledEmergencyRequests();
+            return new BaseReponse<>(200, "Update blood volume successfully for emergency request", new EmergencyBloodEntityResponse(
+                    emergencyBloodRequest.get().getEmergencyBloodRequestId(),
+                    emergencyBloodRequest.get().getPatientName(),
+                    emergencyBloodRequest.get().getPhoneNumber(),
+                    emergencyBloodRequest.get().getLocationOfPatient(),
+                    emergencyBloodRequest.get().getBloodType(),
+                    emergencyBloodRequest.get().getVolumeMl(),
+                    emergencyBloodRequest.get().getLevelOfUrgency(),
+                    emergencyBloodRequest.get().getNote(),
+                    emergencyBloodRequest.get().isFulfill(),
+                    emergencyBloodRequest.get().getRegistrationDate(),
+                    emergencyBloodRequest.get().getRegisteredByStaff().getUserId()
+            ));
+        }
         int updatedVolume = bloodInventory.getTotalVolumeMl() + volumeToAdd;
         bloodInventory.setTotalVolumeMl(updatedVolume);
         bloodInventoryRepository.save(bloodInventory);
@@ -101,6 +107,7 @@ public class BloodInventoryService {
                 bloodInventory.getBloodTypeId(),
                 bloodInventory.getTotalVolumeMl());
         return new BaseReponse<>(200, "Update blood volume successfully. " + message, updatedBloodInventory);
+
     }
 
 
@@ -109,7 +116,6 @@ public class BloodInventoryService {
         Optional<UserEntity> optionalUser = userRepository.findUserByProcessId(processId);
         boolean checkUser =false;
         if (!optionalUser.isPresent()) {
-            System.err.println("User not found for process ID: " + processId);
             return checkUser;
         }
         DonationProcessEntity process = donationProcessRepository.findById(processId)
@@ -127,13 +133,9 @@ public class BloodInventoryService {
             return checkUser;
         }
 
-        if (user.getBloodType() == null || user.getBloodType().isBlank()) {
-            user.setBloodType(bloodType);
-            userRepository.save(user);
-            checkUser=true;
-            return checkUser;
-        }
-        checkUser=false;
+        user.setBloodType(bloodType);
+        userRepository.save(user);
+        checkUser=true;
         return checkUser;
     }
 
