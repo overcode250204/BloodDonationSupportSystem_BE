@@ -24,6 +24,5 @@ public class EmergencyBloodRequestReportDTO {
     private String donorPhone;
     private String donorEmail;
     private int donatedVolume;
-    private int donatedVolume1;
     private String status;
 }
