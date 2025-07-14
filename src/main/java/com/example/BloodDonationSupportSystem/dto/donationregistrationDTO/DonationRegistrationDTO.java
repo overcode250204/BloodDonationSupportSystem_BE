@@ -1,7 +1,6 @@
 package com.example.BloodDonationSupportSystem.dto.donationregistrationDTO;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

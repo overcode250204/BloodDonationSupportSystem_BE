@@ -2,7 +2,7 @@ package com.example.BloodDonationSupportSystem.dto.donationhistoryDTO;
 
 import lombok.Data;
 
-import java.sql.Time;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;

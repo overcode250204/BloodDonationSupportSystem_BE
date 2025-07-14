@@ -1,7 +1,6 @@
 package com.example.BloodDonationSupportSystem.repository;
 
 import com.example.BloodDonationSupportSystem.entity.OauthAccountEntity;
-import com.example.BloodDonationSupportSystem.entity.RoleEntity;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -56,6 +56,64 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
             @Param("fptLng") double fptLng,
             @Param("threeMonthsAgo") LocalDate threeMonthsAgo
     );
+
+
+    @Query(value =
+            "SELECT " +
+                    "u.full_name AS staff_name, " +
+                    "u.phone_number AS staff_phone, " +
+                    "donor.full_name AS donor_name, " +
+                    "donor.phone_number AS donor_phone, " +
+                    "donor.account AS donor_account, " +
+                    "bs.donation_date, " +
+                    "dr.status " +
+                    "FROM user_table u " +
+                    "JOIN donation_registration dr ON dr.screened_by_staff_id = u.user_id " +
+                    "JOIN ( " +
+                    "   SELECT u1.user_id, u1.full_name, u1.phone_number, o.account " +
+                    "   FROM user_table u1 " +
+                    "   LEFT JOIN oauthaccount o ON o.user_id = u1.user_id " +
+                    ") donor ON donor.user_id = dr.donor_id " +
+                    "JOIN blood_donation_schedule bs ON bs.blood_donation_schedule_id = dr.blood_donation_schedule_id " +
+                    "WHERE u.role_id = 3 " +
+                    "  AND bs.donation_date BETWEEN :startDate AND :endDate " +
+                    "ORDER BY bs.donation_date ASC",
+            nativeQuery = true)
+    List<Object[]> getStaffDonationReport(@Param("startDate") Date startDate,
+                                       @Param("endDate") Date endDate);
+
+
+    @Query(value =
+            "SELECT " +
+                    "u.full_name , " +
+                    "u.phone_number , " +
+                    "ebr.patient_name, " +
+                    "ebr.phone_number, " +
+                    "ebr.note , " +
+                    "donor.full_name , " +
+                    "donor.phone_number, " +
+                    "donor.account AS donor_account, " +
+                    "ebr.registration_date, " +
+                    "dr.status " +
+                    "FROM user_table u " +
+                    "JOIN donation_registration dr " +
+                    "   ON dr.screened_by_staff_id = u.user_id " +
+                    "LEFT JOIN ( " +
+                    "   SELECT u1.user_id, u1.full_name, u1.phone_number, o.account " +
+                    "   FROM user_table u1 " +
+                    "   LEFT JOIN oauthaccount o ON o.user_id = u1.user_id " +
+                    ") donor " +
+                    "   ON donor.user_id = dr.donor_id " +
+                    "JOIN donation_emergency de " +
+                    "   ON de.donation_registration_id = dr.donation_registration_id " +
+                    "JOIN emergency_blood_request ebr " +
+                    "   ON ebr.emergency_blood_request_id = de.emergency_blood_request_id " +
+                    "   AND ebr.registration_date BETWEEN :startDate AND :endDate " +
+                    "WHERE u.role_id = 3 " +
+                    "ORDER BY ebr.registration_date ASC",
+            nativeQuery = true)
+    List<Object[]> getStaffEmergencyDonationReport(@Param("startDate") Date startDate,
+                                                   @Param("endDate") Date endDate);
     @Query(value = """
     SELECT u.*
     FROM user_table u

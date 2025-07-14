@@ -1,24 +1,29 @@
 package com.example.BloodDonationSupportSystem.dto.reportDTO;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 import java.util.Date;
 
-@Setter
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BloodDonationReportDTO {
+public class StaffEmergencyReportDTO {
+
+
+    private String staffName;
+    private String staffPhoneNumber;
+    private String patientName;
+    private String patientPhoneNumber;
+    private String note;
     private String donorName;
     private String donorPhoneNumber;
     private String donorEmail;
-    private String donorAddress;
-    private String bloodType;
-    private int sendVolume;
     private Date donationDate;
-    private String hospital;
     private String status;
 }

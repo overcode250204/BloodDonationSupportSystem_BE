@@ -7,18 +7,16 @@ import lombok.Setter;
 
 import java.util.Date;
 
-@Setter
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BloodDonationReportDTO {
+public class StaffDonationReportDTO {
+    private String staffName;
+    private String staffPhone;
     private String donorName;
-    private String donorPhoneNumber;
+    private String donorPhone;
     private String donorEmail;
-    private String donorAddress;
-    private String bloodType;
-    private int sendVolume;
     private Date donationDate;
-    private String hospital;
     private String status;
 }

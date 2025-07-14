@@ -14,6 +14,7 @@ import java.util.List;
 
 @Repository
 public interface BloodInventoryRepository extends JpaRepository<BloodInventory, String> {
+
     @Query(value = "SELECT bi.blood_type_id, " +
             "COALESCE(SUM(CASE " +
             "WHEN bs.donation_date <= :endDate AND dp.blood_test = N'ĐÃ ĐẠT' THEN dp.volume_ml " +

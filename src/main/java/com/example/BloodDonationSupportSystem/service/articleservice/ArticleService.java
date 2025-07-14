@@ -7,7 +7,7 @@ import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundExceptio
 import com.example.BloodDonationSupportSystem.repository.ArticleRepository;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+
 
 import org.springframework.stereotype.Service;
 
@@ -66,6 +66,9 @@ public class ArticleService {
 
     public List<ArticleResponse> getAll() {
         return articleRepository.findAll().stream().map(article -> this.mapToArticleResponse(article)).toList();
+    }
+    public List<ArticleResponse> getAllToView() {
+        return articleRepository.findByStatus("ĐÃ DUYỆT").stream().map(article -> this.mapToArticleResponse(article)).toList();
     }
 
 

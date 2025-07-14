@@ -3,7 +3,6 @@ package com.example.BloodDonationSupportSystem.controller;
 import com.example.BloodDonationSupportSystem.base.BaseReponse;
 import com.example.BloodDonationSupportSystem.dto.blooddonationscheduleDTO.BloodDonationScheduleDTO;
 import com.example.BloodDonationSupportSystem.dto.donationregistrationDTO.StatByDateDTO;
-import com.example.BloodDonationSupportSystem.entity.BloodDonationScheduleEntity;
 import com.example.BloodDonationSupportSystem.service.scheduleservice.BloodDonationScheduleService;
 import com.example.BloodDonationSupportSystem.utils.AuthUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -1,6 +1,5 @@
 package com.example.BloodDonationSupportSystem.dto.blooddonationscheduleDTO.request;
 
-import com.example.BloodDonationSupportSystem.entity.UserEntity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

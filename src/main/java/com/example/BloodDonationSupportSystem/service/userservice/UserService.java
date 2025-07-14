@@ -1,19 +1,16 @@
 package com.example.BloodDonationSupportSystem.service.userservice;
 
-import com.example.BloodDonationSupportSystem.dto.donationregistrationDTO.DonationRegistrationDTO;
-import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
-import com.example.BloodDonationSupportSystem.service.searchdistanceservice.SearchDistanceService;
-import com.example.BloodDonationSupportSystem.utils.AuthUtils;
 import com.example.BloodDonationSupportSystem.dto.authenaccountDTO.UserProfileDTO;
 import com.example.BloodDonationSupportSystem.entity.UserEntity;
+import com.example.BloodDonationSupportSystem.exception.ResourceNotFoundException;
 import com.example.BloodDonationSupportSystem.repository.UserRepository;
+import com.example.BloodDonationSupportSystem.service.searchdistanceservice.SearchDistanceService;
+import com.example.BloodDonationSupportSystem.utils.AuthUtils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 @Service
