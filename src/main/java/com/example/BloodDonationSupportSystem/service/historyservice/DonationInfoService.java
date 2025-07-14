@@ -96,6 +96,8 @@ public class DonationInfoService {
         donationHistoryRepository.save(history);
     }
 
+
+
     public void saveCertificateInfo(DonationRegistrationEntity registration){
 
         DonationCertificateEntity certificateEntity = new DonationCertificateEntity();
@@ -114,5 +116,25 @@ public class DonationInfoService {
 
         donationCertificateRepository.save(certificateEntity);
     }
+
+    public void saveCertificateInfo(DonationRegistrationEntity registration){
+
+        DonationCertificateEntity certificateEntity = new DonationCertificateEntity();
+        certificateEntity.setTitle("GIẤY CHỨNG NHẬN HIẾN MÁU");
+        certificateEntity.setIssuedAt(LocalDate.now());
+        certificateEntity.setDonorCertificate(registration.getDonor());
+        certificateEntity.setDonationRegistrationCertificate(registration);
+        Optional<EmergencyDonationEntity> emergencyDonation =
+                donationEmergencyRepository.findByDonationRegistrationDonationRegistrationId(registration.getDonationRegistrationId());
+
+        if (emergencyDonation.isPresent() && emergencyDonation.get().getEmergencyBloodRequest() != null) {
+            certificateEntity.setTypeCertificate("HIẾN MÁU KHẨN CẤP");
+        } else {
+            certificateEntity.setTypeCertificate("HIẾN MÁU");
+        }
+
+        donationCertificateRepository.save(certificateEntity);
+    }
+
 
 }
