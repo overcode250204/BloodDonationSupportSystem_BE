@@ -34,10 +34,11 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
            COALESCE(oa.account, u.phone_number) AS contactInfo
       FROM user_table u
       JOIN donation_registration d ON u.user_id = d.donor_id
+     JOIN donation_process dp ON dp.donation_registration_id = d.donation_registration_id
       LEFT JOIN oauthaccount oa ON u.user_id = oa.user_id
      WHERE u.status = N'HOẠT ĐỘNG'
        AND u.[role_id] = 2
-       AND d.status = N'ĐÃ HIẾN'
+       AND dp.status = N'ĐÃ HIẾN'
        AND d.date_complete_donation <= :threeMonthsAgo
        AND u.blood_type IN (:bloodTypes)
        AND (6371 * acos(

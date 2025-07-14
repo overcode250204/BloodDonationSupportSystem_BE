@@ -41,8 +41,7 @@ public class SearchDistanceService {
     public List<DonorResponse> getEligibleDonors(List<String> bloodTypes, double maxDistanceKm) {
 
         LocalDate threeMonthsAgo = LocalDate.now().minusMonths(3);
-        List<Object[]> rawResults = userRepository.findEligibleDonors(
-                bloodTypes, maxDistanceKm, FPT_HCM_LATITUDE, FPT_HCM_LONGTITUDE, threeMonthsAgo);
+        List<Object[]> rawResults = userRepository.findEligibleDonors(bloodTypes, maxDistanceKm, FPT_HCM_LATITUDE, FPT_HCM_LONGTITUDE, threeMonthsAgo);
 
 
         return rawResults.stream()
