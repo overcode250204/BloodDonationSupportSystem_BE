@@ -130,7 +130,7 @@ public interface DonationRegistrationRepository extends JpaRepository<DonationRe
                     bds.startTime,
                     bds.endTime,
                     COALESCE(dp.volumeMl, 0),
-                    bds.donationDate,
+                    dr.dateCompleteDonation,
                     dr.registrationDate,
                     bds.bloodDonationScheduleId,
                     dr.startDate,
@@ -155,7 +155,7 @@ public interface DonationRegistrationRepository extends JpaRepository<DonationRe
                     bds.startTime,
                     bds.endTime,
                     COALESCE(dp.volumeMl, 0),
-                    bds.donationDate,
+                    dr.dateCompleteDonation,
                     dr.registrationDate,
                     bds.bloodDonationScheduleId,
                     dr.startDate,
@@ -210,7 +210,7 @@ public interface DonationRegistrationRepository extends JpaRepository<DonationRe
                     bds.startTime,
                     bds.endTime,
                     COALESCE(dp.volumeMl, 0),
-                    bds.donationDate,
+                    dr.dateCompleteDonation,
                     dr.registrationDate,
                     de.assignedDate
                 )
@@ -236,7 +236,7 @@ public interface DonationRegistrationRepository extends JpaRepository<DonationRe
                 bds.startTime,
                 bds.endTime,
                 COALESCE(dp.volumeMl, 0),
-                bds.donationDate,
+                dr.dateCompleteDonation,
                 dr.registrationDate,
                 de.assignedDate
             )
