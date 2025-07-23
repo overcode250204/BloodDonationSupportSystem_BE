@@ -13,6 +13,7 @@ public class StaffDonationInfoDTO {
 
     private String fullName;
     private String phoneNumber;
+    private String email;
     private UUID donorId;
     private String addressHospital;
     private LocalTime scheduleStartTime;
@@ -30,6 +31,7 @@ public class StaffDonationInfoDTO {
             String status,
             String fullName,
             String phoneNumber,
+            String email,
             UUID donorId,
             String addressHospital,
             LocalTime scheduleStartTime,
@@ -43,6 +45,7 @@ public class StaffDonationInfoDTO {
         this.status = status;
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
+        this.email = email;
         this.donorId = donorId;
         this.addressHospital = addressHospital;
         this.scheduleStartTime = scheduleStartTime;
