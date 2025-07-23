@@ -97,6 +97,8 @@ public class DonationInfoService {
         donationHistoryRepository.save(history);
     }
 
+
+
     public void saveCertificateInfo(DonationRegistrationEntity registration){
 
         DonationCertificateEntity certificateEntity = new DonationCertificateEntity();
@@ -115,6 +117,7 @@ public class DonationInfoService {
 
         donationCertificateRepository.save(certificateEntity);
     }
+
 
     public List<StaffDonationInfoDTO> getAllDonationHistoryForStaff() {
         try {
@@ -143,5 +146,6 @@ public class DonationInfoService {
             throw new RuntimeException("Error while retrieving donation history for donor ID: " + donorId, e);
         }
     }
+
 
 }
