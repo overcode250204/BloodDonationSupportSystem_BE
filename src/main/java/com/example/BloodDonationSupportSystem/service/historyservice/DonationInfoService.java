@@ -129,7 +129,7 @@ public class DonationInfoService {
 
             return donationInfoList;
         } catch (Exception e) {
-            throw new RuntimeException("Error while retrieving donation history for staff");
+            throw new RuntimeException("Error while retrieving donation history for staff", e);
         }
     }
 
