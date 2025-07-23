@@ -143,6 +143,7 @@ public class ReportService {
             String donorMail = (String) row[9];
             int sendVolume = row[10] != null ?  (Integer) row[10] : 0;
             String status = (String) row[11];
+
             bloodRequestReportDTOList.add(
                     new EmergencyBloodRequestReportDTO(registrationDate, patientName,
                             patientPhone, patientLocation, patientBloodType, needVolume,
