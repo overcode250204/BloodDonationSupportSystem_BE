@@ -96,6 +96,8 @@ public class DonationInfoService {
         donationHistoryRepository.save(history);
     }
 
+
+
     public void saveCertificateInfo(DonationRegistrationEntity registration){
 
         DonationCertificateEntity certificateEntity = new DonationCertificateEntity();
@@ -114,5 +116,8 @@ public class DonationInfoService {
 
         donationCertificateRepository.save(certificateEntity);
     }
+
+
+
 
 }

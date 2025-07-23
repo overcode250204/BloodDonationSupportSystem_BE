@@ -102,7 +102,7 @@ public class ReportService {
 
 
 
-    
+
 
     public  Map<Integer, Integer> getMonthlyEmergencyRequests(ReportFilterRequest request) {
 
@@ -143,7 +143,8 @@ public class ReportService {
             String donorMail = (String) row[9];
             int sendVolume = row[10] != null ?  (Integer) row[10] : 0;
             String status = (String) row[11];
-             bloodRequestReportDTOList.add(
+
+            bloodRequestReportDTOList.add(
                     new EmergencyBloodRequestReportDTO(registrationDate, patientName,
                             patientPhone, patientLocation, patientBloodType, needVolume,
                             notes, donorName, donorPhone, donorMail, sendVolume, status));
@@ -307,8 +308,8 @@ public class ReportService {
             Date donationDate = (Date) row[8];
             String status = (String) row[9];
             staffEmergencyReportDTOList.add(new StaffEmergencyReportDTO(staffName, staffPhone,
-                                            patientName, patientPhone, note,
-                                            donorName, donorPhone, donorMail, donationDate, status));
+                    patientName, patientPhone, note,
+                    donorName, donorPhone, donorMail, donationDate, status));
         }
         return  staffEmergencyReportDTOList;
     }

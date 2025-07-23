@@ -80,7 +80,7 @@ public interface EmergencyBloodRequestRepository extends JpaRepository<Emergency
                     "ORDER BY ebr.registration_date ASC",
             nativeQuery = true)
     List<Object[]> getEmergencyBloodRequestReport(@Param("startDate") Date startDate,
-                                              @Param("endDate") Date endDate);
+                                                  @Param("endDate") Date endDate);
 
 
 }
