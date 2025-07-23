@@ -204,6 +204,7 @@ public interface DonationRegistrationRepository extends JpaRepository<DonationRe
                     dr.status,
                     u.fullName,
                     u.phoneNumber,
+                    oau.account,
                     u.userId,
                     bds.addressHospital,
                     bds.startTime,
@@ -215,6 +216,7 @@ public interface DonationRegistrationRepository extends JpaRepository<DonationRe
                 )
                 FROM donation_registration dr
                 LEFT JOIN dr.donor u
+                LEFT JOIN u.oauthAccount oau
                 LEFT JOIN dr.bloodDonationSchedule bds
                 LEFT JOIN dr.donationProcess dp
                 LEFT JOIN dr.donationEmergencies de
@@ -229,6 +231,7 @@ public interface DonationRegistrationRepository extends JpaRepository<DonationRe
                 dr.status,
                 u.fullName,
                 u.phoneNumber,
+                oau.account,
                 u.userId,
                 bds.addressHospital,
                 bds.startTime,
@@ -240,6 +243,7 @@ public interface DonationRegistrationRepository extends JpaRepository<DonationRe
             )
             FROM donation_registration dr
             LEFT JOIN dr.donor u
+            LEFT JOIN u.oauthAccount oau
             LEFT JOIN dr.bloodDonationSchedule bds
             LEFT JOIN dr.donationProcess dp
             LEFT JOIN dr.donationEmergencies de
