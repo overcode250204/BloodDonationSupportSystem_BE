@@ -220,7 +220,6 @@ public interface DonationRegistrationRepository extends JpaRepository<DonationRe
                 LEFT JOIN dr.bloodDonationSchedule bds
                 LEFT JOIN dr.donationProcess dp
                 LEFT JOIN dr.donationEmergencies de
-                WHERE dr.status IN ('ĐÃ HIẾN ', 'HỦY')
                 ORDER BY dr.registrationDate DESC
             """)
     List<StaffDonationInfoDTO> findAllDonationsForStaff();
@@ -247,7 +246,7 @@ public interface DonationRegistrationRepository extends JpaRepository<DonationRe
             LEFT JOIN dr.bloodDonationSchedule bds
             LEFT JOIN dr.donationProcess dp
             LEFT JOIN dr.donationEmergencies de
-            WHERE dr.status IN ('ĐÃ HIẾN ', 'HỦY') AND u.userId = :donorId
+            WHERE u.userId = :donorId
             ORDER BY dr.registrationDate DESC
         """)
     List<StaffDonationInfoDTO> findAllDonationsByDonorId(@Param("donorId") UUID donorId);
