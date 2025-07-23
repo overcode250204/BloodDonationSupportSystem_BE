@@ -1,6 +1,7 @@
 package com.example.BloodDonationSupportSystem.service.historyservice;
 
 import com.example.BloodDonationSupportSystem.dto.donationhistoryDTO.DonorDonationInfoDTO;
+import com.example.BloodDonationSupportSystem.dto.donationhistoryDTO.StaffDonationInfoDTO;
 import com.example.BloodDonationSupportSystem.entity.DonationCertificateEntity;
 import com.example.BloodDonationSupportSystem.entity.DonationHistoryEntity;
 import com.example.BloodDonationSupportSystem.entity.DonationRegistrationEntity;
@@ -67,7 +68,7 @@ public class DonationInfoService {
             registration.setStatus("HỦY");
             donationRegistrationRepository.save(registration);
         } catch (Exception e) {
-            throw new RuntimeException("Error while canceling donation registration", e);
+            throw new RuntimeException("Error while canceling donation registration");
         }
     }
 
@@ -79,7 +80,7 @@ public class DonationInfoService {
             }
             return donationInfo;
         } catch (Exception e) {
-            throw new RuntimeException("Error while getting donation info by ID", e);
+            throw new RuntimeException("Error while getting donation info by ID");
         }
     }
 
@@ -113,6 +114,34 @@ public class DonationInfoService {
         }
 
         donationCertificateRepository.save(certificateEntity);
+    }
+
+    public List<StaffDonationInfoDTO> getAllDonationHistoryForStaff() {
+        try {
+            List<StaffDonationInfoDTO> donationInfoList = donationRegistrationRepository.findAllDonationsForStaff();
+
+            if (donationInfoList.isEmpty()) {
+                throw new ResourceNotFoundException("No donation records found in the system.");
+            }
+
+            return donationInfoList;
+        } catch (Exception e) {
+            throw new RuntimeException("Error while retrieving donation history for staff");
+        }
+    }
+
+    public List<StaffDonationInfoDTO> getDonationHistoryByDonorId(UUID donorId) {
+        try {
+            List<StaffDonationInfoDTO> donationInfoList = donationRegistrationRepository.findAllDonationsByDonorId(donorId);
+
+            if (donationInfoList.isEmpty()) {
+                throw new ResourceNotFoundException("No donation records found for donor ID: " + donorId);
+            }
+
+            return donationInfoList;
+        } catch (Exception e) {
+            throw new RuntimeException("Error while retrieving donation history for donor ID: " + donorId, e);
+        }
     }
 
 }
