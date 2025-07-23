@@ -68,19 +68,19 @@ public interface EmergencyBloodRequestRepository extends JpaRepository<Emergency
                     "   u.full_name, " +
                     "   u.phone_number, " +
                     "   oauth.account, " +
-                    "   dp.volume_ml " +
+                    "   dp.volume_ml, " +
+                    " dr.status " +
                     "FROM emergency_blood_request ebr " +
-                    "JOIN donation_emergency de ON de.emergency_blood_request_id = ebr.emergency_blood_request_id " +
-                    "JOIN donation_registration dr ON dr.donation_registration_id = de.donation_registration_id " +
-                    "   AND dr.status = N'ĐÃ HIẾN' " +
-                    "JOIN user_table u ON u.user_id = dr.donor_id " +
+                    "LEFT JOIN donation_emergency de ON de.emergency_blood_request_id = ebr.emergency_blood_request_id " +
+                    "LEFT JOIN donation_registration dr ON dr.donation_registration_id = de.donation_registration_id " +
+                    "LEFT JOIN user_table u ON u.user_id = dr.donor_id " +
                     "LEFT JOIN oauthaccount oauth ON oauth.user_id = u.user_id " +
-                    "JOIN donation_process dp ON dp.donation_registration_id = dr.donation_registration_id " +
+                    "LEFT JOIN donation_process dp ON dp.donation_registration_id = dr.donation_registration_id " +
                     "WHERE ebr.registration_date BETWEEN :startDate AND :endDate " +
                     "ORDER BY ebr.registration_date ASC",
             nativeQuery = true)
     List<Object[]> getEmergencyBloodRequestReport(@Param("startDate") Date startDate,
-                                              @Param("endDate") Date endDate);
+                                                  @Param("endDate") Date endDate);
 
 
 }
