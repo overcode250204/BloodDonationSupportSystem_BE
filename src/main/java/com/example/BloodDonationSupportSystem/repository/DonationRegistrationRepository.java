@@ -2,6 +2,7 @@ package com.example.BloodDonationSupportSystem.repository;
 
 
 import com.example.BloodDonationSupportSystem.dto.donationhistoryDTO.DonorDonationInfoDTO;
+import com.example.BloodDonationSupportSystem.dto.donationhistoryDTO.StaffDonationInfoDTO;
 import com.example.BloodDonationSupportSystem.entity.DonationRegistrationEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -147,7 +148,7 @@ public interface DonationRegistrationRepository extends JpaRepository<DonationRe
     List<DonorDonationInfoDTO> findAllDonationHistoryWithVolume(@Param("donorId") UUID donorId);
 
     @Query("""
-                SELECT new com.example.BloodDonationSupportSystem.dto.donationhistoryDTO.DonorDonationInfoDTO(
+            SELECT new com.example.BloodDonationSupportSystem.dto.donationhistoryDTO.DonorDonationInfoDTO(
                     dr.donationRegistrationId,
                     dr.status,
                     bds.addressHospital,
@@ -195,4 +196,55 @@ public interface DonationRegistrationRepository extends JpaRepository<DonationRe
                       )
             """, nativeQuery = true)
     List<Object[]> findByScreenedByStaffIsNull();
+
+
+    @Query("""
+                SELECT new com.example.BloodDonationSupportSystem.dto.donationhistoryDTO.StaffDonationInfoDTO(
+                    dr.donationRegistrationId,
+                    dr.status,
+                    u.fullName,
+                    u.phoneNumber,
+                    u.userId,
+                    bds.addressHospital,
+                    bds.startTime,
+                    bds.endTime,
+                    COALESCE(dp.volumeMl, 0),
+                    bds.donationDate,
+                    dr.registrationDate,
+                    de.assignedDate
+                )
+                FROM donation_registration dr
+                LEFT JOIN dr.donor u
+                LEFT JOIN dr.bloodDonationSchedule bds
+                LEFT JOIN dr.donationProcess dp
+                LEFT JOIN dr.donationEmergencies de
+                WHERE dr.status IN ('ĐÃ HIẾN ', 'HỦY')
+                ORDER BY dr.registrationDate DESC
+            """)
+    List<StaffDonationInfoDTO> findAllDonationsForStaff();
+
+    @Query("""
+            SELECT new com.example.BloodDonationSupportSystem.dto.donationhistoryDTO.StaffDonationInfoDTO(
+                dr.donationRegistrationId,
+                dr.status,
+                u.fullName,
+                u.phoneNumber,
+                u.userId,
+                bds.addressHospital,
+                bds.startTime,
+                bds.endTime,
+                COALESCE(dp.volumeMl, 0),
+                bds.donationDate,
+                dr.registrationDate,
+                de.assignedDate
+            )
+            FROM donation_registration dr
+            LEFT JOIN dr.donor u
+            LEFT JOIN dr.bloodDonationSchedule bds
+            LEFT JOIN dr.donationProcess dp
+            LEFT JOIN dr.donationEmergencies de
+            WHERE dr.status IN ('ĐÃ HIẾN ', 'HỦY') AND u.userId = :donorId
+            ORDER BY dr.registrationDate DESC
+        """)
+    List<StaffDonationInfoDTO> findAllDonationsByDonorId(@Param("donorId") UUID donorId);
 }

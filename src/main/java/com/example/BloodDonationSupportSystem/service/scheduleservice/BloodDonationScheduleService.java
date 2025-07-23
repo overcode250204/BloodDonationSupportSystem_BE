@@ -44,7 +44,7 @@ public class BloodDonationScheduleService {
     }
 
 
-    public BloodDonationScheduleDTO createSchedule(BloodDonationScheduleDTO dto, UUID staffId) {
+    public BloodDonationScheduleDTO     createSchedule(BloodDonationScheduleDTO dto, UUID staffId) {
 
         BloodDonationScheduleEntity exist = bloodDonationScheduleRepository.findByAddressHospitalAndDonationDate(dto.getAddressHospital(), dto.getDonationDate());
         if (exist != null) {
