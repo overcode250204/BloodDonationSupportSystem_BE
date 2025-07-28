@@ -40,16 +40,19 @@ public class DonationInfoService {
     public List<DonorDonationInfoDTO> getDonationInfo() {
         try {
             UserDetails currentUser = AuthUtils.getCurrentUser();
+
             UUID userId;
             try {
                 userId = UUID.fromString(currentUser.getUsername());
             } catch (IllegalArgumentException e) {
                 throw new RuntimeException("Invalid UUID format for user ID: " + currentUser.getUsername());
             }
+
             List<DonorDonationInfoDTO> donationInfo = donationRegistrationRepository.findAllDonationHistoryWithVolume(userId);
             if (donationInfo.isEmpty()) {
                 throw new ResourceNotFoundException("No donation information found for user ID: " + userId);
             }
+
             return donationInfo;
         } catch (Exception e) {
             throw new RuntimeException("Error while getting current user donation info");
@@ -88,9 +91,11 @@ public class DonationInfoService {
 
         DonationHistoryEntity history = new DonationHistoryEntity();
         history.setRegistrationDate(registration.getRegistrationDate());
+
         if (registration.getBloodDonationSchedule() != null) {
             history.setAddressHospital(registration.getBloodDonationSchedule().getAddressHospital());
         }
+
         history.setDonationRegistration(registration);
         history.setDonorHistory(registration.getDonor());
 
@@ -106,6 +111,7 @@ public class DonationInfoService {
         certificateEntity.setIssuedAt(LocalDate.now());
         certificateEntity.setDonorCertificate(registration.getDonor());
         certificateEntity.setDonationRegistrationCertificate(registration);
+
         Optional<EmergencyDonationEntity> emergencyDonation =
                 donationEmergencyRepository.findByDonationRegistrationDonationRegistrationId(registration.getDonationRegistrationId());
 
