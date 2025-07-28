@@ -16,6 +16,7 @@ public class DonorDonationInfoDTO {
     private LocalTime endTime;
     private int volumeMl;
     private LocalDate donationDate;
+    private LocalDate dateCompleteDonation;
     private LocalDate registrationDate;
     private UUID bloodDonationScheduleId;
     private LocalDate startDate;
@@ -30,6 +31,7 @@ public class DonorDonationInfoDTO {
                                 LocalTime endTime,
                                 int volumeMl,
                                 LocalDate donationDate,
+                                LocalDate dateCompleteDonation,
                                 LocalDate registrationDate,
                                 UUID bloodDonationScheduleId,
                                 LocalDate startDate,
@@ -44,6 +46,7 @@ public class DonorDonationInfoDTO {
         this.endTime = endTime;
         this.volumeMl = volumeMl;
         this.donationDate = donationDate;
+        this.dateCompleteDonation = dateCompleteDonation;
         this.registrationDate = registrationDate;
         this.bloodDonationScheduleId = bloodDonationScheduleId;
         this.startDate = startDate;
