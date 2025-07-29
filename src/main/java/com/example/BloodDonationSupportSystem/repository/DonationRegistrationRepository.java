@@ -96,21 +96,15 @@ public interface DonationRegistrationRepository extends JpaRepository<DonationRe
             """)
     List<DonationRegistrationEntity> findUncompletedRegistrations(@Param("donorId") UUID donorId, @Param("status") String status);
 
-    @Query(value =
-            "SELECT COALESCE(MONTH(bs.donation_date), MONTH(ebr.registration_date)) AS month, " +
-                    "SUM(CASE WHEN dr.status = N'ĐÃ HIẾN' THEN 1 ELSE 0 END) AS successCount, " +
-                    "SUM(CASE WHEN dr.status = N'HỦY' THEN 1 ELSE 0 END) AS failedCount " +
-                    "FROM donation_registration dr " +
-                    "LEFT JOIN blood_donation_schedule bs " +
-                    "ON dr.blood_donation_schedule_id = bs.blood_donation_schedule_id " +
-                    "LEFT JOIN donation_emergency de " +
-                    "ON de.donation_registration_id = dr.donation_registration_id " +
-                    "LEFT JOIN emergency_blood_request ebr " +
-                    "ON ebr.emergency_blood_request_id = de.emergency_blood_request_id " +
-                    "WHERE (YEAR(bs.donation_date) = :year OR YEAR(ebr.registration_date) = :year) " +
-                    "GROUP BY COALESCE(MONTH(bs.donation_date), MONTH(ebr.registration_date)) " +
-                    "ORDER BY month ASC",
-            nativeQuery = true)
+    @Query(value = "SELECT " +
+        "MONTH(dr.registration_date) AS month, " +
+        "SUM(CASE WHEN dr.status = N'ĐÃ HIẾN' THEN 1 ELSE 0 END) AS successCount, " +
+        "SUM(CASE WHEN dr.status = N'HỦY' THEN 1 ELSE 0 END) AS failedCount " +
+        "FROM donation_registration dr " +
+        "WHERE YEAR(dr.registration_date) = :year " +
+        "GROUP BY MONTH(dr.registration_date) " +
+        "ORDER BY month ASC",
+        nativeQuery = true)
     List<Object[]> getMonthlyDonationStats(@Param("year") int year);
 
 
