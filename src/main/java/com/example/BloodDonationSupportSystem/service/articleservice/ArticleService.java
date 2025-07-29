@@ -118,7 +118,7 @@ public class ArticleService {
     }
 
     private Path mapToPath(String url) {
-        String pathText = url.replace("/", "\\");
+        String pathText = url.replace("^/", "");
         return Paths.get(pathText);
     }
     private String mapToUrl(String path) {
@@ -137,7 +137,7 @@ public class ArticleService {
 
             byte[] imageBytes = Base64.getDecoder().decode(base64Image);
 
-            Path uploadDir = Paths.get("images\\uploads");
+            Path uploadDir = Paths.get("images/uploads");
             if (!Files.exists(uploadDir)) {
                 Files.createDirectories(uploadDir);
             }
